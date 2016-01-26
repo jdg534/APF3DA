@@ -167,6 +167,18 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	_gameObjects.push_back(gameObject);
 
+	testTerrainData = generateFlatTerrain(5, 5, 0.5f, 0.5f);
+
+	gameObject = new GameObject("test josh terrain", *testTerrainData, shinyMaterial);
+	gameObject->SetPosition(0.0f, -5.5f, 0.0f);
+	gameObject->SetScale(1.5f, 1.5f, 1.5f);
+	// gameObject->SetRotation(XMConvertToRadians(90.0f), 0.0f, 0.0f);
+	gameObject->SetTextureRV(_pTextureRV);
+
+	_gameObjects.push_back(gameObject);
+
+	delete testTerrainData;
+
 	return S_OK;
 }
 
@@ -390,6 +402,150 @@ HRESULT Application::InitIndexBuffer()
 		return hr;
 
 	return S_OK;
+}
+
+Geometry * Application::generateFlatTerrain(int mRows, int nColumns, float cellWidth, float cellDepth)
+{
+	int cellRows = mRows - 1;
+	int cellColumns = nColumns - 1;
+	int nCells = cellRows * cellColumns;
+	int nTriangles = nCells * 2;
+	int nVerts = mRows * nColumns;
+
+	float width = (float) cellRows * cellWidth;
+	float depth = (float) cellColumns * cellDepth;
+	
+	XMFLOAT2 t;
+	t.x = -(width / 2.0f);
+	t.y = depth / 2.0f;
+
+	int k = 0;
+
+	std::vector<XMFLOAT3> verts;
+	verts.resize(nVerts);
+
+	for (int i = 0; i < mRows; i++)
+	{
+		for (int j = 0; j < nColumns; j++)
+		{
+			verts[k].x = j * cellWidth + (-width * 0.5f);
+			verts[k].y = 0.0f;
+			verts[k].z = -(i * cellDepth) + (depth * 0.5f);
+			k++;
+		}
+	}
+
+	std::vector<WORD> indices;
+
+	// for the ijth Quad
+	
+
+	// code based off slide 9 of first lecture
+
+	for (int i = 0; i < mRows; i++)
+	{
+		for (int j = 0; j < nColumns; j++)
+		{
+			XMINT3 abc;
+			abc.x = i * nColumns + j;
+			abc.y = i * nColumns + j + 1;
+			abc.z = (i + 1) * nColumns + j;
+
+			XMINT3 cbd;
+			cbd.x = (i + 1) * nColumns + j;
+			cbd.y = i * nColumns + j + 1;
+			cbd.z = (i + 1) * nColumns + j + 1;
+
+			// add to the vector as WORD use static_cast<WORD>()
+			indices.push_back(static_cast<WORD>(abc.x));
+			indices.push_back(static_cast<WORD>(abc.y));
+			indices.push_back(static_cast<WORD>(abc.z));
+
+			indices.push_back(static_cast<WORD>(cbd.x));
+			indices.push_back(static_cast<WORD>(cbd.y));
+			indices.push_back(static_cast<WORD>(cbd.z));
+		}
+	}
+
+	std::vector<SimpleVertex> vertsToSendToD3dBuffer;
+	for (int i = 0; i < verts.size(); i++)
+	{
+		SimpleVertex sv;
+		sv.PosL.x = verts[i].x;
+		sv.PosL.y = verts[i].y;
+		sv.PosL.z = verts[i].z;
+
+		sv.NormL.x = 0.0f;
+		sv.NormL.y = 1.0f;
+		sv.NormL.z = 0.0f;
+
+		float scaleXBy = (1.0f / width);
+		float scaleYBy = (1.0f / depth); // technically scale Z
+
+		sv.Tex.x = sv.PosL.x * scaleXBy;
+		sv.Tex.y = sv.PosL.z * scaleYBy;
+
+		// tec coords now in range -1.0 to 1.0
+
+		// need 0.0 to 1.0?
+		sv.Tex.x = (sv.Tex.x + 1.0f) / 2.0f;
+		sv.Tex.y = (sv.Tex.y + 1.0f) / 2.0f;
+
+		vertsToSendToD3dBuffer.push_back(sv);
+	}
+
+	
+	// now move to vertex & index buffers
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory(&bd, sizeof(bd));
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(SimpleVertex) * vertsToSendToD3dBuffer.size();
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA InitData;
+	ZeroMemory(&InitData, sizeof(InitData));
+	InitData.pSysMem = &vertsToSendToD3dBuffer[0];
+
+
+	Geometry * rv = new Geometry();
+
+	HRESULT hr = _pd3dDevice->CreateBuffer(&bd, &InitData, &rv->vertexBuffer);
+	rv->vertexBufferStride = sizeof(SimpleVertex);
+	rv->vertexBufferOffset = 0; // would be somethign else, if got to start with verts that don't stat at bedinning of the buffer
+
+	if (FAILED(hr))
+	{
+		delete rv;
+		return nullptr;
+	}
+
+
+	// now create the index buffer, and set the number of indecies used by the buffer
+
+	D3D11_BUFFER_DESC indBufdesc;
+	ZeroMemory(&indBufdesc, sizeof(indBufdesc));
+
+	indBufdesc.Usage = D3D11_USAGE_DEFAULT;
+	indBufdesc.ByteWidth = sizeof(WORD) * indices.size();
+	indBufdesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indBufdesc.CPUAccessFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA indBufInitData;
+	ZeroMemory(&indBufInitData, sizeof(indBufInitData));
+	indBufInitData.pSysMem = &indices[0];
+	hr = _pd3dDevice->CreateBuffer(&indBufdesc, &indBufInitData, &rv->indexBuffer);
+
+	if (FAILED(hr))
+	{
+		rv->vertexBuffer->Release();
+		delete rv;
+		return nullptr;
+	}
+	
+	rv->numberOfIndices = indices.size();
+
+	return rv;
 }
 
 HRESULT Application::InitWindow(HINSTANCE hInstance, int nCmdShow)

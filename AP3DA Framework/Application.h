@@ -87,6 +87,8 @@ private:
 
 	vector<GameObject *> _gameObjects;
 
+	
+
 	Camera * _camera;
 	float _cameraOrbitRadius = 7.0f;
 	float _cameraOrbitRadiusMin = 2.0f;
@@ -119,6 +121,11 @@ private:
 	HRESULT InitShadersAndInputLayout();
 	HRESULT InitVertexBuffer();
 	HRESULT InitIndexBuffer();
+
+	Geometry * generateFlatTerrain(int mRows, int nColumns, float cellWidth, float cellDepth);
+	//XMFLOAT2 texValue
+
+	Geometry * testTerrainData;
 
 public:
 	Application();
