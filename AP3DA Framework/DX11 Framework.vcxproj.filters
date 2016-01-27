@@ -21,6 +21,9 @@
     <Filter Include="GameObject">
       <UniqueIdentifier>{2465aab1-fb4f-43d3-96ee-db6fff89264f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Terrain">
+      <UniqueIdentifier>{416a4ad2-124f-4c55-8573-bc16ff576be7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -34,6 +37,12 @@
     </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainGenerator.h">
+      <Filter>Terrain</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -49,6 +58,9 @@
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Terrain</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

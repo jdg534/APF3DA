@@ -1,1 +1,15 @@
-1. get a generated Plane working
+
+// side note using heap memory array for creating the simple vertex objects, is can be better than using a std::vector
+
+// alex advice, have manager class for loading with the Terrain, then have terrain objects that are drawable (Terrain objects stored in the manager class)
+
+
+1. Create the flying camera, us "Terrain info" lecture for reference
+
+1.2 Create Render class using the render class made in 
+
+2. Refactor the application to have seperate terrain class
+
+
+3. mod terrain class to have a create from file func
+

@@ -516,7 +516,7 @@ Geometry * Application::generateFlatTerrain(int mRows, int nColumns, float cellW
 
 	HRESULT hr = _pd3dDevice->CreateBuffer(&bd, &InitData, &rv->vertexBuffer);
 	rv->vertexBufferStride = sizeof(SimpleVertex);
-	rv->vertexBufferOffset = 0; // would be somethign else, if got to start with verts that don't stat at bedinning of the buffer
+	rv->vertexBufferOffset = 0; // would be somethign else, if got to start with verts that don't stat at beginning of the buffer
 
 	if (FAILED(hr))
 	{

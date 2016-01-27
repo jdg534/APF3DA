@@ -61,8 +61,8 @@ public:
 
 	void SetParent(GameObject * parent) { _parent = parent; }
 
-	void Update(float t);
-	void Draw(ID3D11DeviceContext * pImmediateContext);
+	virtual void Update(float t);
+	virtual void Draw(ID3D11DeviceContext * pImmediateContext);
 
 private:
 	XMFLOAT3 _position;

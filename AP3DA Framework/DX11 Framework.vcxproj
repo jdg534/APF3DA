@@ -378,6 +378,7 @@
     <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Terrain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="DX11 Framework.fx">
@@ -391,6 +392,8 @@
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="GameObject.h" />
     <CLInclude Include="resource.h" />
+    <ClInclude Include="Terrain.h" />
+    <ClInclude Include="TerrainGenerator.h" />
     <ResourceCompile Include="DX11 Framework.rc" />
   </ItemGroup>
   <ItemGroup>
