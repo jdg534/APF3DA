@@ -146,13 +146,17 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	noSpecMaterial.specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	noSpecMaterial.specularPower = 0.0f;
 	
-	GameObject * gameObject = new GameObject("Floor", planeGeometry, noSpecMaterial);
+	GameObject * gameObject;
+	
+	/*gameObject = new GameObject("Floor", planeGeometry, noSpecMaterial);
 	gameObject->SetPosition(0.0f, 0.0f, 0.0f);
 	gameObject->SetScale(15.0f, 15.0f, 15.0f);
 	gameObject->SetRotation(XMConvertToRadians(90.0f), 0.0f, 0.0f);
 	gameObject->SetTextureRV(_pTextureRV);
-
+	
 	_gameObjects.push_back(gameObject);
+	*/
+
 
 	gameObject = new GameObject("Cube 1", cubeGeometry, shinyMaterial);
 	gameObject->SetPosition(0.0f, 2.0f, 0.0f);
@@ -167,10 +171,10 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	_gameObjects.push_back(gameObject);
 
-	testTerrainData = generateFlatTerrain(5, 5, 0.5f, 0.5f);
+	testTerrainData = generateFlatTerrain(15, 15, 1.0f, 1.0f);
 
 	gameObject = new GameObject("test josh terrain", *testTerrainData, shinyMaterial);
-	gameObject->SetPosition(0.0f, -5.5f, 0.0f);
+	gameObject->SetPosition(0.0f, 0.5f, 0.0f);
 	gameObject->SetScale(1.5f, 1.5f, 1.5f);
 	// gameObject->SetRotation(XMConvertToRadians(90.0f), 0.0f, 0.0f);
 	gameObject->SetTextureRV(_pTextureRV);
@@ -442,19 +446,19 @@ Geometry * Application::generateFlatTerrain(int mRows, int nColumns, float cellW
 
 	// code based off slide 9 of first lecture
 
-	for (int i = 0; i < mRows; i++)
+	for (int i = 0; i < mRows - 1; i++)
 	{
-		for (int j = 0; j < nColumns; j++)
+		for (int j = 0; j < nColumns - 1; j++)
 		{
 			XMINT3 abc;
-			abc.x = i * nColumns + j;
-			abc.y = i * nColumns + j + 1;
-			abc.z = (i + 1) * nColumns + j;
+			abc.x = i * mRows + j;
+			abc.y = i * mRows + j + 1;
+			abc.z = (i + 1) * mRows + j;
 
 			XMINT3 cbd;
-			cbd.x = (i + 1) * nColumns + j;
-			cbd.y = i * nColumns + j + 1;
-			cbd.z = (i + 1) * nColumns + j + 1;
+			cbd.x = (i + 1) * mRows + j;
+			cbd.y = i * mRows + j + 1;
+			cbd.z = (i + 1) * mRows + j + 1;
 
 			// add to the vector as WORD use static_cast<WORD>()
 			indices.push_back(static_cast<WORD>(abc.x));
