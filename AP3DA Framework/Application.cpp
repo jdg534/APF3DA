@@ -1,5 +1,24 @@
 #include "Application.h"
 
+#include "Math.h"
+
+float calculateTexCoord(float minPoint, float maxPoint, float vertPos) // this function is to be used at load time
+{
+	float stepSize = 0.001f;
+	float currentStep = 0.0f;
+
+	while (currentStep < 1.0f)
+	{
+		float stepPos = Math::lerp(minPoint, maxPoint, currentStep);
+		if (stepPos >= vertPos)
+		{
+			return currentStep;
+		}
+		currentStep += stepSize;
+	}
+	return 1.0f;
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
@@ -471,6 +490,35 @@ Geometry * Application::generateFlatTerrain(int mRows, int nColumns, float cellW
 		}
 	}
 
+	/*
+	0,0---1,0
+	|		|
+	0,1---1,1
+	*/
+
+	XMFLOAT2 topLeft(99999.99f, 99999.99f), bottomRight(-topLeft.x, -topLeft.y);
+
+	for (int i = 0; i < verts.size(); i++)
+	{
+		if (topLeft.x > verts[i].x)
+		{
+			topLeft.x = verts[i].x;
+		}
+		if (topLeft.y > verts[i].z)
+		{
+			topLeft.y = verts[i].z;
+		}
+
+		if (bottomRight.x < verts[i].x)
+		{
+			bottomRight.x = verts[i].x;
+		}
+		if (bottomRight.y < verts[i].z)
+		{
+			bottomRight.y = verts[i].z;
+		}
+	}
+
 	std::vector<SimpleVertex> vertsToSendToD3dBuffer;
 	for (int i = 0; i < verts.size(); i++)
 	{
@@ -483,6 +531,7 @@ Geometry * Application::generateFlatTerrain(int mRows, int nColumns, float cellW
 		sv.NormL.y = 1.0f;
 		sv.NormL.z = 0.0f;
 
+		/*
 		float scaleXBy = (1.0f / width);
 		float scaleYBy = (1.0f / depth); // technically scale Z
 
@@ -494,6 +543,10 @@ Geometry * Application::generateFlatTerrain(int mRows, int nColumns, float cellW
 		// need 0.0 to 1.0?
 		sv.Tex.x = (sv.Tex.x + 1.0f) / 2.0f;
 		sv.Tex.y = (sv.Tex.y + 1.0f) / 2.0f;
+		*/
+
+		sv.Tex.x = calculateTexCoord(topLeft.x, bottomRight.x, sv.PosL.x);
+		sv.Tex.y = calculateTexCoord(topLeft.y, bottomRight.y, sv.PosL.z);
 
 		vertsToSendToD3dBuffer.push_back(sv);
 	}
