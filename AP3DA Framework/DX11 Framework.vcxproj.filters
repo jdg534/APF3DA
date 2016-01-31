@@ -53,6 +53,9 @@
     <ClInclude Include="Math.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="HeightMap.h">
+      <Filter>Terrain</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />

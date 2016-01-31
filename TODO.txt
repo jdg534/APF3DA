@@ -3,6 +3,20 @@
 
 // alex advice, have manager class for loading with the Terrain, then have terrain objects that are drawable (Terrain objects stored in the manager class)
 
+1. Code Height Map class
+
+2. Code Height Map Generator Class
+
+3. Code Height Map Manager Class
+
+4. Code Terrain manager class
+
+5. Code Terrain Generator class (takes a height map object as a parameter)
+
+6. Code the Fly trough camera
+
+
+// below original plan
 
 1. Create the flying camera, us "Terrain info" lecture for reference
 

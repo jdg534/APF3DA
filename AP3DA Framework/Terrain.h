@@ -6,15 +6,14 @@
 
 #include <string>
 
-class Terrain : public Geometry
+class Terrain
 {
 public:
-	Terrain();
+	Terrain(string type, Geometry geometry, Material material);
 	~Terrain();
 
-	bool generateFlatGrid(ID3D11Device * d3dDPtr, int mRows, int nColumns, float cellWidth, float cellDepth);
-	bool generateFromHeightMapRawFile(ID3D11Device * d3dDPtr, std::string heightMapFileName, float cellWidth, float cellDepth); // asumes that the number of cells (width and depth) are equal to the number pixels in width & height
 
+	
 	virtual void Update(float t);
 	virtual void Draw(ID3D11DeviceContext * pImmediateContext);
 
@@ -32,6 +31,8 @@ private:
 
 	DirectX::XMFLOAT3 m_position;
 	DirectX::XMFLOAT4X4 m_worldMatrix;
+
+
 };
 
 

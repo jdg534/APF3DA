@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-Terrain::Terrain()
+Terrain::Terrain(string type, Geometry geometry, Material material)
 {
 	m_rows = 0;
 	m_columns = 0;
@@ -25,28 +25,6 @@ Terrain::Terrain()
 Terrain::~Terrain()
 {
 
-}
-
-bool Terrain::generateFlatGrid(ID3D11Device * d3dDPtr, int mRows, int nColumns, float cellWidth, float cellDepth)
-{
-
-	return false;
-}
-
-bool Terrain::generateFromHeightMapRawFile(ID3D11Device * d3dDPtr, std::string heightMapFileName, float cellWidth, float cellDepth)
-{
-	std::ifstream heightMap(heightMapFileName, std::ios::binary);
-
-	if (!heightMap.good())
-	{
-		return false;
-	}
-
-	// can read from the file
-
-
-
-	return false;
 }
 
 void Terrain::Update(float t)
