@@ -16,7 +16,7 @@ public:
 	{
 	}
 
-
+	bool load
 
 private:
 	unsigned int m_width;

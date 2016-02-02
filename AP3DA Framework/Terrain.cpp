@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-Terrain::Terrain(string type, Geometry geometry, Material material)
+Terrain::Terrain()
 {
 	m_rows = 0;
 	m_columns = 0;

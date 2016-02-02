@@ -1,18 +1,22 @@
 #ifndef _TERRAIN_H_
 #define _TERRAIN_H_
 
-#include "GameObject.h" // will inherit from Geomatry
+#include "GameObject.h" 
+#include "HeightMap.h"
+
 #include <d3d11.h> // need to know about the Dx11 types for creating the buffers
 
 #include <string>
 
+
+
 class Terrain
 {
 public:
-	Terrain(string type, Geometry geometry, Material material);
+	Terrain();
 	~Terrain();
 
-
+	bool initAsFlatTerrain(); // just the func from Application.cpp
 	
 	virtual void Update(float t);
 	virtual void Draw(ID3D11DeviceContext * pImmediateContext);
@@ -32,7 +36,7 @@ private:
 	DirectX::XMFLOAT3 m_position;
 	DirectX::XMFLOAT4X4 m_worldMatrix;
 
-
+	HeightMap * m_heightMap;
 };
 
 
