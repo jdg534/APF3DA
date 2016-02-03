@@ -24,9 +24,6 @@
     <Filter Include="Terrain">
       <UniqueIdentifier>{416a4ad2-124f-4c55-8573-bc16ff576be7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Math">
-      <UniqueIdentifier>{22f1ae65-57eb-48be-a52d-b215a05c1cd3}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -50,12 +47,10 @@
     <ClInclude Include="TerrainManager.h">
       <Filter>Terrain</Filter>
     </ClInclude>
-    <ClInclude Include="Math.h">
-      <Filter>Math</Filter>
-    </ClInclude>
     <ClInclude Include="HeightMap.h">
       <Filter>Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="Structures.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -72,6 +67,9 @@
       <Filter>GameObject</Filter>
     </ClCompile>
     <ClCompile Include="Terrain.cpp">
+      <Filter>Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="HeightMap.cpp">
       <Filter>Terrain</Filter>
     </ClCompile>
   </ItemGroup>

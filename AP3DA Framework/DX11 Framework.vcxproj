@@ -378,6 +378,7 @@
     <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="HeightMap.cpp" />
     <ClCompile Include="Terrain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -392,8 +393,8 @@
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="HeightMap.h" />
-    <ClInclude Include="Math.h" />
     <CLInclude Include="resource.h" />
+    <ClInclude Include="Structures.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="TerrainGenerator.h" />
     <ClInclude Include="TerrainManager.h" />

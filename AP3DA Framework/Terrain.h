@@ -21,13 +21,30 @@ public:
 	virtual void Update(float t); // probably not nessary
 	virtual void Draw(ID3D11DeviceContext * pImmediateContext);
 
+	
+	void setPosition(float x, float y, float z)
+	{
+		m_position.x = x;
+		m_position.y = y;
+		m_position.z = z;
+	}
+
+	DirectX::XMMATRIX getWorldMat(){ return DirectX::XMLoadFloat4x4(&m_worldMatrix); }
+
 private:
+
+	float calculateTextureCoord(float minPos, float maxPos, float pos);
+
 	int m_rows;
 	int m_columns;
+	
+	int m_cellRows;
+	int m_cellColumns;
+
 	float m_cellWidth;
 	float m_cellDepth;
 	float m_width;
-	float m_height;
+	float m_depth;
 	float m_minX;
 	float m_maxX;
 	float m_minZ;

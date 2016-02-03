@@ -9,7 +9,10 @@ float calculateTexCoord(float minPoint, float maxPoint, float vertPos) // this f
 
 	while (currentStep < 1.0f)
 	{
-		float stepPos = Math::lerp(minPoint, maxPoint, currentStep);
+		// float stepPos = Math::lerp(minPoint, maxPoint, currentStep);
+
+		float stepPos = (1.0f - currentStep) * minPoint + maxPoint * currentStep;
+
 		if (stepPos >= vertPos)
 		{
 			return currentStep;
@@ -190,8 +193,9 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	_gameObjects.push_back(gameObject);
 
-	testTerrainData = generateFlatTerrain(15, 15, 1.0f, 1.0f);
+	//testTerrainData = generateFlatTerrain(15, 15, 1.0f, 1.0f);
 
+	/*
 	gameObject = new GameObject("test josh terrain", *testTerrainData, shinyMaterial);
 	gameObject->SetPosition(0.0f, 0.5f, 0.0f);
 	gameObject->SetScale(1.5f, 1.5f, 1.5f);
@@ -199,8 +203,12 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	gameObject->SetTextureRV(_pTextureRV);
 
 	_gameObjects.push_back(gameObject);
+	*/
 
-	delete testTerrainData;
+
+	//delete testTerrainData;
+
+	testT.initAsFlatTerrain(15, 15, 1.0f, 1.0f, _pd3dDevice);
 
 	return S_OK;
 }
@@ -927,6 +935,10 @@ void Application::Update()
 	{
 		gameObject->Update(timeSinceStart);
 	}
+
+	testT.setPosition(0.0f, -2.5f, 0.0f);
+	testT.Update(0.0f);
+
 }
 
 void Application::Draw()
@@ -1008,6 +1020,36 @@ void Application::Draw()
 		gameObject->Draw(_pImmediateContext);
 	}
 
+	/*
+	// render the terrain
+	Material terrainMat;
+	terrainMat.ambient.x = 0.2f;
+	terrainMat.ambient.y = 0.2f;
+	terrainMat.ambient.z = 0.2f;
+	terrainMat.ambient.w = 0.2f;
+
+	terrainMat.diffuse.x = 0.6f;
+	terrainMat.diffuse.y = 0.6f;
+	terrainMat.diffuse.z = 0.6f;
+	terrainMat.diffuse.w = 0.6f;
+
+	terrainMat.specular.x = 0.1f;
+	terrainMat.specular.y = 0.1f;
+	terrainMat.specular.z = 0.1f;
+	terrainMat.specular.w = 0.1f;
+	
+	terrainMat.specularPower = 20.0f;
+
+	//_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+	*/
+
+
+
+	cb.World = XMMatrixTranspose(testT.getWorldMat());
+	_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+
+	testT.Draw(_pImmediateContext);
+	
     //
     // Present our back buffer to our front buffer
     //

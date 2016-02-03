@@ -9,20 +9,32 @@
 class HeightMap
 {
 public:
-	HeightMap()
-	{
+	HeightMap();
+	~HeightMap();
+
+	bool loadTerrainFromRAWFile(std::string fileName); // asumes is square
+	
+	unsigned char getHeightAt(int x, int y);
+
+
+	unsigned int getWidth(){ return m_width; }
+	unsigned int getDepth() { return m_depth; }
+	std::vector<unsigned char> getHeightValues(){ return m_heightValues; }
+
+	void setWidth(unsigned int width) { m_width = width; }
+	void setDepth(unsigned int depth) { m_depth = depth; }
+	void setheightValues(std::vector<unsigned char> heightValues)
+	{ 
+		m_heightValues.clear();
+		for (int i = 0; i < heightValues.size(); i++)
+		{
+			m_heightValues.push_back(heightValues[i]);
+		}
 	}
-
-	~HeightMap()
-	{
-	}
-
-	bool loadTerrainFromFile(std::string fileName){ return false; }
-
 
 private:
 	unsigned int m_width;
-	unsigned int m_height;
+	unsigned int m_depth;
 	std::vector<unsigned char> m_heightValues;
 };
 
