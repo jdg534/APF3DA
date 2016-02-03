@@ -16,9 +16,9 @@ public:
 	Terrain();
 	~Terrain();
 
-	bool initAsFlatTerrain(); // just the func from Application.cpp
+	virtual bool initAsFlatTerrain(int mRows, int nColumns, float cellWidth, float cellDepth, ID3D11Device * devicePtr); // just the func from Application.cpp
 	
-	virtual void Update(float t);
+	virtual void Update(float t); // probably not nessary
 	virtual void Draw(ID3D11DeviceContext * pImmediateContext);
 
 private:
@@ -37,6 +37,8 @@ private:
 	DirectX::XMFLOAT4X4 m_worldMatrix;
 
 	HeightMap * m_heightMap;
+
+	Geometry m_geometry;
 };
 
 

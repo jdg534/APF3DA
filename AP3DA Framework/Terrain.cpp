@@ -27,6 +27,12 @@ Terrain::~Terrain()
 
 }
 
+bool Terrain::initAsFlatTerrain(int mRows, int nColumns, float cellWidth, float cellDepth, ID3D11Device * devicePtr)
+{
+
+	return false;
+}
+
 void Terrain::Update(float t)
 {
 

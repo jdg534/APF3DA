@@ -4,6 +4,7 @@
 // this class is for representing height maps, the map can be from file, or generated via the heightMapGenerator class (both types stored in the height map manager class
 
 #include <vector>
+#include <string>
 
 class HeightMap
 {
@@ -16,7 +17,8 @@ public:
 	{
 	}
 
-	bool load
+	bool loadTerrainFromFile(std::string fileName){ return false; }
+
 
 private:
 	unsigned int m_width;
