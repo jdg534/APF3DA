@@ -15,6 +15,9 @@ public:
 	{
 	}
 
+	// plan, have this generate a height map, then have the Terrain class setup via height map
+
+
 	//GameObject * generateFlatTerrain(ID3D11Device * d3dDPtr, );
 private:
 

@@ -41,4 +41,10 @@ struct ConstantBuffer
 	float HasTexture;
 };
 
+struct Facet
+{
+	DirectX::XMFLOAT3 v0, v1, v2;
+	DirectX::XMFLOAT3 surfaceNormal;
+};
+
 #endif

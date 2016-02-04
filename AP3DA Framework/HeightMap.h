@@ -14,6 +14,8 @@ public:
 
 	bool loadTerrainFromRAWFile(std::string fileName); // asumes is square
 	
+	// optionally include .bmp (low priorty)
+
 	unsigned char getHeightAt(int x, int y);
 
 
@@ -23,6 +25,7 @@ public:
 
 	void setWidth(unsigned int width) { m_width = width; }
 	void setDepth(unsigned int depth) { m_depth = depth; }
+	
 	void setheightValues(std::vector<unsigned char> heightValues)
 	{ 
 		m_heightValues.clear();

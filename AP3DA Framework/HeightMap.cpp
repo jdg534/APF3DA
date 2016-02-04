@@ -35,3 +35,11 @@ bool HeightMap::loadTerrainFromRAWFile(std::string fileName) // asumes is square
 
 	return true;
 }
+
+unsigned char HeightMap::getHeightAt(int x, int y)
+{
+	// need to calculate y off set
+	// (x offset = x) anyway
+	int yOffset = m_width * y;
+	return m_heightValues[x + yOffset];
+}
