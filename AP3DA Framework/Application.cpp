@@ -2,6 +2,9 @@
 
 #include "Math.h"
 
+#include "HeightMapGenerator.h"
+
+
 float calculateTexCoord(float minPoint, float maxPoint, float vertPos) // this function is to be used at load time
 {
 	float stepSize = 0.001f;
@@ -209,9 +212,14 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	//delete testTerrainData;
 
 	HeightMap hm;
+
+	HeightMapGenerator hmg;
+
+	hm = hmg.generateFaultFormation(100, 125);
+
 	// hm.loadTerrainFromRAWFile("Textures/terrain.raw");
 	// hm.loadTerrainFromBMPFile("Textures/testHM.bmp");
-	hm.loadTerrainFromBMPFile("Textures/_20x20Test.bmp");
+	// hm.loadTerrainFromBMPFile("Textures/_20x20Test.bmp");
 
 
 
