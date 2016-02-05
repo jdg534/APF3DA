@@ -208,7 +208,18 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	//delete testTerrainData;
 
-	testT.initAsFlatTerrain(15, 15, 1.0f, 1.0f, _pd3dDevice);
+	HeightMap hm;
+	// hm.loadTerrainFromRAWFile("Textures/terrain.raw");
+	// hm.loadTerrainFromBMPFile("Textures/testHM.bmp");
+	hm.loadTerrainFromBMPFile("Textures/_20x20Test.bmp");
+
+
+
+	// testT.initAsFlatTerrain(15, 15, 1.0f, 1.0f, _pd3dDevice);
+	testT.initViaHeightMap(&hm, 1.0f, _pd3dDevice, 15.0f, 15.0f);
+	testT.setPosition(0.0f, -2.5f, 0.0f);
+	// testT.setPosition(0.0f, -512.5f, 10.0f);
+
 
 	return S_OK;
 }
@@ -936,7 +947,7 @@ void Application::Update()
 		gameObject->Update(timeSinceStart);
 	}
 
-	testT.setPosition(0.0f, -2.5f, 0.0f);
+	
 	testT.Update(0.0f);
 
 }

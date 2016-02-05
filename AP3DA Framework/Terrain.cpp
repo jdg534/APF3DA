@@ -216,7 +216,7 @@ bool Terrain::initAsFlatTerrain(int mRows, int nColumns, float cellWidth, float 
 	return true;
 }
 
-bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device * devicePtr)
+bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device * devicePtr, float width, float depth)
 {
 	/* (original calculations from initAsFlatTerrain())
 	m_rows = mRows;
@@ -228,15 +228,24 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 	m_width = m_rows * m_cellWidth;
 	m_depth = m_columns * m_cellDepth;
 	*/
+
 	m_rows = hm->getWidth();
 	m_columns = hm->getDepth();
 	m_cellRows = m_rows - 1;
 	m_cellColumns = m_columns - 1;
+
+	/* before width & depth as a parameter
 	m_cellWidth = 1.0f; // should have as a parameter
 	m_cellDepth = 1.0f;
+	
 	m_width = m_rows * m_cellWidth;
 	m_depth = m_columns * m_cellDepth;
+	*/
+	m_width = width;
+	m_depth = depth;
 
+	m_cellWidth = m_width / (float) m_rows;
+	m_cellDepth = m_depth / (float)m_columns;
 
 	int nCells = m_cellRows * m_cellColumns;
 	int nTriangles = nCells * 2;
@@ -248,14 +257,14 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 
 	int k = 0;
 
-	std::vector<XMFLOAT3> verts;
+	std::vector<VertexForVertexNormalCalc> verts;
 	verts.resize(nVerts);
 
 	for (int i = 0; i < m_rows; i++)
 	{
 		for (int j = 0; j < m_columns; j++)
 		{
-			verts[k].x = j * m_cellWidth + (-m_width * 0.5f);
+			verts[k].pos.x = j * m_cellWidth + (-m_width * 0.5f);
 			// verts[k].y = 0.0f; original
 
 			unsigned char hmVal = hm->getHeightAt(i, j);
@@ -266,9 +275,9 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 
 			// rescale to the scale use requested
 
-			verts[k].y = downScaled * scaleHeightBy;
+			verts[k].pos.y = downScaled * scaleHeightBy;
 
-			verts[k].z = -(i * m_cellDepth) + (m_depth * 0.5f);
+			verts[k].pos.z = -(i * m_cellDepth) + (m_depth * 0.5f);
 			k++;
 		}
 	}
@@ -278,21 +287,42 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 	// for the ijth Quad
 
 
-	// code based off slide 9 of first lecture
+	// code partly based off slide 9 of first lecture
 
 	for (int i = 0; i < m_rows - 1; i++)
 	{
 		for (int j = 0; j < m_columns - 1; j++)
 		{
+			// treat each tri as a facet
+			
 			XMINT3 abc;
 			abc.x = i * m_rows + j;
 			abc.y = i * m_rows + j + 1;
 			abc.z = (i + 1) * m_rows + j;
 
+			XMFLOAT3 abcSn = calcSurfaceNormal(XMLoadFloat3(&verts[abc.x].pos), 
+				XMLoadFloat3(&verts[abc.y].pos),
+				XMLoadFloat3(&verts[abc.z].pos));
+
+			
+						
+
 			XMINT3 cbd;
 			cbd.x = (i + 1) * m_rows + j;
 			cbd.y = i * m_rows + j + 1;
 			cbd.z = (i + 1) * m_rows + j + 1;
+
+			XMFLOAT3 cbdSn = calcSurfaceNormal(XMLoadFloat3(&verts[cbd.x].pos),
+				XMLoadFloat3(&verts[cbd.y].pos),
+				XMLoadFloat3(&verts[cbd.z].pos));
+
+			verts[abc.x].surfaceNormals.push_back(abcSn);
+			verts[abc.y].surfaceNormals.push_back(abcSn);
+			verts[abc.z].surfaceNormals.push_back(abcSn);
+
+			verts[cbd.x].surfaceNormals.push_back(cbdSn);
+			verts[cbd.y].surfaceNormals.push_back(cbdSn);
+			verts[cbd.z].surfaceNormals.push_back(cbdSn);
 
 			// add to the vector as WORD use static_cast<WORD>()
 			indices.push_back(static_cast<WORD>(abc.x));
@@ -305,6 +335,8 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 		}
 	}
 
+
+
 	/*
 	0,0---1,0
 	|		|
@@ -315,22 +347,22 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 
 	for (int i = 0; i < verts.size(); i++)
 	{
-		if (topLeft.x > verts[i].x)
+		if (topLeft.x > verts[i].pos.x)
 		{
-			topLeft.x = verts[i].x;
+			topLeft.x = verts[i].pos.x;
 		}
-		if (topLeft.y > verts[i].z)
+		if (topLeft.y > verts[i].pos.z)
 		{
-			topLeft.y = verts[i].z;
+			topLeft.y = verts[i].pos.z;
 		}
 
-		if (bottomRight.x < verts[i].x)
+		if (bottomRight.x < verts[i].pos.x)
 		{
-			bottomRight.x = verts[i].x;
+			bottomRight.x = verts[i].pos.x;
 		}
-		if (bottomRight.y < verts[i].z)
+		if (bottomRight.y < verts[i].pos.z)
 		{
-			bottomRight.y = verts[i].z;
+			bottomRight.y = verts[i].pos.z;
 		}
 	}
 
@@ -338,19 +370,26 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 	for (int i = 0; i < verts.size(); i++)
 	{
 		SimpleVertex sv;
-		sv.PosL.x = verts[i].x;
-		sv.PosL.y = verts[i].y;
-		sv.PosL.z = verts[i].z;
+		sv.PosL.x = verts[i].pos.x;
+		sv.PosL.y = verts[i].pos.y;
+		sv.PosL.z = verts[i].pos.z;
 
 
 
 		// this has to be changed
 		// will just have a normals correction func, calc surface normal, then 
-		sv.NormL.x = 0.0f;
-		sv.NormL.y = 1.0f;
-		sv.NormL.z = 0.0f;
-
-
+		
+		XMFLOAT3 VertexNormal(0.0, 0.0, 0.0);
+		for (int j = 0; j < verts[i].surfaceNormals.size(); j++)
+		{
+			VertexNormal.x += verts[i].surfaceNormals[j].x;
+			VertexNormal.y += verts[i].surfaceNormals[j].y;
+			VertexNormal.z += verts[i].surfaceNormals[j].z;
+		}
+		float downScaleVNBy = 1.0f / (float)verts[i].surfaceNormals.size();
+		sv.NormL.x = VertexNormal.x * downScaleVNBy;
+		sv.NormL.y = VertexNormal.y * downScaleVNBy;
+		sv.NormL.z = VertexNormal.z * downScaleVNBy;
 
 		/*
 		float scaleXBy = (1.0f / width);
@@ -374,7 +413,10 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 
 	m_heightMap = hm;
 
-	correctVertexNormals(vertsToSendToD3dBuffer, indices);
+	// correctVertexNormals(vertsToSendToD3dBuffer, indices);
+	// altCorrectVertexNormals(vertsToSendToD3dBuffer, indices);
+
+	// both funcs too slow
 
 	// handle sending the data to actual d3d buffers
 
@@ -506,7 +548,7 @@ void Terrain::correctVertexNormals(std::vector<SimpleVertex> & toCorrect, std::v
 		std::vector<XMFLOAT3> facetNormals;
 		for (int j = 0; j < connectedFacets.size(); j++)
 		{
-			facetNormals.push_back(connectedFacets[i].surfaceNormal);
+			facetNormals.push_back(connectedFacets[j].surfaceNormal);
 		}
 		// ditch the duplercate normals
 		removeDuplicateNormals(facetNormals);
@@ -576,4 +618,94 @@ void Terrain::removeDuplicateNormals(std::vector<DirectX::XMFLOAT3> & n)
 			}
 		}
 	}
+}
+
+void Terrain::altCorrectVertexNormals(std::vector<SimpleVertex> & toCorrect, std::vector<WORD> & indices)
+{
+	std::vector<Facet> f;
+	// use the index buffer to determine the correct facets
+	for (int i = 0; i < indices.size(); i += 3)
+	{
+		Facet tmpf;
+		tmpf.v0 = toCorrect[indices[i]].PosL;
+		tmpf.v1 = toCorrect[indices[i + 1]].PosL;
+		tmpf.v2 = toCorrect[indices[i + 2]].PosL;
+		// calculate the surface normal
+		DirectX::XMFLOAT3 v0ToV1, v0ToV2;
+		v0ToV1.x = tmpf.v1.x - tmpf.v0.x;
+		v0ToV1.y = tmpf.v1.y - tmpf.v0.y;
+		v0ToV1.z = tmpf.v1.z - tmpf.v0.z;
+
+		v0ToV2.x = tmpf.v2.x - tmpf.v0.x;
+		v0ToV2.y = tmpf.v2.y - tmpf.v0.y;
+		v0ToV2.z = tmpf.v2.z - tmpf.v0.z;
+
+		DirectX::XMVECTOR a, b;
+		a = DirectX::XMLoadFloat3(&v0ToV1);
+		b = DirectX::XMLoadFloat3(&v0ToV2);
+
+		DirectX::XMVECTOR aCrossB = DirectX::XMVector3Cross(a, b);
+
+		XMStoreFloat3(&tmpf.surfaceNormal, XMVector3Normalize(aCrossB));
+
+		// add tmpF to f
+		f.push_back(tmpf);
+	}
+
+
+	// set the vertexNormals to be (0,0,0)
+	// loop through all of the vetices add if its part of the facet, add the facet normal to the vertex normal
+	for (int i = 0; i < toCorrect.size(); i++)
+	{
+		toCorrect[i].NormL.x = toCorrect[i].NormL.y = toCorrect[i].NormL.z = 0.0f;
+		for (int j = 0; j < f.size(); j++)
+		{
+			if (toCorrect[i].PosL.x == f[j].v0.x &&
+				toCorrect[i].PosL.y == f[j].v0.y &&
+				toCorrect[i].PosL.z == f[j].v0.z)
+			{
+				toCorrect[i].NormL.x += f[j].surfaceNormal.x;
+				toCorrect[i].NormL.y += f[j].surfaceNormal.y;
+				toCorrect[i].NormL.z += f[j].surfaceNormal.z;
+			}
+			else if (toCorrect[i].PosL.x == f[j].v1.x &&
+				toCorrect[i].PosL.y == f[j].v1.y &&
+				toCorrect[i].PosL.z == f[j].v1.z)
+			{
+				toCorrect[i].NormL.x += f[j].surfaceNormal.x;
+				toCorrect[i].NormL.y += f[j].surfaceNormal.y;
+				toCorrect[i].NormL.z += f[j].surfaceNormal.z;
+			}
+			else if (toCorrect[i].PosL.x == f[j].v2.x &&
+				toCorrect[i].PosL.y == f[j].v2.y &&
+				toCorrect[i].PosL.z == f[j].v2.z)
+			{
+				toCorrect[i].NormL.x += f[j].surfaceNormal.x;
+				toCorrect[i].NormL.y += f[j].surfaceNormal.y;
+				toCorrect[i].NormL.z += f[j].surfaceNormal.z;
+			}
+		}
+		// finally renormalise the vertex normals 
+		//(may count the same facet normal multiple times, 
+		// so not mathermatically correct, but should be more in the same general direction)
+
+		float mag = sqrtf(toCorrect[i].NormL.x *toCorrect[i].NormL.x
+			+ toCorrect[i].NormL.y *toCorrect[i].NormL.y
+			+ toCorrect[i].NormL.z *toCorrect[i].NormL.z);
+		float scaleBy = 1.0f / mag;
+		toCorrect[i].NormL.x *= scaleBy;
+		toCorrect[i].NormL.y *= scaleBy;
+		toCorrect[i].NormL.z *= scaleBy;
+	}
+}
+
+XMFLOAT3 Terrain::calcSurfaceNormal(XMVECTOR a, XMVECTOR b, XMVECTOR c)
+{
+	XMVECTOR ab = XMVectorSubtract(b, a);
+	XMVECTOR ac = XMVectorSubtract(c, a);
+	XMVECTOR abCrossAc = XMVector3Cross(ab, ac);
+	XMFLOAT3 rv;
+	
+	XMStoreFloat3(&rv, XMVector3Normalize(abCrossAc));
+	return rv;
 }

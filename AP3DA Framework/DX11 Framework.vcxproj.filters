@@ -24,6 +24,9 @@
     <Filter Include="Terrain">
       <UniqueIdentifier>{416a4ad2-124f-4c55-8573-bc16ff576be7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MathFuncs">
+      <UniqueIdentifier>{e3c55872-4c1c-4225-92fa-040306f35687}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -41,16 +44,16 @@
     <ClInclude Include="Terrain.h">
       <Filter>Terrain</Filter>
     </ClInclude>
-    <ClInclude Include="TerrainGenerator.h">
-      <Filter>Terrain</Filter>
-    </ClInclude>
-    <ClInclude Include="TerrainManager.h">
-      <Filter>Terrain</Filter>
-    </ClInclude>
     <ClInclude Include="HeightMap.h">
       <Filter>Terrain</Filter>
     </ClInclude>
     <ClInclude Include="Structures.h" />
+    <ClInclude Include="HeightMapGenerator.h">
+      <Filter>Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="MathFuncs.h">
+      <Filter>MathFuncs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -71,6 +74,12 @@
     </ClCompile>
     <ClCompile Include="HeightMap.cpp">
       <Filter>Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="HeightMapGenerator.cpp">
+      <Filter>Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="MathFuncs.cpp">
+      <Filter>MathFuncs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

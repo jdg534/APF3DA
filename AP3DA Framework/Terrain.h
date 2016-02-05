@@ -18,7 +18,7 @@ public:
 	~Terrain();
 
 	virtual bool initAsFlatTerrain(int mRows, int nColumns, float cellWidth, float cellDepth, ID3D11Device * devicePtr); // just the func from Application.cpp
-	virtual bool initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device * devicePtr);
+	virtual bool initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device * devicePtr, float width, float depth);
 
 
 	virtual void Update(float t); // probably not nessary
@@ -60,9 +60,17 @@ protected:
 
 	Geometry m_geometry;
 
+
+
+	// the following functions are for correcting the vertex normals, however they are all too slow to be used 
 	void correctVertexNormals(std::vector<SimpleVertex> & toCorrect, std::vector<WORD> & indices);
 	std::vector<Facet> getConnectedFacets(XMFLOAT3 vertex, std::vector<Facet> & facets);
 	void removeDuplicateNormals(std::vector<DirectX::XMFLOAT3> & n);
+
+	void altCorrectVertexNormals(std::vector<SimpleVertex> & toCorrect, std::vector<WORD> & indices);
+
+	XMFLOAT3 calcSurfaceNormal(XMVECTOR a, XMVECTOR b, XMVECTOR c);
+
 };
 
 

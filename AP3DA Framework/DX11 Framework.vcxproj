@@ -376,9 +376,11 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
+    <ClCompile Include="HeightMapGenerator.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="HeightMap.cpp" />
+    <ClCompile Include="MathFuncs.cpp" />
     <ClCompile Include="Terrain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -393,11 +395,11 @@
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="HeightMap.h" />
+    <ClInclude Include="HeightMapGenerator.h" />
+    <ClInclude Include="MathFuncs.h" />
     <CLInclude Include="resource.h" />
     <ClInclude Include="Structures.h" />
     <ClInclude Include="Terrain.h" />
-    <ClInclude Include="TerrainGenerator.h" />
-    <ClInclude Include="TerrainManager.h" />
     <ResourceCompile Include="DX11 Framework.rc" />
   </ItemGroup>
   <ItemGroup>
