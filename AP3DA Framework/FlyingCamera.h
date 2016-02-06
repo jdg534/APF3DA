@@ -26,7 +26,22 @@ private:
 
 	*/
 
+	XMFLOAT3 m_defaultForward;
+	XMFLOAT3 m_defaultRight;
 	
+	
+	XMFLOAT3 m_right;
+	XMFLOAT3 m_forward;
+	XMFLOAT3 m_upVecForFlyCam;
+
+	// lookat == target (external tutorial terminology)
+
+
+	float m_yaw; // rotation in Y axis
+	float m_pitch; // rotation in 
+
+	XMFLOAT4X4 m_rotationMat;
+
 };
 
 

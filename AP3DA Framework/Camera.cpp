@@ -22,7 +22,7 @@ void Camera::Update()
 	XMVECTOR AtVector = XMLoadFloat4(&at);
 	XMVECTOR UpVector = XMLoadFloat4(&up);
 
-	XMStoreFloat4x4(&m_view, XMMatrixLookAtLH(EyeVector, AtVector, UpVector));
+	XMStoreFloat4x4(&m_view, DirectX::XMMatrixLookAtLH(EyeVector, AtVector, UpVector));
 
     // Initialize the projection matrix
 	XMStoreFloat4x4(&m_projection, XMMatrixPerspectiveFovLH(XM_PIDIV2, m_windowWidth / m_windowHeight, m_nearDepth, m_farDepth));
