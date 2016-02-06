@@ -54,6 +54,9 @@
     <ClInclude Include="MathFuncs.h">
       <Filter>MathFuncs</Filter>
     </ClInclude>
+    <ClInclude Include="FlyingCamera.h">
+      <Filter>Cameras</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -80,6 +83,9 @@
     </ClCompile>
     <ClCompile Include="MathFuncs.cpp">
       <Filter>MathFuncs</Filter>
+    </ClCompile>
+    <ClCompile Include="FlyingCamera.cpp">
+      <Filter>Cameras</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

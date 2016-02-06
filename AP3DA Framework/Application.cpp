@@ -136,7 +136,9 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	XMFLOAT3 at = XMFLOAT3(0.0f, 2.0f, 0.0f);
 	XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
-	_camera = new Camera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
+	//_camera = new Camera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
+	_camera = new FlyingCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
+
 
 	// Setup the scene's light
 	basicLight.AmbientLight = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
@@ -935,7 +937,7 @@ void Application::Update()
 	timeSinceStart = (dwTimeCur - dwTimeStart) / 1000.0f;
 
 	// Update camera
-
+	/*
 	float angleAroundZ = XMConvertToRadians(_cameraOrbitAngleXZ);
 
 	float x = _cameraOrbitRadius * cos(angleAroundZ);
@@ -944,8 +946,11 @@ void Application::Update()
 	XMFLOAT3 cameraPos = _camera->GetPosition();
 	cameraPos.x = x;
 	cameraPos.z = z;
-
+	
 	_camera->SetPosition(cameraPos);
+	*/
+
+	_camera->updateLogic(0.4f); // 0.4 rand value
 	_camera->Update();
 
 	// Update objects

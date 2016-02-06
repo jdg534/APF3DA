@@ -7,7 +7,9 @@
 #include <directxcolors.h>
 #include "DDSTextureLoader.h"
 #include "resource.h"
+
 #include "Camera.h"
+#include "FlyingCamera.h"
 
 #include <vector>
 

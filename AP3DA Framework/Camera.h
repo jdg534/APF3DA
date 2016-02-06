@@ -9,18 +9,18 @@ using namespace DirectX;
 
 class Camera
 {
-private:
-	XMFLOAT3 _eye; 
-	XMFLOAT3 _at;
-	XMFLOAT3 _up;
+protected:
+	XMFLOAT3 m_eye; 
+	XMFLOAT3 m_at;
+	XMFLOAT3 m_up;
 
-	FLOAT _windowWidth;
-	FLOAT _windowHeight;
-	FLOAT _nearDepth;
-	FLOAT _farDepth;
+	FLOAT m_windowWidth;
+	FLOAT m_windowHeight;
+	FLOAT m_nearDepth;
+	FLOAT m_farDepth;
 
-	XMFLOAT4X4 _view;
-	XMFLOAT4X4 _projection;
+	XMFLOAT4X4 m_view;
+	XMFLOAT4X4 m_projection;
 
 public:
 	Camera(XMFLOAT3 position, XMFLOAT3 at, XMFLOAT3 up, FLOAT windowWidth, FLOAT windowHeight, FLOAT nearDepth, FLOAT farDepth);
@@ -28,19 +28,21 @@ public:
 
 	void Update();
 
-	XMFLOAT4X4 GetView() const { return _view; }
-	XMFLOAT4X4 GetProjection() const { return _projection; }
+	XMFLOAT4X4 GetView() const { return m_view; }
+	XMFLOAT4X4 GetProjection() const { return m_projection; }
 
 	XMFLOAT4X4 GetViewProjection() const;
 
-	XMFLOAT3 GetPosition() const { return _eye; }
-	XMFLOAT3 GetLookAt() const { return _at; }
-	XMFLOAT3 GetUp() const { return _up; }
+	XMFLOAT3 GetPosition() const { return m_eye; }
+	XMFLOAT3 GetLookAt() const { return m_at; }
+	XMFLOAT3 GetUp() const { return m_up; }
 
-	void SetPosition(XMFLOAT3 position) { _eye = position; }
-	void SetLookAt(XMFLOAT3 lookAt) { _at = lookAt; }
-	void SetUp(XMFLOAT3 up) { _up = up; }
+	void SetPosition(XMFLOAT3 position) { m_eye = position; }
+	void SetLookAt(XMFLOAT3 lookAt) { m_at = lookAt; }
+	void SetUp(XMFLOAT3 up) { m_up = up; }
 
 	void Reshape(FLOAT windowWidth, FLOAT windowHeight, FLOAT nearDepth, FLOAT farDepth);
+
+	virtual void updateLogic(float dt){ return; } // override for the logic to be implermented via the
 };
 
