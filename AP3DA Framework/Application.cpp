@@ -213,11 +213,11 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	//delete testTerrainData;
 
-	HeightMap hm;
+	HeightMap *hm;
 
 	HeightMapGenerator hmg;
 
-	hm = hmg.generateFaultFormation(100, 125);
+	hm = hmg.generateFaultFormation(10, 15);
 
 	// hm.loadTerrainFromRAWFile("Textures/terrain.raw");
 	// hm.loadTerrainFromBMPFile("Textures/testHM.bmp");
@@ -226,8 +226,8 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 
 	// testT.initAsFlatTerrain(15, 15, 1.0f, 1.0f, _pd3dDevice);
-	testT.initViaHeightMap(&hm, 1.0f, _pd3dDevice, 15.0f, 15.0f);
-	testT.setPosition(0.0f, -2.5f, 0.0f);
+	testT.initViaHeightMap(hm, 1.0f, _pd3dDevice, 15.0f, 15.0f);
+	testT.setPosition(0.0f, 0.0f, 0.0f);
 	// testT.setPosition(0.0f, -512.5f, 10.0f);
 
 

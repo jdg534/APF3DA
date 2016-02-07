@@ -11,7 +11,7 @@ class HeightMapGenerator
 public:
 
 
-	HeightMap generateFaultFormation(int widthDepthVal, int iterations);
+	HeightMap * generateFaultFormation(int widthDepthVal, int iterations);
 
 private:
 

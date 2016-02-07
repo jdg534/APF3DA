@@ -6,11 +6,12 @@
 #include <functional> // for std::bind()
 
 
-HeightMap HeightMapGenerator::generateFaultFormation(int widthDepthVal, int iterations)
+HeightMap * HeightMapGenerator::generateFaultFormation(int widthDepthVal, int iterations)
 {
-	HeightMap rv;
-	rv.setWidth(widthDepthVal);
-	rv.setDepth(widthDepthVal);
+	HeightMap * rv;
+	rv = new HeightMap();
+	rv->setWidth(widthDepthVal);
+	rv->setDepth(widthDepthVal);
 
 	// setup the random number generator
 	std::default_random_engine generator;
@@ -48,7 +49,7 @@ HeightMap HeightMapGenerator::generateFaultFormation(int widthDepthVal, int iter
 		unsigned char initVal = 0;
 		initialHeightValues.push_back(initVal);
 	}
-	rv.setheightValues(initialHeightValues);
+	rv->setheightValues(initialHeightValues);
 
 	bool positiveSideOfLine = true;
 
@@ -73,18 +74,18 @@ HeightMap HeightMapGenerator::generateFaultFormation(int widthDepthVal, int iter
 
 			// get vector representations of the positions
 			DirectX::XMFLOAT2 startPos((float) topToBottom.startSideIndex, (float) 0);
-			DirectX::XMFLOAT2 endPos((float)topToBottom.endSideIndex, (float)rv.getDepth());
+			DirectX::XMFLOAT2 endPos((float)topToBottom.endSideIndex, (float)rv->getDepth());
 
 			unsigned char altVal = alterValDice();
-			for (int j = 0; j  < rv.getDepth(); j ++)
+			for (int j = 0; j  < rv->getDepth(); j ++)
 			{
 				// j in the depth of a cell not the width
-				int cutoffPointForRow = findLinePointOnRow(startPos, endPos, j, &rv);
-				for (int k = 0; k < rv.getWidth(); k++)
+				int cutoffPointForRow = findLinePointOnRow(startPos, endPos, j, rv);
+				for (int k = 0; k < rv->getWidth(); k++)
 				{
 					// rember k is the width across for the row
 
-					unsigned char hmVal = rv.getHeightAt(k, j);
+					unsigned char hmVal = rv->getHeightAt(k, j);
 					/* code for determining if adding or lowering the height map value
 					(alter hmVal)
 					*/
@@ -122,7 +123,7 @@ HeightMap HeightMapGenerator::generateFaultFormation(int widthDepthVal, int iter
 
 					increaseTopTurn = !increaseTopTurn;
 
-					rv.setHeightAt(k, j, hmVal);
+					rv->setHeightAt(k, j, hmVal);
 				}
 			}
 		}
@@ -138,19 +139,19 @@ HeightMap HeightMapGenerator::generateFaultFormation(int widthDepthVal, int iter
 
 			// get vector representations of the positions
 			DirectX::XMFLOAT2 startPos((float)0, (float)leftToRight.startSideIndex);
-			DirectX::XMFLOAT2 endPos((float)rv.getWidth(), (float)leftToRight.endSideIndex);
+			DirectX::XMFLOAT2 endPos((float)rv->getWidth(), (float)leftToRight.endSideIndex);
 
 			unsigned char altVal = alterValDice();
-			for (int j = 0; j < rv.getWidth(); j++)
+			for (int j = 0; j < rv->getWidth(); j++)
 			{
 				// j in the width of a cell not the depth
-				int cutOffPointForColumn = findLinePointOnColumn(startPos, endPos, j, &rv);
+				int cutOffPointForColumn = findLinePointOnColumn(startPos, endPos, j, rv);
 				
-				for (int k = 0; k < rv.getDepth(); k++)
+				for (int k = 0; k < rv->getDepth(); k++)
 				{
 					// k for the depth
 
-					unsigned char hmVal = rv.getHeightAt(j, k);
+					unsigned char hmVal = rv->getHeightAt(j, k);
 					/* code for determining if adding or lowering the height map value
 					(alter hmVal)
 					*/
@@ -188,7 +189,7 @@ HeightMap HeightMapGenerator::generateFaultFormation(int widthDepthVal, int iter
 
 					increaseLeftTurn = !increaseLeftTurn;
 
-					rv.setHeightAt(j, k, hmVal);
+					rv->setHeightAt(j, k, hmVal);
 
 				}
 			}

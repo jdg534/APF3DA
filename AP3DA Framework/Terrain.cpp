@@ -2,7 +2,7 @@
 
 #include "Structures.h"
 
-#include "Math.h"
+#include "MathFuncs.h"
 
 #include <fstream>
 
@@ -597,12 +597,23 @@ float Terrain::getHeightAtLocation(float x, float z)
 		_01UC = m_heightMap->getHeightAt(xCellsCoveredUIntForm, zCellsCoveredUIntForm + 1), _11UC = m_heightMap->getHeightAt(xCellsCoveredUIntForm + 1,zCellsCoveredUIntForm + 1 );
 
 	// down scale from 0 - 255 to 0.0 - 1.0
+	float _00F = (float)_00UC * (1.0f / 225.0f), _10F = (float)_10UC * (1.0f / 255.0f),
+		_01F = (float)_01UC * (1.0f / 255.0f), _11F = (float)_11UC * (1.0f / 255.0f);
 
 	// rescale based on m_scaleHeightBy
+	_00F * m_scaleHeightBy;
+	_10F * m_scaleHeightBy;
+	_01F * m_scaleHeightBy;
+	_11F * m_scaleHeightBy;
 
-	// biLerp the cells
+	float rv = MathFuncs::biLerp(_00F, _10F,
+		_01F, _11F, xBiLerpTxVal, zBiLerpTyVal);
+
+	return rv;
+
+	// return biLerp of the cells
 	
-	return 0.0f;
+	// return 0.0f;
 }
 
 float Terrain::calculateTextureCoord(float minPos, float maxPos, float pos)
