@@ -368,6 +368,10 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 		}
 	}
 
+	// set the m_ versions topLeft & bottomRight
+	m_topLeftPoint = topLeft;
+	m_bottomRightPoint = bottomRight;
+
 	std::vector<SimpleVertex> vertsToSendToD3dBuffer;
 	for (int i = 0; i < verts.size(); i++)
 	{
@@ -492,14 +496,113 @@ void Terrain::Draw(ID3D11DeviceContext * pImmediateContext)
 	pImmediateContext->DrawIndexed(m_geometry.numberOfIndices, 0, 0);
 }
 
-bool Terrain::isPositionInHeightMap(float x, float z)
+bool Terrain::isPositionOnTerrain(float x, float z)
 {
 	// first 
+	// like AABB
+
+	// height map position += m_position
+
+	XMFLOAT2 actualTopLeftCoord;
+	XMFLOAT2 actualBottomRight;
+	actualTopLeftCoord.x = m_position.x + m_topLeftPoint.x;
+	actualTopLeftCoord.y = m_position.z + m_topLeftPoint.y; // although its denoted as z the value is actually for the z axis
+
+	actualBottomRight.x = m_position.x + m_bottomRightPoint.x;
+	actualBottomRight.y = m_position.z + m_bottomRightPoint.y;
+
+	// bottom right is actually far distance
+	// top left actually the near distance
+	float LowZ = actualTopLeftCoord.y;
+	float highZ = actualBottomRight.y;
+	
+
+	// left handed coord sys
+	if (x < actualTopLeftCoord.x)
+	{
+		return false;
+	}
+	else if (x > actualBottomRight.x)
+	{
+		return false;
+	}
+	else if (z < LowZ)
+	{
+		return false;
+	}
+	else if (z > highZ)
+	{
+		return false;
+	}
+	return true;
 }
 
 float Terrain::getHeightAtLocation(float x, float z)
 {
+	// after checking isPositionOnTerrain()
+	// may need to biLerp
 
+	// if this is called will asume that the point is on the terrain
+
+	XMFLOAT2 actualTopLeftCoord;
+	XMFLOAT2 actualBottomRight;
+	actualTopLeftCoord.x = m_position.x + m_topLeftPoint.x;
+	actualTopLeftCoord.y = m_position.z + m_topLeftPoint.y; // although its denoted as z the value is actually for the z axis
+
+	actualBottomRight.x = m_position.x + m_bottomRightPoint.x;
+	actualBottomRight.y = m_position.z + m_bottomRightPoint.y;
+
+	/*
+
+	int xStepsSoFar = 0;
+	float xStartingPoint = actualTopLeftCoord.x;
+	float xTraceStepLoc = xStartingPoint;
+	bool keepGoingRight = true;
+	
+	while (keepGoingRight)
+	{
+		if (xTraceStepLoc >= x)
+		{
+			// got right enough to hit 
+			keepGoingRight = false;
+		}
+		xStepsSoFar++;
+		xTraceStepLoc = (float) xStepsSoFar * m_cellWidth;
+	}
+
+	// xStepsSoFar stores the index for the current cells height map value
+	// need to calc the over shoot from previous cell
+	float xOverShoot
+	*/
+
+	// calc dist from far right
+	float xDistFromRight = actualBottomRight.x - x;
+
+	float zDistFromBottom = actualBottomRight.y - z;
+
+	// calculate nCells covered in X
+
+	// calculate nCells covered in Z
+	float xCellsCovered = xDistFromRight / m_cellWidth;
+	float zCellsCovered = zDistFromBottom / m_cellDepth;
+
+	unsigned int xCellsCoveredUIntForm = (unsigned int)xCellsCovered;
+	unsigned int zCellsCoveredUIntForm = (unsigned int)zCellsCovered;
+
+	float xBiLerpTxVal = xCellsCovered - (float)xCellsCoveredUIntForm;
+	float zBiLerpTyVal = zCellsCovered - (float)zCellsCoveredUIntForm;
+
+	// now get the cell heights
+	unsigned char _00UC = m_heightMap->getHeightAt(xCellsCoveredUIntForm, zCellsCoveredUIntForm), _10UC = m_heightMap->getHeightAt(xCellsCoveredUIntForm + 1, zCellsCoveredUIntForm),
+		_01UC = m_heightMap->getHeightAt(xCellsCoveredUIntForm, zCellsCoveredUIntForm + 1), _11UC = m_heightMap->getHeightAt(xCellsCoveredUIntForm + 1,zCellsCoveredUIntForm + 1 );
+
+	// down scale from 0 - 255 to 0.0 - 1.0
+
+	// rescale based on m_scaleHeightBy
+
+	// biLerp the cells
+	
+	return 0.0f;
 }
 
 float Terrain::calculateTextureCoord(float minPos, float maxPos, float pos)

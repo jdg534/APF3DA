@@ -35,7 +35,7 @@ public:
 	DirectX::XMMATRIX getWorldMat(){ return DirectX::XMLoadFloat4x4(&m_worldMatrix); }
 
 
-	bool isPositionInHeightMap(float x, float z);
+	bool isPositionOnTerrain(float x, float z);
 	float getHeightAtLocation(float x, float z);
 
 protected:

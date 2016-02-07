@@ -963,6 +963,14 @@ void Application::Update()
 	
 	testT.Update(0.0f);
 
+	// test the terrain heightAt functions
+	float x = 0.3;
+	float z = 0.4;
+	if (testT.isPositionOnTerrain(x, z))
+	{
+		float terrainHeigth = testT.getHeightAtLocation(x, z);
+	}
+
 }
 
 void Application::Draw()
