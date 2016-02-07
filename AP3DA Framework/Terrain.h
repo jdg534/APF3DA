@@ -34,6 +34,10 @@ public:
 
 	DirectX::XMMATRIX getWorldMat(){ return DirectX::XMLoadFloat4x4(&m_worldMatrix); }
 
+
+	bool isPositionInHeightMap(float x, float z);
+	float getHeightAtLocation(float x, float z);
+
 protected:
 
 	float calculateTextureCoord(float minPos, float maxPos, float pos);
@@ -53,6 +57,14 @@ protected:
 	float m_minZ;
 	float m_maxZ;
 
+
+	// added for determining the height at points
+	DirectX::XMFLOAT2 m_topLeftPoint;
+	DirectX::XMFLOAT2 m_bottomRightPoint;
+	float m_scaleHeightBy;
+
+	
+	
 	DirectX::XMFLOAT3 m_position;
 	DirectX::XMFLOAT4X4 m_worldMatrix;
 

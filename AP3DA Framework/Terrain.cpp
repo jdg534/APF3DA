@@ -44,7 +44,7 @@ bool Terrain::initAsFlatTerrain(int mRows, int nColumns, float cellWidth, float 
 	m_width = m_rows * m_cellWidth;
 	m_depth = m_columns * m_cellDepth;
 
-	
+	m_scaleHeightBy = 1.0f;
 
 	int nCells = m_cellRows * m_cellColumns;
 	int nTriangles = nCells * 2;
@@ -233,6 +233,8 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 	m_columns = hm->getDepth();
 	m_cellRows = m_rows - 1;
 	m_cellColumns = m_columns - 1;
+
+	m_scaleHeightBy = scaleHeightBy;
 
 	/* before width & depth as a parameter
 	m_cellWidth = 1.0f; // should have as a parameter
@@ -488,6 +490,16 @@ void Terrain::Draw(ID3D11DeviceContext * pImmediateContext)
 	pImmediateContext->IASetIndexBuffer(m_geometry.indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
 	pImmediateContext->DrawIndexed(m_geometry.numberOfIndices, 0, 0);
+}
+
+bool Terrain::isPositionInHeightMap(float x, float z)
+{
+	// first 
+}
+
+float Terrain::getHeightAtLocation(float x, float z)
+{
+
 }
 
 float Terrain::calculateTextureCoord(float minPos, float maxPos, float pos)
