@@ -130,6 +130,31 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
     }
 
 	CreateDDSTextureFromFile(_pd3dDevice, L"Resources\\Crate_COLOR.dds", nullptr, &_pTextureRV);
+	// now the terrain textures
+
+	/*
+	HRESULT texHres= CreateDDSTextureFromFile(_pd3dDevice, L"Textures\\lightdirt.dds", nullptr, &m_terrainLightDirtTex);
+	if (FAILED(texHres))
+	{
+		return texHres;
+	}
+	*/
+
+	CreateDDSTextureFromFile(_pd3dDevice, L"Textures\\lightdirt.dds", nullptr, &m_terrainLightDirtTex);
+	CreateDDSTextureFromFile(_pd3dDevice, L"Textures\\grass.dds", nullptr, &m_terrainGrassTex);
+	CreateDDSTextureFromFile(_pd3dDevice, L"Textures\\darkdirt.dds", nullptr, &m_terrainDarkDirtTex);
+	CreateDDSTextureFromFile(_pd3dDevice, L"Textures\\stone.dds", nullptr, &m_terrainStoneTex);
+	CreateDDSTextureFromFile(_pd3dDevice, L"Textures\\snow.dds", nullptr, &m_terrainSnowTex);
+	
+	
+	/*
+	ID3D11ShaderResourceView * m_terrainLightDirtTex = nullptr; // for aprox sand
+	ID3D11ShaderResourceView * m_terrainGrassTex = nullptr;
+	ID3D11ShaderResourceView * m_terrainDarkDirtTex = nullptr;
+	ID3D11ShaderResourceView * m_terrainStoneTex = nullptr;
+	ID3D11ShaderResourceView * m_terrainSnowTex = nullptr;
+	*/
+
 
     // Setup Camera
 	XMFLOAT3 eye = XMFLOAT3(0.0f, 2.0f, -1.0f);
@@ -219,7 +244,7 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	HeightMapGenerator hmg;
 
-	hm = hmg.generateFaultFormation(10, 15);
+	hm = hmg.generateFaultFormation(25, 1200);
 
 	// hm.loadTerrainFromRAWFile("Textures/terrain.raw");
 	// hm.loadTerrainFromBMPFile("Textures/testHM.bmp");
@@ -887,6 +912,12 @@ void Application::Cleanup()
 
 	if (_pTextureRV) _pTextureRV->Release();
 
+	if (m_terrainLightDirtTex) m_terrainLightDirtTex->Release();
+	if (m_terrainGrassTex) m_terrainGrassTex->Release();
+	if (m_terrainDarkDirtTex) m_terrainDarkDirtTex->Release();
+	if (m_terrainStoneTex) m_terrainStoneTex->Release();
+	if (m_terrainSnowTex) m_terrainSnowTex->Release();
+
     if (_pConstantBuffer) _pConstantBuffer->Release();
 
     if (_pVertexBuffer) _pVertexBuffer->Release();
@@ -1049,6 +1080,9 @@ void Application::Draw()
 			cb.HasTexture = 0.0f;
 		}
 
+		cb.drawingTerrain = 0.0f;
+		cb.terrainScaledBy = 0.0f;
+
 		// Update constant buffer
 		_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
 
@@ -1082,6 +1116,26 @@ void Application::Draw()
 
 
 	cb.World = XMMatrixTranspose(testT.getWorldMat());
+	cb.drawingTerrain = 1.0f;
+	cb.terrainScaledBy = testT.getHeightScaledBy();
+
+	// _pImmediateContext->PSSetShaderResources(0, 1, &m_);
+	/*
+	m_terrainLightDirtTex : Texture2D terrainLightDirtTex : register(t1);
+	m_terrainGrassTex : Texture2D terrainGrassTex : register(t2);
+	m_terrainDarkDirtTex : Texture2D terrainDarkDirtTex : register(t3);
+	m_terrainStoneTex : Texture2D terrainStoneTex : register(t4);
+	m_terrainSnowTex : Texture2D terrainSnowTex : register(t5);
+	
+	*/
+
+	_pImmediateContext->PSSetShaderResources(1, 1, &m_terrainLightDirtTex);
+	_pImmediateContext->PSSetShaderResources(2, 1, &m_terrainGrassTex);
+	_pImmediateContext->PSSetShaderResources(3, 1, &m_terrainDarkDirtTex);
+	_pImmediateContext->PSSetShaderResources(4, 1, &m_terrainStoneTex);
+	_pImmediateContext->PSSetShaderResources(5, 1, &m_terrainSnowTex);
+
+
 	_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
 
 	testT.Draw(_pImmediateContext);

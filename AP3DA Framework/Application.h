@@ -55,6 +55,13 @@ private:
 
 	ID3D11ShaderResourceView * _pTextureRV = nullptr;
 
+	ID3D11ShaderResourceView * m_terrainLightDirtTex = nullptr; // for aprox sand
+	ID3D11ShaderResourceView * m_terrainGrassTex = nullptr;
+	ID3D11ShaderResourceView * m_terrainDarkDirtTex = nullptr;
+	ID3D11ShaderResourceView * m_terrainStoneTex = nullptr;
+	ID3D11ShaderResourceView * m_terrainSnowTex = nullptr;
+
+
 	ID3D11SamplerState * _pSamplerLinear = nullptr;
 
 	Light basicLight;

@@ -41,6 +41,8 @@ struct ConstantBuffer
 
 	DirectX::XMFLOAT3 EyePosW;
 	float HasTexture;
+	float drawingTerrain;
+	float terrainScaledBy;
 };
 
 struct Facet

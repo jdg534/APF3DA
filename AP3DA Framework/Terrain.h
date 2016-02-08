@@ -38,6 +38,8 @@ public:
 	bool isPositionOnTerrain(float x, float z);
 	float getHeightAtLocation(float x, float z);
 
+	float getHeightScaledBy(){ return m_scaleHeightBy; }
+
 protected:
 
 	float calculateTextureCoord(float minPos, float maxPos, float pos);
