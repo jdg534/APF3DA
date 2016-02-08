@@ -18,6 +18,8 @@ FlyingCamera::FlyingCamera(XMFLOAT3 position, XMFLOAT3 at, XMFLOAT3 up, FLOAT wi
 	m_yaw = 0.0f; // rotation in Y axis
 	m_pitch = 0.0f; // rotation in 
 
+	m_lookAtDir = XMFLOAT3(0.0f, 0.0f, 1.0f);
+
 	XMStoreFloat4x4(&m_rotationMat, XMMatrixIdentity());
 }
 
@@ -87,7 +89,7 @@ void FlyingCamera::updateLogic(float dt)
 	XMVECTOR targetVec = XMVector3TransformCoord(XMLoadFloat3(&m_defaultForward), rotM);
 	targetVec = XMVector3Normalize(targetVec);
 	// rember the lookAt vec = eyePosition + targetVec
-	
+	XMStoreFloat3(&m_lookAtDir, targetVec);
 
 	XMMATRIX tmpYRotMat = XMMatrixRotationY(m_yaw);
 

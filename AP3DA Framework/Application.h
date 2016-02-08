@@ -10,6 +10,8 @@
 
 #include "Camera.h"
 #include "FlyingCamera.h"
+#include "FirstPersonCamera.h"
+
 
 #include <vector>
 

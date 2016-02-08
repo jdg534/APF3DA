@@ -57,6 +57,9 @@
     <ClInclude Include="FlyingCamera.h">
       <Filter>Cameras</Filter>
     </ClInclude>
+    <ClInclude Include="FirstPersonCamera.h">
+      <Filter>Cameras</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -85,6 +88,9 @@
       <Filter>MathFuncs</Filter>
     </ClCompile>
     <ClCompile Include="FlyingCamera.cpp">
+      <Filter>Cameras</Filter>
+    </ClCompile>
+    <ClCompile Include="FirstPersonCamera.cpp">
       <Filter>Cameras</Filter>
     </ClCompile>
   </ItemGroup>

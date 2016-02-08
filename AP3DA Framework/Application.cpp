@@ -137,7 +137,9 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
 	//_camera = new Camera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
-	_camera = new FlyingCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
+	// _camera = new FlyingCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
+
+	// declaring the camera pointer later when got the terrain
 
 
 	// Setup the scene's light
@@ -229,6 +231,8 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	testT.initViaHeightMap(hm, 1.0f, _pd3dDevice, 15.0f, 15.0f);
 	testT.setPosition(0.0f, 0.0f, 0.0f);
 	// testT.setPosition(0.0f, -512.5f, 10.0f);
+
+	_camera = new FirstPersonCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f, &testT, 1.0f);
 
 
 	return S_OK;

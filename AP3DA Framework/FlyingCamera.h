@@ -10,7 +10,7 @@ public:
 	FlyingCamera(XMFLOAT3 position, XMFLOAT3 at, XMFLOAT3 up, FLOAT windowWidth, FLOAT windowHeight, FLOAT nearDepth, FLOAT farDepth);
 	~FlyingCamera();
 	virtual void updateLogic(float dt);
-private:
+protected:
 	/* Camera defined at centre of own coord system
 	+ Z is the "look at" vector
 	+ X is the "right" vector
@@ -33,6 +33,8 @@ private:
 	XMFLOAT3 m_right;
 	XMFLOAT3 m_forward;
 	XMFLOAT3 m_upVecForFlyCam;
+
+	XMFLOAT3 m_lookAtDir; // for sub class they need to know the direction that the camera is looking at
 
 	// lookat == target (external tutorial terminology)
 

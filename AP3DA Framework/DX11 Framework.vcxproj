@@ -376,6 +376,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
+    <ClCompile Include="FirstPersonCamera.cpp" />
     <ClCompile Include="FlyingCamera.cpp" />
     <ClCompile Include="HeightMapGenerator.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -394,6 +395,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DDSTextureLoader.h" />
+    <ClInclude Include="FirstPersonCamera.h" />
     <ClInclude Include="FlyingCamera.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="HeightMap.h" />
