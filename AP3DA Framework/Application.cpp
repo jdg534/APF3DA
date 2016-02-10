@@ -246,14 +246,15 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	hm = hmg.generateFaultFormation(25, 1200);
 
-	// hm.loadTerrainFromRAWFile("Textures/terrain.raw");
+	//hm = new HeightMap();
+	//hm->loadTerrainFromRAWFile("Textures/terrain.raw");
 	// hm.loadTerrainFromBMPFile("Textures/testHM.bmp");
 	// hm.loadTerrainFromBMPFile("Textures/_20x20Test.bmp");
 
 
 
 	// testT.initAsFlatTerrain(15, 15, 1.0f, 1.0f, _pd3dDevice);
-	testT.initViaHeightMap(hm, 1.0f, _pd3dDevice, 15.0f, 15.0f);
+	testT.initViaHeightMap(hm, 5.0f, _pd3dDevice, 150.0f, 150.0f);
 	testT.setPosition(0.0f, 0.0f, 0.0f);
 	// testT.setPosition(0.0f, -512.5f, 10.0f);
 

@@ -110,6 +110,11 @@ struct Square
 	float top, bottom, left, right;
 };
 
+struct Triangle
+{
+	DirectX::XMFLOAT3 v0, v1, v2;
+};
+
 struct FaultFormationLine
 {
 	unsigned int startSideIndex;

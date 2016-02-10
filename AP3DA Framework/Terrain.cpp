@@ -589,6 +589,7 @@ float Terrain::getHeightAtLocation(float x, float z)
 	unsigned int xCellsCoveredUIntForm = (unsigned int)xCellsCovered;
 	unsigned int zCellsCoveredUIntForm = (unsigned int)zCellsCovered;
 
+	/* (Old in-accurate code)
 	float xBiLerpTxVal = xCellsCovered - (float)xCellsCoveredUIntForm;
 	float zBiLerpTyVal = zCellsCovered - (float)zCellsCoveredUIntForm;
 
@@ -611,6 +612,24 @@ float Terrain::getHeightAtLocation(float x, float z)
 
 	return rv;
 
+	*/
+
+	// get the Heights for Triangles ABC & DCB
+	Triangle abc, dcb;
+	abc.v0.x = m_cellWidth * (float)xCellsCoveredUIntForm;
+	abc.v0.z = m_cellDepth * (float)zCellsCoveredUIntForm; // rember to convert due to the width moving 0,0 c
+
+	return -1.0f;// WIP
+	
+	// new code, based off WK1 L1 Slides 19 to 24
+
+
+
+
+
+
+
+
 	// return biLerp of the cells
 	
 	// return 0.0f;
@@ -618,7 +637,7 @@ float Terrain::getHeightAtLocation(float x, float z)
 
 float Terrain::calculateTextureCoord(float minPos, float maxPos, float pos)
 {
-	float stepSize = 0.001f;
+	float stepSize = 0.01f;
 	float currentStep = 0.0f;
 
 	while (currentStep < 1.0f)
