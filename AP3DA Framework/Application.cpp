@@ -244,7 +244,9 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	HeightMapGenerator hmg;
 
-	hm = hmg.generateFaultFormation(25, 1200);
+	// hm = hmg.generateFaultFormation(25, 1200);
+	hm = hmg.generateHillCircle(30, 50, 1, 10, 7);
+
 
 	//hm = new HeightMap();
 	//hm->loadTerrainFromRAWFile("Textures/terrain.raw");
@@ -254,11 +256,13 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 
 	// testT.initAsFlatTerrain(15, 15, 1.0f, 1.0f, _pd3dDevice);
-	testT.initViaHeightMap(hm, 5.0f, _pd3dDevice, 150.0f, 150.0f);
+	testT.initViaHeightMap(hm, 50.0f, _pd3dDevice, 150.0f, 150.0f);
 	testT.setPosition(0.0f, 0.0f, 0.0f);
 	// testT.setPosition(0.0f, -512.5f, 10.0f);
 
-	_camera = new FirstPersonCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f, &testT, 1.0f);
+	float additionalCamHeight = 5.0f;
+
+	_camera = new FirstPersonCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f, &testT, additionalCamHeight);
 
 
 	return S_OK;
@@ -484,184 +488,6 @@ HRESULT Application::InitIndexBuffer()
 		return hr;
 
 	return S_OK;
-}
-
-Geometry * Application::generateFlatTerrain(int mRows, int nColumns, float cellWidth, float cellDepth)
-{
-	int cellRows = mRows - 1;
-	int cellColumns = nColumns - 1;
-	int nCells = cellRows * cellColumns;
-	int nTriangles = nCells * 2;
-	int nVerts = mRows * nColumns;
-
-	float width = (float) cellRows * cellWidth;
-	float depth = (float) cellColumns * cellDepth;
-	
-	XMFLOAT2 t;
-	t.x = -(width / 2.0f);
-	t.y = depth / 2.0f;
-
-	int k = 0;
-
-	std::vector<XMFLOAT3> verts;
-	verts.resize(nVerts);
-
-	for (int i = 0; i < mRows; i++)
-	{
-		for (int j = 0; j < nColumns; j++)
-		{
-			verts[k].x = j * cellWidth + (-width * 0.5f);
-			verts[k].y = 0.0f;
-			verts[k].z = -(i * cellDepth) + (depth * 0.5f);
-			k++;
-		}
-	}
-
-	std::vector<WORD> indices;
-
-	// for the ijth Quad
-	
-
-	// code based off slide 9 of first lecture
-
-	for (int i = 0; i < mRows - 1; i++)
-	{
-		for (int j = 0; j < nColumns - 1; j++)
-		{
-			XMINT3 abc;
-			abc.x = i * mRows + j;
-			abc.y = i * mRows + j + 1;
-			abc.z = (i + 1) * mRows + j;
-
-			XMINT3 cbd;
-			cbd.x = (i + 1) * mRows + j;
-			cbd.y = i * mRows + j + 1;
-			cbd.z = (i + 1) * mRows + j + 1;
-
-			// add to the vector as WORD use static_cast<WORD>()
-			indices.push_back(static_cast<WORD>(abc.x));
-			indices.push_back(static_cast<WORD>(abc.y));
-			indices.push_back(static_cast<WORD>(abc.z));
-
-			indices.push_back(static_cast<WORD>(cbd.x));
-			indices.push_back(static_cast<WORD>(cbd.y));
-			indices.push_back(static_cast<WORD>(cbd.z));
-		}
-	}
-
-	/*
-	0,0---1,0
-	|		|
-	0,1---1,1
-	*/
-
-	XMFLOAT2 topLeft(99999.99f, 99999.99f), bottomRight(-topLeft.x, -topLeft.y);
-
-	for (int i = 0; i < verts.size(); i++)
-	{
-		if (topLeft.x > verts[i].x)
-		{
-			topLeft.x = verts[i].x;
-		}
-		if (topLeft.y > verts[i].z)
-		{
-			topLeft.y = verts[i].z;
-		}
-
-		if (bottomRight.x < verts[i].x)
-		{
-			bottomRight.x = verts[i].x;
-		}
-		if (bottomRight.y < verts[i].z)
-		{
-			bottomRight.y = verts[i].z;
-		}
-	}
-
-	std::vector<SimpleVertex> vertsToSendToD3dBuffer;
-	for (int i = 0; i < verts.size(); i++)
-	{
-		SimpleVertex sv;
-		sv.PosL.x = verts[i].x;
-		sv.PosL.y = verts[i].y;
-		sv.PosL.z = verts[i].z;
-
-		sv.NormL.x = 0.0f;
-		sv.NormL.y = 1.0f;
-		sv.NormL.z = 0.0f;
-
-		/*
-		float scaleXBy = (1.0f / width);
-		float scaleYBy = (1.0f / depth); // technically scale Z
-
-		sv.Tex.x = sv.PosL.x * scaleXBy;
-		sv.Tex.y = sv.PosL.z * scaleYBy;
-
-		// tec coords now in range -1.0 to 1.0
-
-		// need 0.0 to 1.0?
-		sv.Tex.x = (sv.Tex.x + 1.0f) / 2.0f;
-		sv.Tex.y = (sv.Tex.y + 1.0f) / 2.0f;
-		*/
-
-		sv.Tex.x = calculateTexCoord(topLeft.x, bottomRight.x, sv.PosL.x);
-		sv.Tex.y = calculateTexCoord(topLeft.y, bottomRight.y, sv.PosL.z);
-
-		vertsToSendToD3dBuffer.push_back(sv);
-	}
-
-	
-	// now move to vertex & index buffers
-	D3D11_BUFFER_DESC bd;
-	ZeroMemory(&bd, sizeof(bd));
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(SimpleVertex) * vertsToSendToD3dBuffer.size();
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.CPUAccessFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA InitData;
-	ZeroMemory(&InitData, sizeof(InitData));
-	InitData.pSysMem = &vertsToSendToD3dBuffer[0];
-
-
-	Geometry * rv = new Geometry();
-
-	HRESULT hr = _pd3dDevice->CreateBuffer(&bd, &InitData, &rv->vertexBuffer);
-	rv->vertexBufferStride = sizeof(SimpleVertex);
-	rv->vertexBufferOffset = 0; // would be somethign else, if got to start with verts that don't stat at beginning of the buffer
-
-	if (FAILED(hr))
-	{
-		delete rv;
-		return nullptr;
-	}
-
-
-	// now create the index buffer, and set the number of indecies used by the buffer
-
-	D3D11_BUFFER_DESC indBufdesc;
-	ZeroMemory(&indBufdesc, sizeof(indBufdesc));
-
-	indBufdesc.Usage = D3D11_USAGE_DEFAULT;
-	indBufdesc.ByteWidth = sizeof(WORD) * indices.size();
-	indBufdesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indBufdesc.CPUAccessFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA indBufInitData;
-	ZeroMemory(&indBufInitData, sizeof(indBufInitData));
-	indBufInitData.pSysMem = &indices[0];
-	hr = _pd3dDevice->CreateBuffer(&indBufdesc, &indBufInitData, &rv->indexBuffer);
-
-	if (FAILED(hr))
-	{
-		rv->vertexBuffer->Release();
-		delete rv;
-		return nullptr;
-	}
-	
-	rv->numberOfIndices = indices.size();
-
-	return rv;
 }
 
 HRESULT Application::InitWindow(HINSTANCE hInstance, int nCmdShow)

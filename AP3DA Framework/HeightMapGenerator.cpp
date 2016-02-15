@@ -5,6 +5,158 @@
 #include <random>
 #include <functional> // for std::bind()
 
+#include <DirectXMath.h> // for XMINT3
+
+HeightMap * HeightMapGenerator::generateHillCircle(int widthDepthVal, int iterations, int minRadius, int maxRadius, int maxRaiseHeight)
+{
+	/* steps:
+	
+	1. Start with a flat terrain
+	2. Pick a random point on or near the terrain, and a random radius between some predetermined minimum and maximum
+		2.1 Carefully choosing this min and max will make a terrain rough and rocky or smooth and rolling
+	3. Raise a hill on the terrain centered at the point, having the given radius (can use cosine or parabola function)
+	4. Go back to step 2, and repeat as many times as necessary. The number of iterations chosen will affect the appearance of the terrain.
+	
+
+	// Josh insertion after dealing with the float version
+	5. renormalise the float form to range 0.0 - ??? to 0.0 - 1.0
+	6. rescale float form from 0.0 - 1.0 to 0 - 255
+	7. set the return value (rv) version values to the rescaled values
+
+	*/
+
+	HeightMap * rv = new HeightMap();
+
+	rv->setWidth(widthDepthVal);
+	rv->setDepth(widthDepthVal);
+
+	std::vector<unsigned char> initialHeightValues;
+	for (int i = 0; i < widthDepthVal * widthDepthVal; i++)
+	{
+		unsigned char initVal = 0;
+		initialHeightValues.push_back(initVal);
+	}
+	rv->setheightValues(initialHeightValues);
+
+	FloatHeightMap fhm;
+	fhm.copyFromHeightMap(rv);
+
+	// step 1 done
+
+	// setup the random number generator(s)
+	std::default_random_engine positionGenerator;
+	std::uniform_int_distribution<int> positionRandIntRange(0, widthDepthVal);
+	auto positionDice = std::bind(positionRandIntRange, positionGenerator);
+
+	
+
+	std::default_random_engine radiusGenerator;
+	std::uniform_int_distribution<int> radiusRandIntRange(minRadius, maxRadius);
+	auto radiusDice = std::bind(radiusRandIntRange, radiusGenerator);
+
+
+	/*
+	std::default_random_engine raiseValGenerator;
+	std::uniform_int_distribution<int> raiseValRandIntRange(0, maxRaiseHeight);
+	auto raiseValDice = std::bind(raiseValRandIntRange, raiseValGenerator);
+	*/
+	
+
+	using namespace DirectX;
+
+	// steps 2, 3 & 4 in the loop
+	for (unsigned int i = 0; i < iterations; i++)
+	{
+		
+		
+
+		XMFLOAT2 raisePos(0,0);
+		raisePos.x = positionDice();
+		raisePos.y = positionDice();
+		
+		int radius = radiusDice();
+
+		// int raiseVal = raiseValDice();
+
+		for (int x = 0; x < widthDepthVal; x++)
+		{
+			for (int y = 0; y < widthDepthVal; y++)
+			{
+				XMFLOAT2 pos(x, y);
+				XMVECTOR p = XMLoadFloat2(&pos);
+				XMVECTOR rp = XMLoadFloat2(&raisePos);
+
+				XMVECTOR pToRp = XMVectorSubtract(rp, p);
+				// get the mag
+				XMVECTOR distVF = XMVector2Length(pToRp);
+				float dist;
+				XMStoreFloat(&dist, distVF);
+				
+
+				float valueAtPoint = fhm.getHeightAt(x, y);
+
+				if (dist > radius)
+				{
+					// do nothing
+				}
+				else
+				{
+					// determine a raise value based on distance from the radius
+					
+					// use the equasion from: http://www.stuffwithstuff.com/robot-frog/3d/hills/hill.html
+
+					// z = r ^ 2 - ((x2 - x1)^2 + (y2 - y1)^2)
+					// where x1, y1 is hill positon
+					// where x2, y2 is cell positon
+					float raiseEquPt1 = radius * radius;
+					float raiseEquPtX = (pos.x - raisePos.x) * (pos.x - raisePos.x);
+					float raiseEquPtY = (pos.y - raisePos.y) * (pos.y - raisePos.y);
+					float raiseEquPt2 = raiseEquPtX + raiseEquPtY;
+
+					float rasieEquFull = raiseEquPt1 - raiseEquPt2;
+					
+					valueAtPoint += rasieEquFull; // double check this in the tutorials
+
+				}
+				fhm.setHeightAt(x, y, valueAtPoint);
+			}
+		}
+	}
+
+	// step 5: renormalise the float form to range 0.0 - ??? to 0.0 - 1.0
+	float maxH = 0.0f;
+	for (int i = 0; i < fhm.heightValues.size(); i++)
+	{
+		if (maxH < fhm.heightValues[i])
+		{
+			maxH = fhm.heightValues[i];
+		}
+	}
+
+	// calculate down scale value
+	float downScale = 1.0f / maxH;
+
+	for (int i = 0; i < fhm.heightValues.size(); i++)
+	{
+		fhm.heightValues[i] *= downScale;
+		// also handle step 6, rescale to 0 - 255
+		fhm.heightValues[i] *= 255.0f;
+	}
+
+	// rember to cite: http://www.stuffwithstuff.com/robot-frog/3d/hills/hill.html
+
+	// now rest the values in rv (step 7)
+	for (int x = 0; x < rv->getWidth(); x++)
+	{
+		for (int y = 0; y < rv->getDepth(); y++)
+		{
+			unsigned char valToSet = static_cast<unsigned char>(fhm.getHeightAt(x,y));
+			rv->setHeightAt(x,y, valToSet);
+		}
+	}
+
+	return rv;
+}
 
 HeightMap * HeightMapGenerator::generateFaultFormation(int widthDepthVal, int iterations)
 {

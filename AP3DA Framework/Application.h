@@ -106,9 +106,6 @@ private:
 	HRESULT InitVertexBuffer();
 	HRESULT InitIndexBuffer();
 
-	Geometry * generateFlatTerrain(int mRows, int nColumns, float cellWidth, float cellDepth);
-	//XMFLOAT2 texValue
-
 	Geometry * testTerrainData;
 
 public:

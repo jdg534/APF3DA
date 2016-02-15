@@ -45,4 +45,39 @@ private:
 };
 
 
+struct FloatHeightMap
+{
+	// this is only for dealing with the hill circle algorith
+	unsigned int width;
+	unsigned int depth;
+	std::vector<float> heightValues;
+
+	void copyFromHeightMap(HeightMap * hm)
+	{
+		width = hm->getWidth();
+		depth = hm->getDepth();
+		heightValues.clear();
+
+		std::vector<unsigned char> originalValues = hm->getHeightValues();
+
+		for (int i = 0; i < originalValues.size(); i++)
+		{
+			heightValues.push_back(originalValues[i]);
+		}
+	}
+
+	float getHeightAt(int x, int y)
+	{
+		int yOffset = width * y;
+		return heightValues[x + yOffset];
+	}
+	
+	void setHeightAt(int x, int y, float value)
+	{
+		int yOffset = width * y;
+		heightValues[x + yOffset] = value;
+	}
+
+};
+
 #endif

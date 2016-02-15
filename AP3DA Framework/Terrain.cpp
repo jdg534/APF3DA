@@ -614,25 +614,105 @@ float Terrain::getHeightAtLocation(float x, float z)
 
 	*/
 
+	unsigned char heightTL_UC = m_heightMap->getHeightAt(xCellsCoveredUIntForm, zCellsCoveredUIntForm), 
+		heightTR_UC = m_heightMap->getHeightAt(xCellsCoveredUIntForm + 1, zCellsCoveredUIntForm),
+		heightBL_UC = m_heightMap->getHeightAt(xCellsCoveredUIntForm, zCellsCoveredUIntForm + 1), 
+		heightBR_UC = m_heightMap->getHeightAt(xCellsCoveredUIntForm + 1, zCellsCoveredUIntForm + 1);
+
+	
+
+	float downScale = 1.0f / 255.0f;
+
+	float heightTL_F = (float)heightTL_UC * downScale;
+	float heightTR_F = (float)heightTR_UC * downScale;
+	float heightBL_F = (float)heightBL_UC * downScale;
+	float heightBR_F = (float)heightBR_UC * downScale;
+
+	heightTL_F *= m_scaleHeightBy;
+	heightTR_F *= m_scaleHeightBy;
+	heightBL_F *= m_scaleHeightBy;
+	heightBR_F *= m_scaleHeightBy;
+
+	// is rescaled by m_scaleHeightBy
+
+
+
 	// get the Heights for Triangles ABC & DCB
 	Triangle abc, dcb;
 	abc.v0.x = m_cellWidth * (float)xCellsCoveredUIntForm;
-	abc.v0.z = m_cellDepth * (float)zCellsCoveredUIntForm; // rember to convert due to the width moving 0,0 c
-
-	return -1.0f;// WIP
+	abc.v0.y = heightTL_F;
+	abc.v0.z = m_cellDepth * (float)zCellsCoveredUIntForm;
 	
-	// new code, based off WK1 L1 Slides 19 to 24
+	abc.v1.x = m_cellWidth * (float)(xCellsCoveredUIntForm + 1);
+	abc.v1.y = heightTR_F;
+	abc.v1.z = m_cellDepth * (float)zCellsCoveredUIntForm;
 
+	abc.v2.x = m_cellWidth * (float)xCellsCoveredUIntForm;
+	abc.v2.y = heightBL_F;
+	abc.v2.z = m_cellDepth * (float)(zCellsCoveredUIntForm + 1);
 
+	// see the characters on which vertex on D.C.B maps to vetex on A.B.C
+	dcb.v0.x = m_cellWidth * (float)(xCellsCoveredUIntForm + 1);
+	dcb.v0.y = heightBR_F;
+	dcb.v0.z = m_cellDepth * (float)(zCellsCoveredUIntForm + 1);
 
+	dcb.v1 = abc.v2;
+	dcb.v2 = abc.v1;
 
+	// return -1.0f;// WIP
+	
+	// new code, based off WK1 L1 Slides 19 to 24, the above ABC & DCB triangles may be used
 
+	float c = (x + 0.5f * m_width) / m_cellWidth; 
+	float d = (z - 0.5f * m_depth) / -m_cellDepth;
 
+	float row = floorf(d);
+	float column = floorf(c);
 
+	float s = c - column;
+	float t = d - row;
+
+	float sAndT = s + t; // if it's bigger than 2.0 some thing is wrong
+
+	float stepSize = 0.02f; // may need to be bigger for speed (bigger steps = less steps = faster)
+
+	
+
+	if (s+t <= 1.0f) 
+	{
+		// do stuff in ABC
+
+		XMFLOAT3 u, v;
+		u.x = 0.0f;
+		u.y = abc.v1.y - abc.v0.y;
+		u.z = 0.0f;
+		
+		v.x = 0.0f;
+		v.y = abc.v2.y - abc.v0.y;
+		v.z = v.x;
+
+		float rv = abc.v0.y + (s * u.y) + (t * v.y);
+		return rv;
+	}
+	else
+	{
+		// do stuff in DCB
+		XMFLOAT3 u, v;
+		u.x = 0.0f;
+		u.y = dcb.v1.y - dcb.v0.y;
+		u.z = 0.0f;
+
+		v.x = 0.0f;
+		v.y = dcb.v2.y - dcb.v0.y;
+		v.z = v.x;
+
+		float rv = dcb.v0.y + ((1.0f - s) * u.y) + ((1.0f - t) * v.y);
+		return rv;
+	}
 
 	// return biLerp of the cells
 	
-	// return 0.0f;
+	return -1.0f;
 }
 
 float Terrain::calculateTextureCoord(float minPos, float maxPos, float pos)
