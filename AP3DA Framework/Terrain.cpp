@@ -674,39 +674,41 @@ float Terrain::getHeightAtLocation(float x, float z)
 
 	float sAndT = s + t; // if it's bigger than 2.0 some thing is wrong
 
-	float stepSize = 0.02f; // may need to be bigger for speed (bigger steps = less steps = faster)
-
 	
+	// to conform to the notation in the frank lunk book:
+	/*
+	A---B
+	|  /|
+	| / |
+	|/	|
+	C---D
+	
+	*/
+	
+	float A, B,
+		C, D;
+	A = heightTL_F;
+	B = heightTR_F;
+	C = heightBL_F;
+	D = heightBR_F;
 
 	if (s+t <= 1.0f) 
 	{
 		// do stuff in ABC
 
-		XMFLOAT3 u, v;
-		u.x = 0.0f;
-		u.y = abc.v1.y - abc.v0.y;
-		u.z = 0.0f;
-		
-		v.x = 0.0f;
-		v.y = abc.v2.y - abc.v0.y;
-		v.z = v.x;
-
-		float rv = abc.v0.y + (s * u.y) + (t * v.y);
+		float uy, vy, rv;
+		uy = B - A;
+		vy = C - A;
+		rv = A + s * uy + t * vy;
 		return rv;
 	}
 	else
 	{
 		// do stuff in DCB
-		XMFLOAT3 u, v;
-		u.x = 0.0f;
-		u.y = dcb.v1.y - dcb.v0.y;
-		u.z = 0.0f;
-
-		v.x = 0.0f;
-		v.y = dcb.v2.y - dcb.v0.y;
-		v.z = v.x;
-
-		float rv = dcb.v0.y + ((1.0f - s) * u.y) + ((1.0f - t) * v.y);
+		float uy, vy, rv;
+		uy = C - d;
+		vy = B - D;
+		rv = D + (1.0f - s)*uy + (1.0f - t)*vy;
 		return rv;
 	}
 
