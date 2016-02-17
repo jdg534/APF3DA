@@ -4,6 +4,7 @@
 
 #include "HeightMapGenerator.h"
 
+#include "MoveOnTerrainGO.h"
 
 float calculateTexCoord(float minPoint, float maxPoint, float vertPos) // this function is to be used at load time
 {
@@ -103,6 +104,8 @@ Application::Application()
 
 	DSLessEqual = nullptr;
 	RSCullNone = nullptr;
+
+	m_secondsToProcessLastFrame = 0.0f;
 }
 
 Application::~Application()
@@ -157,8 +160,8 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 
     // Setup Camera
-	XMFLOAT3 eye = XMFLOAT3(0.0f, 2.0f, -1.0f);
-	XMFLOAT3 at = XMFLOAT3(0.0f, 2.0f, 0.0f);
+	XMFLOAT3 eye = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMFLOAT3 at = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
 	//_camera = new Camera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
@@ -225,6 +228,8 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	_gameObjects.push_back(gameObject);
 
+	
+
 	//testTerrainData = generateFlatTerrain(15, 15, 1.0f, 1.0f);
 
 	/*
@@ -242,27 +247,68 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	HeightMap *hm;
 
+	/*
+	Advice: deal with the terrain generation algorithms first (Diamond Square, then Perlin Noise)
+
+	then go back to fixing the Terrain::getHeightAt()
+
+	then do the skeletal animation
+	*/
+
 	HeightMapGenerator hmg;
 
-	// hm = hmg.generateFaultFormation(25, 1200);
-	hm = hmg.generateHillCircle(30, 50, 1, 10, 7);
+	// hm = hmg.generateFaultFormation(10, 3);
+	// hm = hmg.generateHillCircle(100, 25, 3, 10, 15);
 
 
-	//hm = new HeightMap();
+	/*
+	hm = new HeightMap();
+	hm->setWidth(3);
+	hm->setDepth(3);
+	std::vector<unsigned char> flatHeight;
+	for (int i = 0; i < 3 * 3; i++)
+	{
+		flatHeight.push_back(0);
+	}
+	hm->setheightValues(flatHeight);
+	*/
+
+	hm = new HeightMap();
 	//hm->loadTerrainFromRAWFile("Textures/terrain.raw");
 	// hm.loadTerrainFromBMPFile("Textures/testHM.bmp");
-	// hm.loadTerrainFromBMPFile("Textures/_20x20Test.bmp");
+	// hm->loadTerrainFromBMPFile("Textures/_20x20Test.bmp");
+	// hm->loadTerrainFromBMPFile("testHM24Bit25x25.bmp");
+	hm->loadTerrainFromBMPFile("tt.bmp");
 
 
-
-	// testT.initAsFlatTerrain(15, 15, 1.0f, 1.0f, _pd3dDevice);
-	testT.initViaHeightMap(hm, 50.0f, _pd3dDevice, 150.0f, 150.0f);
+	// testT.initAsFlatTerrain(5, 5, 5.0f, 5.0f, _pd3dDevice);
+	testT.initViaHeightMap(hm, 1.0f, _pd3dDevice, 10.0f, 10.0f);
 	testT.setPosition(0.0f, 0.0f, 0.0f);
 	// testT.setPosition(0.0f, -512.5f, 10.0f);
 
-	float additionalCamHeight = 5.0f;
+	
+	gameObject = new MoveOnTerrainGameObject("MoveingCube1", cubeGeometry, shinyMaterial);
+	gameObject->SetScale(0.5f, 0.5f, 0.5f);
+	gameObject->SetPosition(0.0f, 0.0f, 0.0f);
+	gameObject->SetTextureRV(_pTextureRV);
 
-	_camera = new FirstPersonCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f, &testT, additionalCamHeight);
+	MoveOnTerrainGameObject * tmpmotgp = (MoveOnTerrainGameObject *)gameObject;
+	tmpmotgp->setMoveOn(&testT);
+
+	_gameObjects.push_back(gameObject);
+	
+	//MoveOnTerrainGameObject * goPtr = new MoveOnTerrainGameObject("MoveingCube1", cubeGeometry, shinyMaterial);
+	//goPtr->setMoveOn(&testT);
+
+	// _gameObjects.push_back(goPtr);
+
+
+	//float additionalCamHeight = 5.0f;
+	float additionalCamHeight = 0.0f;
+
+	// _camera = new FirstPersonCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f, &testT, additionalCamHeight);
+
+	_camera = new FlyingCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
 
 
 	return S_OK;
@@ -787,17 +833,9 @@ void Application::Cleanup()
 
 void Application::Update()
 {
-    // Update our time
-    static float timeSinceStart = 0.0f;
-    static DWORD dwTimeStart = 0;
+	m_timeAtStartOfFrame = std::chrono::steady_clock::now();
 
-    DWORD dwTimeCur = GetTickCount();
-
-    if (dwTimeStart == 0)
-        dwTimeStart = dwTimeCur;
-
-	timeSinceStart = (dwTimeCur - dwTimeStart) / 1000.0f;
-
+    
 	// Update camera
 	/*
 	float angleAroundZ = XMConvertToRadians(_cameraOrbitAngleXZ);
@@ -812,22 +850,22 @@ void Application::Update()
 	_camera->SetPosition(cameraPos);
 	*/
 
-	_camera->updateLogic(0.4f); // 0.4 rand value
+	_camera->updateLogic(m_secondsToProcessLastFrame);
 	_camera->Update();
 
 	// Update objects
 
 	for (auto gameObject : _gameObjects)
 	{
-		gameObject->Update(timeSinceStart);
+		gameObject->Update(m_secondsToProcessLastFrame);
 	}
 
 	
 	testT.Update(0.0f);
 
 	// test the terrain heightAt functions
-	float x = 0.3;
-	float z = 0.4;
+	float x = 0.0;
+	float z = 0.0;
 	if (testT.isPositionOnTerrain(x, z))
 	{
 		float terrainHeigth = testT.getHeightAtLocation(x, z);
@@ -971,4 +1009,13 @@ void Application::Draw()
     // Present our back buffer to our front buffer
     //
     _pSwapChain->Present(0, 0);
+
+	using namespace std::chrono;
+
+	m_timeAtEndOfFrame = steady_clock::now();
+	steady_clock::duration timeTaken = m_timeAtEndOfFrame - m_timeAtStartOfFrame;
+
+	std::chrono::milliseconds ms = duration_cast<milliseconds>(timeTaken);
+	m_secondsToProcessLastFrame = ms.count();
+	m_secondsToProcessLastFrame / 1000.0f;// convert back to seconds
 }

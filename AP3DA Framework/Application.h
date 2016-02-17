@@ -21,7 +21,7 @@
 
 #include "Structures.h"
 
-
+#include <chrono>
 
 class Application
 {
@@ -78,6 +78,10 @@ private:
 	float _cameraSpeed = 2.0f;
 
 	Terrain testT;
+
+	std::chrono::steady_clock::time_point m_timeAtStartOfFrame;
+	std::chrono::steady_clock::time_point m_timeAtEndOfFrame;
+	float m_secondsToProcessLastFrame;
 
 
 	UINT _WindowHeight;

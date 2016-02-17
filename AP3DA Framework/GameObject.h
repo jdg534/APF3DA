@@ -64,7 +64,7 @@ public:
 	virtual void Update(float t);
 	virtual void Draw(ID3D11DeviceContext * pImmediateContext);
 
-private:
+protected:
 	XMFLOAT3 _position;
 	XMFLOAT3 _rotation;
 	XMFLOAT3 _scale;

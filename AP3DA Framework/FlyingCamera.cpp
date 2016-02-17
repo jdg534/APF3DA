@@ -21,6 +21,7 @@ FlyingCamera::FlyingCamera(XMFLOAT3 position, XMFLOAT3 at, XMFLOAT3 up, FLOAT wi
 	m_lookAtDir = XMFLOAT3(0.0f, 0.0f, 1.0f);
 
 	XMStoreFloat4x4(&m_rotationMat, XMMatrixIdentity());
+	m_moveSpeed = 0.01f;
 }
 
 FlyingCamera::~FlyingCamera()
@@ -39,10 +40,17 @@ void FlyingCamera::updateLogic(float dt)
 	+X is the ‘right’ vector
 	+Y is the ‘up’ vector 
 	*/
+	if (GetAsyncKeyState('Q') & 0x8000)
+	{
+		m_moveSpeed += 0.00001f;
+	}
+	else if (GetAsyncKeyState('E') & 0x8000)
+	{
+		m_moveSpeed -= 0.00001f;
+	}
 
-	float moveSpeed = 0.05f;
 
-	moveSpeed *= dt;
+	float moveSpeed = m_moveSpeed * dt;
 
 	float turnSpeed = 0.01f;
 	turnSpeed *= dt;

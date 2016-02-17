@@ -60,6 +60,9 @@
     <ClInclude Include="FirstPersonCamera.h">
       <Filter>Cameras</Filter>
     </ClInclude>
+    <ClInclude Include="MoveOnTerrainGO.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -92,6 +95,9 @@
     </ClCompile>
     <ClCompile Include="FirstPersonCamera.cpp">
       <Filter>Cameras</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveOnTerrainGO.cpp">
+      <Filter>GameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

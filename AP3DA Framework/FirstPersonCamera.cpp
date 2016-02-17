@@ -41,5 +41,15 @@ void FirstPersonCamera::updateLogic(float dt)
 		m_positionLastFrame = m_eye;
 	}
 
-	// works perfectly :)
+	
+	if (GetAsyncKeyState(VK_PRIOR) & 0x8000) // VK_PRIOR = page up
+	{
+		m_additionalHeight += 0.01f;
+	}
+	if (GetAsyncKeyState(VK_NEXT) & 0x8000) // VK_NEXT = page down
+	{
+		m_additionalHeight -= 0.01f;
+	}
+
+
 }

@@ -38,6 +38,8 @@ public:
 	bool isPositionOnTerrain(float x, float z);
 	float getHeightAtLocation(float x, float z);
 
+	DirectX::XMFLOAT2 positionOnHeightMap(float x, float z);
+
 	float getHeightScaledBy(){ return m_scaleHeightBy; }
 
 protected:

@@ -6,7 +6,14 @@
 
 #include <fstream>
 
-
+float diff(float a, float b)
+{
+	if (a>b)
+	{
+		return a - b;
+	}
+	return b - a;
+}
 
 Terrain::Terrain()
 {
@@ -542,77 +549,49 @@ float Terrain::getHeightAtLocation(float x, float z)
 	// after checking isPositionOnTerrain()
 	// may need to biLerp
 
-	// if this is called will asume that the point is on the terrain
 
-	XMFLOAT2 actualTopLeftCoord;
-	XMFLOAT2 actualBottomRight;
-	actualTopLeftCoord.x = m_position.x + m_topLeftPoint.x;
-	actualTopLeftCoord.y = m_position.z + m_topLeftPoint.y; // although its denoted as z the value is actually for the z axis
 
-	actualBottomRight.x = m_position.x + m_bottomRightPoint.x;
-	actualBottomRight.y = m_position.z + m_bottomRightPoint.y;
-
-	/*
-
-	int xStepsSoFar = 0;
-	float xStartingPoint = actualTopLeftCoord.x;
-	float xTraceStepLoc = xStartingPoint;
-	bool keepGoingRight = true;
+	// DirectX::XMFLOAT2 xzRelativeToTheTopLeft = positionOnHeightMap(x, z);
 	
-	while (keepGoingRight)
-	{
-		if (xTraceStepLoc >= x)
-		{
-			// got right enough to hit 
-			keepGoingRight = false;
-		}
-		xStepsSoFar++;
-		xTraceStepLoc = (float) xStepsSoFar * m_cellWidth;
-	}
+	// cells stored by terrain class in system of 0,0 bottom left?
 
-	// xStepsSoFar stores the index for the current cells height map value
-	// need to calc the over shoot from previous cell
-	float xOverShoot
-	*/
+	float leftSideWorldSpace = m_position.x + m_topLeftPoint.x;
+	float rightSideWorldSpace = m_position.x + m_bottomRightPoint.y;
 
-	// calc dist from far right
-	float xDistFromRight = actualBottomRight.x - x;
+	float topSideWorldSpace = m_position.z + m_topLeftPoint.y;
+	float bottomSideWorldSpace = m_position.z + m_bottomRightPoint.y;
 
-	float zDistFromBottom = actualBottomRight.y - z;
+	float distFromLeftSide = diff(x, leftSideWorldSpace);
+	float distFromRighSide = diff(x, rightSideWorldSpace);
+
+	float distFromTopSide = diff(z, topSideWorldSpace);
+	float distFromBottomSide = diff(z, bottomSideWorldSpace);
 
 	// calculate nCells covered in X
 
 	// calculate nCells covered in Z
-	float xCellsCovered = xDistFromRight / m_cellWidth;
-	float zCellsCovered = zDistFromBottom / m_cellDepth;
+	float xCellsCovered = 0.0f;
+	// float zCellsCovered = zDistFromBottom / m_cellDepth;
+	float zCellsCovered = 0.0f;
+
+	// testing with 0,0 top left (terrain space)
+	xCellsCovered = distFromLeftSide / m_cellWidth;
+	zCellsCovered = distFromTopSide / m_cellDepth;
+
+	// try 0,0 bottom left
+	zCellsCovered = distFromBottomSide / m_cellDepth;
 
 	unsigned int xCellsCoveredUIntForm = (unsigned int)xCellsCovered;
 	unsigned int zCellsCoveredUIntForm = (unsigned int)zCellsCovered;
-
-	/* (Old in-accurate code)
-	float xBiLerpTxVal = xCellsCovered - (float)xCellsCoveredUIntForm;
-	float zBiLerpTyVal = zCellsCovered - (float)zCellsCoveredUIntForm;
-
-	// now get the cell heights
-	unsigned char _00UC = m_heightMap->getHeightAt(xCellsCoveredUIntForm, zCellsCoveredUIntForm), _10UC = m_heightMap->getHeightAt(xCellsCoveredUIntForm + 1, zCellsCoveredUIntForm),
-		_01UC = m_heightMap->getHeightAt(xCellsCoveredUIntForm, zCellsCoveredUIntForm + 1), _11UC = m_heightMap->getHeightAt(xCellsCoveredUIntForm + 1,zCellsCoveredUIntForm + 1 );
-
-	// down scale from 0 - 255 to 0.0 - 1.0
-	float _00F = (float)_00UC * (1.0f / 225.0f), _10F = (float)_10UC * (1.0f / 255.0f),
-		_01F = (float)_01UC * (1.0f / 255.0f), _11F = (float)_11UC * (1.0f / 255.0f);
-
-	// rescale based on m_scaleHeightBy
-	_00F * m_scaleHeightBy;
-	_10F * m_scaleHeightBy;
-	_01F * m_scaleHeightBy;
-	_11F * m_scaleHeightBy;
-
-	float rv = MathFuncs::biLerp(_00F, _10F,
-		_01F, _11F, xBiLerpTxVal, zBiLerpTyVal);
-
-	return rv;
-
-	*/
+	
+	if (xCellsCoveredUIntForm >= m_cellColumns)
+	{
+		xCellsCoveredUIntForm = m_cellColumns - 2;
+	}
+	if (zCellsCoveredUIntForm >= m_cellRows)
+	{
+		zCellsCoveredUIntForm = m_cellRows - 2;
+	}
 
 	unsigned char heightTL_UC = m_heightMap->getHeightAt(xCellsCoveredUIntForm, zCellsCoveredUIntForm), 
 		heightTR_UC = m_heightMap->getHeightAt(xCellsCoveredUIntForm + 1, zCellsCoveredUIntForm),
@@ -627,7 +606,6 @@ float Terrain::getHeightAtLocation(float x, float z)
 	float heightTR_F = (float)heightTR_UC * downScale;
 	float heightBL_F = (float)heightBL_UC * downScale;
 	float heightBR_F = (float)heightBR_UC * downScale;
-
 	heightTL_F *= m_scaleHeightBy;
 	heightTR_F *= m_scaleHeightBy;
 	heightBL_F *= m_scaleHeightBy;
@@ -692,6 +670,16 @@ float Terrain::getHeightAtLocation(float x, float z)
 	C = heightBL_F;
 	D = heightBR_F;
 
+	if (A < 0.0f ||
+		B < 0.0f ||
+		C < 0.0f ||
+		D < 0.0f)
+	{
+		// something went very wrong
+		char breakPointVar = 'E';
+	}
+
+
 	if (s+t <= 1.0f) 
 	{
 		// do stuff in ABC
@@ -706,15 +694,36 @@ float Terrain::getHeightAtLocation(float x, float z)
 	{
 		// do stuff in DCB
 		float uy, vy, rv;
-		uy = C - d;
+		uy = C - D;
 		vy = B - D;
 		rv = D + (1.0f - s)*uy + (1.0f - t)*vy;
+
+
 		return rv;
 	}
 
 	// return biLerp of the cells
 	
 	return -1.0f;
+}
+
+DirectX::XMFLOAT2 Terrain::positionOnHeightMap(float x, float z)
+{
+	float leftOfTerrain = m_topLeftPoint.x + m_position.x;
+
+	float bottomOfTerrain = m_bottomRightPoint.y + m_position.z; // note distance going down same as the distance going up
+
+	float topOfTerrain = -bottomOfTerrain;
+
+	// topOfTerrain = m_topLeftPoint.y + m_position.z; the size from mid point to top should be the same as the mid point to top
+
+	DirectX::XMFLOAT2 rv;
+
+	rv.x = diff(leftOfTerrain, x);
+
+	rv.y = diff(topOfTerrain, z);
+
+	return rv;
 }
 
 float Terrain::calculateTextureCoord(float minPos, float maxPos, float pos)
