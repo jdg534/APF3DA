@@ -3,14 +3,43 @@
 
 #include <directxmath.h>
 #include <vector>
+#include <string>
 
+
+// start of Vertex Structures
 
 struct SimpleVertex
 {
 	DirectX::XMFLOAT3 PosL;
 	DirectX::XMFLOAT3 NormL;
 	DirectX::XMFLOAT2 Tex;
+
+	int startWeight;
+	int weightCount;
 };
+
+// now the the Skeletal animation related structures
+
+
+struct Joint
+{
+	std::string name;
+	int parentID;
+
+	DirectX::XMFLOAT3 pos;
+	DirectX::XMFLOAT4 orientation;
+};
+
+struct Weight
+{
+	int jointID;
+	float bias;
+	DirectX::XMFLOAT3 position;
+};
+
+// End of vertex Structures
+
+
 
 struct SurfaceInfo
 {

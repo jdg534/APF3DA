@@ -383,6 +383,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="HeightMap.cpp" />
     <ClCompile Include="MathFuncs.cpp" />
+    <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="MoveOnTerrainGO.cpp" />
     <ClCompile Include="Terrain.cpp" />
   </ItemGroup>
@@ -402,8 +403,10 @@
     <ClInclude Include="HeightMap.h" />
     <ClInclude Include="HeightMapGenerator.h" />
     <ClInclude Include="MathFuncs.h" />
+    <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="MoveOnTerrainGO.h" />
     <CLInclude Include="resource.h" />
+    <ClInclude Include="SkeletalModel.h" />
     <ClInclude Include="Structures.h" />
     <ClInclude Include="Terrain.h" />
     <ResourceCompile Include="DX11 Framework.rc" />

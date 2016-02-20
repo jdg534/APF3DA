@@ -311,6 +311,16 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	_camera = new FlyingCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
 
 
+	// file loading code
+	m_modelLoaderInstancePtr = ModelLoader::getInstance();
+	m_modelLoaderInstancePtr->init(this->_pd3dDevice);
+
+
+	if (!m_modelLoaderInstancePtr->loadMD5Mesh("bob_lamp_update.md5mesh", testSM, testSMTextures, testSMTextureNames))
+	{
+		// return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -387,6 +397,8 @@ HRESULT Application::InitShadersAndInputLayout()
 	sampDesc.MinLOD = 0;
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	hr = _pd3dDevice->CreateSamplerState(&sampDesc, &_pSamplerLinear);
+
+
 
 	return hr;
 }
@@ -1005,6 +1017,18 @@ void Application::Draw()
 
 	testT.Draw(_pImmediateContext);
 	
+	// now try the skeletal model
+	// update the CB
+	cb.drawingTerrain = 0.0f;
+	cb.HasTexture = 0.0f;
+	cb.terrainScaledBy = 0.0f;
+	cb.World = XMMatrixTranspose(testSM.getWorldMat());
+	_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+
+	testSM.draw(_pImmediateContext);
+
+
+
     //
     // Present our back buffer to our front buffer
     //

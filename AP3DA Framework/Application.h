@@ -23,6 +23,9 @@
 
 #include <chrono>
 
+#include "ModelLoader.h"
+#include "SkeletalModel.h"
+
 class Application
 {
 	
@@ -122,5 +125,15 @@ public:
 
 	void Update();
 	void Draw();
+
+
+	// stuff for the skeletal model
+	SkeletalModel testSM;
+	std::vector<ID3D11ShaderResourceView  *> testSMTextures;
+	std::vector<std::string> testSMTextureNames;
+
+	ModelLoader * m_modelLoaderInstancePtr;
+
+	
 };
 

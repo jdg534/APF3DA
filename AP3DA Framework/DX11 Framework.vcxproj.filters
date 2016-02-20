@@ -27,6 +27,9 @@
     <Filter Include="MathFuncs">
       <UniqueIdentifier>{e3c55872-4c1c-4225-92fa-040306f35687}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Models">
+      <UniqueIdentifier>{cc2aaa88-1162-433c-9e01-d4ea675b6cd5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -63,6 +66,12 @@
     <ClInclude Include="MoveOnTerrainGO.h">
       <Filter>GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="SkeletalModel.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelLoader.h">
+      <Filter>Models</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -98,6 +107,9 @@
     </ClCompile>
     <ClCompile Include="MoveOnTerrainGO.cpp">
       <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelLoader.cpp">
+      <Filter>Models</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
