@@ -321,6 +321,11 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 		// return E_FAIL;
 	}
 
+	if (!m_modelLoaderInstancePtr->loadMD5Animation("bob_lamp_update.md5anim", testSM))
+	{
+
+	}
+
 	return S_OK;
 }
 

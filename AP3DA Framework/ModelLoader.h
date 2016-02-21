@@ -28,6 +28,8 @@ public:
 		std::vector<ID3D11ShaderResourceView*> & shaders,
 		std::vector<std::string> texFileNames);
 
+	bool loadMD5Animation(std::string fileLoc, SkeletalModel & md5MdlOut);
+
 private:
 	ModelLoader();
 

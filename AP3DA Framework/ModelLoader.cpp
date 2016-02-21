@@ -369,3 +369,244 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 
 	return true;
 }
+
+bool ModelLoader::loadMD5Animation(std::string fileLoc, SkeletalModel & md5MdlOut)
+{
+	std::ifstream animationFile(fileLoc);
+
+	if (!animationFile.good())
+	{
+		return false;
+	}
+
+	ModelAnimation ma;
+
+	std::string currentBit = "";
+	while (!animationFile.eof())
+	{
+		animationFile >> currentBit;
+		if (currentBit == "MD5Version")
+		{
+			// ignor it, just dealing with version 10
+		}
+		else if (currentBit == "commandline")
+		{
+			// also ignor it
+		}
+		else if (currentBit == "numFrames")
+		{
+			animationFile >> ma.nFrames;
+		}
+		else if (currentBit == "numJoints")
+		{
+			animationFile >> ma.nJoints;
+		}
+		else if (currentBit == "frameRate")
+		{
+			animationFile >> ma.fps;
+		}
+		else if (currentBit == "numAnimatedComponents")
+		{
+			animationFile >> ma.nAnimatedComponents;
+		}
+		else if (currentBit == "hierarchy")
+		{
+			AnimationJointInformation aji;
+			animationFile >> currentBit; // {
+			for (int i = 0; i < ma.nJoints; i++)
+			{
+				std::string s;
+				animationFile >> s;
+				if (s[0] == '"')
+				{
+					s = s.substr(1, s.size() - 2);
+				}
+
+				int parentIndex;
+
+				int flags;
+				int startIndex;
+
+				animationFile >> parentIndex;
+				animationFile >> flags;
+				animationFile >> startIndex;
+
+				aji.name = s;
+				aji.parentID = parentIndex;
+				aji.flags = flags;
+				aji.startIndex = startIndex;
+
+				bool matchedWithModelHierarchy = false;
+				for (int  j = 0; j < md5MdlOut.nJoints; j++)
+				{
+					if (md5MdlOut.m_joints[j].name == aji.name) // string names match
+					{
+						if (md5MdlOut.m_joints[j].parentID == aji.parentID) // parent joints match
+						{
+							matchedWithModelHierarchy = true;
+							ma.jointInfo.push_back(aji);
+						}
+					}
+				}
+
+				if (!matchedWithModelHierarchy)
+				{
+					return false; // animation file hierarchy not compaterble with the model
+				}
+
+				std::getline(animationFile, currentBit);
+
+			}
+		}
+		else if (currentBit == "bounds")
+		{
+			// the bounding box for the model for the frame
+			animationFile >> currentBit; // skip {
+			for (int i = 0; i < ma.nFrames; i++)
+			{
+				animationFile >> currentBit; // skip (
+
+				BoundingBox bb;
+
+				animationFile >> bb.min.x >> bb.min.z >> bb.min.y;
+				animationFile >> currentBit // skip )
+					>> currentBit; // skip (
+				animationFile >> bb.max.x >> bb.max.z >> bb.max.y;
+
+				std::getline(animationFile, currentBit); // skip ) & rest of the line
+				ma.frameBoundingBox.push_back(bb);
+			}
+
+		}
+		else if (currentBit == "baseframe")
+		{
+			// this is the skeleton that the skeletons 
+			animationFile >> currentBit;// {
+			for (int i = 0; i < ma.nJoints; i++)
+			{
+				Joint jTmp;
+				animationFile >> currentBit; // (
+				animationFile >> jTmp.pos.x >> jTmp.pos.z >> jTmp.pos.y;
+				animationFile >> currentBit // )
+					>> currentBit; // (
+				animationFile >> jTmp.orientation.x >> jTmp.orientation.z >> jTmp.orientation.y;
+				std::getline(animationFile, currentBit); // skip ) & rest of line
+				ma.baseFrameJoints.push_back(jTmp);
+			}
+		}
+		else if (currentBit == "frame")
+		{
+			FrameData fd;
+			animationFile >> fd.frameIndex;
+			animationFile >> currentBit;// {
+			for (int i = 0; i < ma.nAnimatedComponents; i++)
+			{
+				float tempD;
+				animationFile >> tempD;
+				fd.frameData.push_back(tempD);
+			}
+			ma.frameData.push_back(fd);
+
+			// create frame skeleton
+			std::vector<Joint> tempSkel;
+
+			for (int i = 0; i < ma.jointInfo.size(); i++)
+			{
+				int k = 0;
+				// start with base frame joints
+				Joint jTmp = ma.baseFrameJoints[i];
+
+				jTmp.parentID = ma.jointInfo[i].parentID;
+
+				// use flags to determine if need to reswap y & z
+
+				// just going with the tutorial: http://www.braynzarsoft.net/viewtutorial/q16390-28-skeletal-animation-based-on-the-md5-format
+				if (ma.jointInfo[i].flags & 1)
+				{
+					jTmp.pos.x = fd.frameData[ma.jointInfo[i].startIndex + k++];
+				}
+				if (ma.jointInfo[i].flags & 2)
+				{
+					// note in RH coord sys would be setting Y NOT Z
+					jTmp.pos.z = fd.frameData[ma.jointInfo[i].startIndex + k++];
+				}
+				if (ma.jointInfo[i].flags & 4)
+				{
+					jTmp.pos.y = fd.frameData[ma.jointInfo[i].startIndex + k++];
+				}
+				if (ma.jointInfo[i].flags & 8)
+				{
+					jTmp.orientation.x = fd.frameData[ma.jointInfo[i].startIndex + k++];
+				}
+				if (ma.jointInfo[i].flags & 16)
+				{
+					jTmp.orientation.z = fd.frameData[ma.jointInfo[i].startIndex + k++];
+				}
+				if (ma.jointInfo[i].flags & 32)
+				{
+					jTmp.orientation.y = fd.frameData[ma.jointInfo[i].startIndex + k++];
+				}
+				
+				// now the Quaternion W component, rember w != Theta
+				float t = 1.0f - (jTmp.orientation.x * jTmp.orientation.x)
+					- (jTmp.orientation.y * jTmp.orientation.y)
+					- (jTmp.orientation.z * jTmp.orientation.z);
+				if (t < 0.0f)
+				{
+					jTmp.orientation.w = 0.0f;
+				}
+				else
+				{
+					jTmp.orientation.w = -sqrtf(t);
+				}
+
+				// deal with the transformation, relative to patent
+				if (jTmp.parentID >= 0) // The root Joint have -1 as its parent index
+				{
+					Joint jTmpParent = tempSkel[jTmp.parentID];
+
+					XMVECTOR parentJointOrienation = XMVectorSet(jTmpParent.orientation.x, jTmpParent.orientation.y, jTmpParent.orientation.z, jTmpParent.orientation.w);
+					XMVECTOR jointpos = XMLoadFloat3(&jTmp.pos);
+
+					XMVECTOR parentOrientationJointCondugate = XMVectorSet(-jTmpParent.orientation.x, -jTmpParent.orientation.y, -jTmpParent.orientation.z, jTmpParent.orientation.w);;
+
+					// position
+					XMFLOAT3 rotatedPosition;
+					XMStoreFloat3(&rotatedPosition, XMQuaternionMultiply(XMQuaternionMultiply(parentJointOrienation, jointpos), parentOrientationJointCondugate));
+
+					jTmp.pos.x = rotatedPosition.x + jTmpParent.pos.x;
+					jTmp.pos.y = rotatedPosition.y + jTmpParent.pos.y;
+					jTmp.pos.z = rotatedPosition.z + jTmpParent.pos.z;
+
+
+					// orientation
+					XMVECTOR jTmpOri = XMVectorSet(jTmp.orientation.x, jTmp.orientation.y, jTmp.orientation.z, jTmp.orientation.w);
+					jTmpOri = XMQuaternionMultiply(parentJointOrienation, jTmpOri);
+
+
+					// re normalise
+					jTmpOri = XMQuaternionNormalize(jTmpOri);
+
+					// set the actual value
+					XMStoreFloat4(&jTmp.orientation, jTmpOri);
+				}
+				// add the joint
+				tempSkel.push_back(jTmp);
+			}
+			ma.frameSkeleton.push_back(tempSkel);
+			animationFile >> currentBit; // the "}"
+		}
+	}
+
+	// setup the animation variables
+	ma.frameTime = 1.0f / ma.fps; // frameTime to store the time deticated to each frame
+	ma.totalAnimationTime = ma.nFrames * ma.frameTime; // total amount of time spent on the entire animation
+	ma.currentAnimationTime = 0.0f;// starts at the actual start of the animation
+
+
+	// add the animation to the models's class
+	md5MdlOut.m_animations.push_back(ma);
+
+
+	return true;
+}

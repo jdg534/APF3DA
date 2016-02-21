@@ -82,6 +82,10 @@ struct SkeletalModel // will make into a class later
 
 	DirectX::XMFLOAT4X4 m_worldMat;
 	DirectX::XMFLOAT3 m_pos;
+
+	// Added for the Skeletal animation
+	std::vector<ModelAnimation> m_animations;
+
 };
 
 

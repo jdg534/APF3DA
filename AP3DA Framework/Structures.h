@@ -35,7 +35,51 @@ struct Weight
 	int jointID;
 	float bias;
 	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT3 normal; // added upon adding the animation code
 };
+
+struct BoundingBox // added when implermenting Skeletal animation
+{
+	DirectX::XMFLOAT3 min, max;
+};
+
+struct FrameData
+{
+	unsigned int frameIndex;
+	std::vector<float> frameData;
+};
+
+struct AnimationJointInformation
+{
+	std::string name;
+	int parentID;
+
+	int flags;
+	int startIndex;
+};
+
+struct ModelAnimation
+{
+	int nFrames;
+	int nJoints;
+	int fps;
+
+	int nAnimatedComponents;
+
+	float frameTime;
+	float totalAnimationTime;
+	float currentAnimationTime;
+
+	std::vector<AnimationJointInformation> jointInfo;
+	std::vector<BoundingBox> frameBoundingBox;
+	std::vector<Joint> baseFrameJoints;
+	std::vector<FrameData> frameData;
+	std::vector<std::vector<Joint>> frameSkeleton;
+};
+
+// end of skeletal animation related structures
+
+
 
 // End of vertex Structures
 

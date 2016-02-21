@@ -12,6 +12,10 @@ and http://www.braynzarsoft.net/viewtutorial/q16390-28-skeletal-animation-based-
 
 for reference on creating an animated Bi ped modelrendering
 
+PROGRESS: can load & render MD5 model,
+can load the animations from file.
+
+next have the animations be applyed to the model before rendering
 
 
 
