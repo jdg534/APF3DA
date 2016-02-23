@@ -19,6 +19,7 @@ terrain texture blending works
 
 next have the animations be applyed to the model before rendering
 
+Next Tutorial get help with the animation code
 
 
 

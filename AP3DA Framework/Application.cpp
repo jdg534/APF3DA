@@ -326,6 +326,8 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	}
 
+	testSM.m_animationIndex = 0; // start with the first animation
+
 	return S_OK;
 }
 
@@ -889,7 +891,8 @@ void Application::Update()
 	}
 
 	// update the sleletal model
-
+	testSM.update(m_secondsToProcessLastFrame, _pImmediateContext);
+	
 }
 
 void Application::Draw()
