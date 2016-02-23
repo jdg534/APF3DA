@@ -888,6 +888,8 @@ void Application::Update()
 		float terrainHeigth = testT.getHeightAtLocation(x, z);
 	}
 
+	// update the sleletal model
+
 }
 
 void Application::Draw()

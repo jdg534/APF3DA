@@ -113,6 +113,44 @@ VS_OUTPUT VS(VS_INPUT input)
 // Pixel Shader(s) // sort of
 //--------------------------------------------------------------------------------------
 
+float calcLerpValue(float min, float max, float x)
+{
+	// like in the Key frame animation in LLGC
+	float rv = 1.0f;
+	float diffMinMax = max - min;
+	if (diffMinMax <= 0.0f)
+	{
+		rv = 1.0f;
+	}
+	else 
+	{
+		float diffMinX = x - min;
+		rv = diffMinX / diffMinMax;
+	}
+
+
+	//float diffMinX;
+	//diffMinX = x - min;
+
+	// return diffMinX / diffMinMax;
+	
+	return rv;
+}
+
+bool between(float min, float max, float x)
+{
+	bool rv = true;
+	if (x < min)
+	{
+		rv = false;
+	}
+	else if (x > max)
+	{
+		rv = false;
+	}
+	return rv;
+}	
+
 float4 drawTerrain(VS_OUTPUT input)
 {
 	// just gouraud shading for terrain, specular components, overkill? ask in next tutorial
@@ -124,15 +162,63 @@ float4 drawTerrain(VS_OUTPUT input)
 	// 0 - 255 wrong, 0.0 - 1.0 right
 
 
-	float lightDirtCutOff = 0.2f;
-	float grassCutOff = 0.4f;
-	float darkDirtCutOff = 0.6f;
-	float stoneCutOff = 0.8f;
+	
+	
+	
+	
+	
+	// new order to down
+	// snow
+	// rock
+	// light dirt
+	// dark dirt
+	// grass
+
+	float snowMax = 1.0f;
+	float stoneMax = 0.8f;
+	float lightDirtMax = 0.6f;
+	float darkDirtMax = 0.4f;
+	float grassMax = 0.2f;
+
 	// snow for any thing above stoneCutOff
-
-
+	if (heightForVertex > snowMax * terrainScaledBy)
+	{
+		textureColourValue = terrainSnowTex.Sample(samLinear, input.Tex);
+	}
+	else if (between(stoneMax * terrainScaledBy, snowMax * terrainScaledBy, heightForVertex))
+	{
+		float4 snowTex = terrainSnowTex.Sample(samLinear, input.Tex);
+		float4 stoneTex = terrainStoneTex.Sample(samLinear, input.Tex);
+		float lerpVal = calcLerpValue(stoneMax * terrainScaledBy, snowMax * terrainScaledBy, heightForVertex);
+		textureColourValue = lerp(stoneTex, snowTex, lerpVal);
+	}
+	else if (between(lightDirtMax * terrainScaledBy, stoneMax * terrainScaledBy, heightForVertex))
+	{
+		float4 stoneTex = terrainStoneTex.Sample(samLinear, input.Tex);
+		float4 lightDirtTex = terrainLightDirtTex.Sample(samLinear, input.Tex);
+		float lerpVal = calcLerpValue(lightDirtMax * terrainScaledBy, stoneMax * terrainScaledBy, heightForVertex);
+		textureColourValue = lerp(lightDirtTex, stoneTex, lerpVal);
+	}
+	else if (between(darkDirtMax * terrainScaledBy, lightDirtMax * terrainScaledBy, heightForVertex))
+	{
+		float4 darkDirtTex = terrainDarkDirtTex.Sample(samLinear, input.Tex);
+		float4 lightDirtTex = terrainLightDirtTex.Sample(samLinear, input.Tex);
+		float lerpVal = calcLerpValue(darkDirtMax * terrainScaledBy, lightDirtMax * terrainScaledBy, heightForVertex);
+		textureColourValue = lerp(darkDirtTex, lightDirtTex, lerpVal);
+	}
+	else if (between(grassMax * terrainScaledBy, darkDirtMax * terrainScaledBy, heightForVertex))
+	{
+		float4 darkDirtTex = terrainDarkDirtTex.Sample(samLinear, input.Tex);
+		float4 grassTex = terrainGrassTex.Sample(samLinear, input.Tex);
+		float lerpVal = calcLerpValue(grassMax * terrainScaledBy, darkDirtMax * terrainScaledBy, heightForVertex);
+		textureColourValue = lerp(grassTex, darkDirtTex, lerpVal);
+	}
+	else
+	{
+		textureColourValue = terrainGrassTex.Sample(samLinear, input.Tex);
+	}
 	// following works, need to include some blending
-
+	/*
 	if (heightForVertex < lightDirtCutOff * terrainScaledBy)
 	{
 		textureColourValue = terrainLightDirtTex.Sample(samLinear, input.Tex);
@@ -154,6 +240,9 @@ float4 drawTerrain(VS_OUTPUT input)
 		// just use the snow (for mountain tops)
 		textureColourValue = terrainSnowTex.Sample(samLinear, input.Tex);
 	}
+	*/
+
+
 	// now got the colour for a texture
 
 

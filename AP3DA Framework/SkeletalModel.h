@@ -75,6 +75,11 @@ struct SkeletalModel // will make into a class later
 		}
 	}
 
+	void updateAnimation()
+	{
+
+	}
+
 	XMMATRIX getWorldMat()
 	{
 		return XMLoadFloat4x4(&m_worldMat);
@@ -85,7 +90,7 @@ struct SkeletalModel // will make into a class later
 
 	// Added for the Skeletal animation
 	std::vector<ModelAnimation> m_animations;
-
+	unsigned short m_animationIndex;
 };
 
 

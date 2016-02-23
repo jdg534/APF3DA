@@ -15,6 +15,8 @@ for reference on creating an animated Bi ped modelrendering
 PROGRESS: can load & render MD5 model,
 can load the animations from file.
 
+terrain texture blending works
+
 next have the animations be applyed to the model before rendering
 
 
