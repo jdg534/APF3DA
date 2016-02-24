@@ -318,12 +318,12 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	if (!m_modelLoaderInstancePtr->loadMD5Mesh("bob_lamp_update.md5mesh", testSM, testSMTextures, testSMTextureNames))
 	{
-		// return E_FAIL;
+		return E_FAIL;
 	}
 
 	if (!m_modelLoaderInstancePtr->loadMD5Animation("bob_lamp_update.md5anim", testSM))
 	{
-
+		return E_FAIL;
 	}
 
 	testSM.m_animationIndex = 0; // start with the first animation
