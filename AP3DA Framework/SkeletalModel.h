@@ -19,7 +19,7 @@ struct SkeletalModelSubset
 	int nWeights;
 
 	std::vector<SimpleVertex> vertices;
-	std::vector<WORD> indices;
+	std::vector<unsigned int> indices;
 	std::vector<Weight> weights;
 
 	std::vector<DirectX::XMFLOAT3> positions;
@@ -59,7 +59,7 @@ struct SkeletalModel // will make into a class later
 
 	void draw(ID3D11DeviceContext * deviceContext)
 	{
-		for (int i = 0; i < m_subsets.size(); i++)
+		for (auto i = 0; i < m_subsets.size(); i++)
 		{
 			m_subsets[i].draw(deviceContext);
 		}

@@ -171,7 +171,7 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 						theFile >> currentBit; // tri
 						theFile >> currentBit; // triangle index
 
-						DWORD vertIndex;
+						DWORD vertIndex;  // TODO: Change this??
 						for (int j = 0; j < 3; j++)
 						{
 							theFile >> vertIndex;

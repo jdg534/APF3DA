@@ -32,7 +32,7 @@ public:
 	void setheightValues(std::vector<unsigned char> heightValues)
 	{ 
 		m_heightValues.clear();
-		for (int i = 0; i < heightValues.size(); i++)
+		for (auto i = 0; i < heightValues.size(); i++)
 		{
 			m_heightValues.push_back(heightValues[i]);
 		}

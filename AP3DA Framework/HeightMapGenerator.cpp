@@ -5,7 +5,28 @@
 #include <random>
 #include <functional> // for std::bind()
 
-#include <DirectXMath.h> // for XMINT3
+#include <DirectXMath.h> // for XMINT3, think of it as XM INT 3
+
+
+HeightMap * generateDiamonSquare(int widthDepthVal)
+{
+	/* About
+	widthDepthValue needs to be (2 ^ n) + 1, value e.g. 5, 9.... 
+	
+	see: https://en.wikipedia.org/wiki/Diamond-square_algorithm
+
+	1. set the 4 corner values to some random value
+
+	2. carry out the recursive steps (till all values have been altered):
+	2.1 Diamon step
+
+	2.2 Square steps
+
+	*/
+
+
+	return nullptr;
+}
 
 HeightMap * HeightMapGenerator::generateHillCircle(int widthDepthVal, int iterations, int minRadius, int maxRadius, int maxRaiseHeight)
 {

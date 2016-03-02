@@ -77,7 +77,7 @@ bool Terrain::initAsFlatTerrain(int mRows, int nColumns, float cellWidth, float 
 		}
 	}
 
-	std::vector<WORD> indices;
+	std::vector<unsigned int> indices;
 
 	// for the ijth Quad
 
@@ -99,13 +99,13 @@ bool Terrain::initAsFlatTerrain(int mRows, int nColumns, float cellWidth, float 
 			cbd.z = (i + 1) * mRows + j + 1;
 
 			// add to the vector as WORD use static_cast<WORD>()
-			indices.push_back(static_cast<WORD>(abc.x));
-			indices.push_back(static_cast<WORD>(abc.y));
-			indices.push_back(static_cast<WORD>(abc.z));
+			indices.push_back(static_cast<unsigned int>(abc.x));
+			indices.push_back(static_cast<unsigned int>(abc.y));
+			indices.push_back(static_cast<unsigned int>(abc.z));
 
-			indices.push_back(static_cast<WORD>(cbd.x));
-			indices.push_back(static_cast<WORD>(cbd.y));
-			indices.push_back(static_cast<WORD>(cbd.z));
+			indices.push_back(static_cast<unsigned int>(cbd.x));
+			indices.push_back(static_cast<unsigned int>(cbd.y));
+			indices.push_back(static_cast<unsigned int>(cbd.z));
 		}
 	}
 
@@ -204,7 +204,7 @@ bool Terrain::initAsFlatTerrain(int mRows, int nColumns, float cellWidth, float 
 	ZeroMemory(&indBufdesc, sizeof(indBufdesc));
 
 	indBufdesc.Usage = D3D11_USAGE_DEFAULT;
-	indBufdesc.ByteWidth = sizeof(WORD) * indices.size();
+	indBufdesc.ByteWidth = sizeof(unsigned int) * indices.size();
 	indBufdesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	indBufdesc.CPUAccessFlags = 0;
 
@@ -291,7 +291,7 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 		}
 	}
 
-	std::vector<WORD> indices;
+	std::vector<unsigned int> indices;
 
 	// for the ijth Quad
 
@@ -334,13 +334,13 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 			verts[cbd.z].surfaceNormals.push_back(cbdSn);
 
 			// add to the vector as WORD use static_cast<WORD>()
-			indices.push_back(static_cast<WORD>(abc.x));
-			indices.push_back(static_cast<WORD>(abc.y));
-			indices.push_back(static_cast<WORD>(abc.z));
+			indices.push_back(static_cast<unsigned int>(abc.x));
+			indices.push_back(static_cast<unsigned int>(abc.y));
+			indices.push_back(static_cast<unsigned int>(abc.z));
 
-			indices.push_back(static_cast<WORD>(cbd.x));
-			indices.push_back(static_cast<WORD>(cbd.y));
-			indices.push_back(static_cast<WORD>(cbd.z));
+			indices.push_back(static_cast<unsigned int>(cbd.x));
+			indices.push_back(static_cast<unsigned int>(cbd.y));
+			indices.push_back(static_cast<unsigned int>(cbd.z));
 		}
 	}
 
@@ -467,7 +467,7 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 	ZeroMemory(&indBufdesc, sizeof(indBufdesc));
 
 	indBufdesc.Usage = D3D11_USAGE_DEFAULT;
-	indBufdesc.ByteWidth = sizeof(WORD) * indices.size();
+	indBufdesc.ByteWidth = sizeof(unsigned int) * indices.size();
 	indBufdesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	indBufdesc.CPUAccessFlags = 0;
 
@@ -745,7 +745,7 @@ float Terrain::calculateTextureCoord(float minPos, float maxPos, float pos)
 	return 1.0f;
 }
 
-void Terrain::correctVertexNormals(std::vector<SimpleVertex> & toCorrect, std::vector<WORD> & indices)
+void Terrain::correctVertexNormals(std::vector<SimpleVertex> & toCorrect, std::vector<unsigned int> & indices)
 {
 	std::vector<Facet> f;
 	// use the index buffer to determine the correct facets
@@ -856,7 +856,7 @@ void Terrain::removeDuplicateNormals(std::vector<DirectX::XMFLOAT3> & n)
 	}
 }
 
-void Terrain::altCorrectVertexNormals(std::vector<SimpleVertex> & toCorrect, std::vector<WORD> & indices)
+void Terrain::altCorrectVertexNormals(std::vector<SimpleVertex> & toCorrect, std::vector<unsigned int> & indices)
 {
 	std::vector<Facet> f;
 	// use the index buffer to determine the correct facets

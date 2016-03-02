@@ -10,9 +10,13 @@ class HeightMapGenerator
 {
 public:
 
+	HeightMap * generateDiamonSquare(int widthDepthVal);
+
 	HeightMap * generateHillCircle(int widthDepthVal, int iterations, int minRadius, int maxRadius, int maxRaiseHeight);
 
 	HeightMap * generateFaultFormation(int widthDepthVal, int iterations);
+
+
 
 private:
 

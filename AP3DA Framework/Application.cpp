@@ -273,12 +273,14 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	hm->setheightValues(flatHeight);
 	*/
 
-	hm = new HeightMap();
+	//hm = new HeightMap();
 	//hm->loadTerrainFromRAWFile("Textures/terrain.raw");
 	// hm.loadTerrainFromBMPFile("Textures/testHM.bmp");
 	// hm->loadTerrainFromBMPFile("Textures/_20x20Test.bmp");
 	// hm->loadTerrainFromBMPFile("testHM24Bit25x25.bmp");
-	hm->loadTerrainFromBMPFile("tt.bmp");
+	//hm->loadTerrainFromBMPFile("tt.bmp");
+
+	hm = hmg.generateHillCircle(512, 5, 5, 25, 15);
 
 
 	// testT.initAsFlatTerrain(5, 5, 5.0f, 5.0f, _pd3dDevice);
@@ -495,7 +497,7 @@ HRESULT Application::InitIndexBuffer()
 	HRESULT hr;
 
     // Create index buffer
-    WORD indices[] =
+    unsigned int indices[] =
     {
 		3, 1, 0,
 		2, 1, 3,
@@ -520,7 +522,7 @@ HRESULT Application::InitIndexBuffer()
 	ZeroMemory(&bd, sizeof(bd));
 
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(WORD) * 36;     
+    bd.ByteWidth = sizeof(unsigned int) * 36;     
     bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 
@@ -533,7 +535,7 @@ HRESULT Application::InitIndexBuffer()
         return hr;
 
 	// Create plane index buffer
-	WORD planeIndices[] =
+	unsigned int planeIndices[] =
 	{
 		0, 3, 1,
 		3, 2, 1,
@@ -541,7 +543,7 @@ HRESULT Application::InitIndexBuffer()
 
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(WORD) * 6;
+	bd.ByteWidth = sizeof(unsigned int) * 6;
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 

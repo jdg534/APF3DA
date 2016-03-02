@@ -79,11 +79,11 @@ protected:
 
 
 	// the following functions are for correcting the vertex normals, however they are all too slow to be used 
-	void correctVertexNormals(std::vector<SimpleVertex> & toCorrect, std::vector<WORD> & indices);
+	void correctVertexNormals(std::vector<SimpleVertex> & toCorrect, std::vector<unsigned int> & indices);
 	std::vector<Facet> getConnectedFacets(XMFLOAT3 vertex, std::vector<Facet> & facets);
 	void removeDuplicateNormals(std::vector<DirectX::XMFLOAT3> & n);
 
-	void altCorrectVertexNormals(std::vector<SimpleVertex> & toCorrect, std::vector<WORD> & indices);
+	void altCorrectVertexNormals(std::vector<SimpleVertex> & toCorrect, std::vector<unsigned int> & indices);
 
 	XMFLOAT3 calcSurfaceNormal(XMVECTOR a, XMVECTOR b, XMVECTOR c);
 
