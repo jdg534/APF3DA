@@ -280,8 +280,8 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	// hm->loadTerrainFromBMPFile("testHM24Bit25x25.bmp");
 	//hm->loadTerrainFromBMPFile("tt.bmp");
 
-	hm = hmg.generateHillCircle(512, 5, 5, 25, 15);
-
+	// hm = hmg.generateHillCircle(512, 5, 5, 25, 15);
+	hm = hmg.generateDiamonSquare(50, 0.7);
 
 	// testT.initAsFlatTerrain(5, 5, 5.0f, 5.0f, _pd3dDevice);
 	testT.initViaHeightMap(hm, 1.0f, _pd3dDevice, 10.0f, 10.0f);

@@ -5,12 +5,13 @@
 
 // #include <d3d11.h>
 #include <DirectXMath.h>
+#include "Structures.h"
 
 class HeightMapGenerator
 {
 public:
 
-	HeightMap * generateDiamonSquare(int widthDepthVal);
+	HeightMap * generateDiamonSquare(int widthDepthVal, float rangeReductionFactor);
 
 	HeightMap * generateHillCircle(int widthDepthVal, int iterations, int minRadius, int maxRadius, int maxRaiseHeight);
 
@@ -24,6 +25,9 @@ private:
 	
 	int findLinePointOnRow(DirectX::XMFLOAT2 topPoint, DirectX::XMFLOAT2 bottomPoint, int row, HeightMap * hm);
 
+	void checkAndFixWidthHeightValForDimondSquare(int & widthDepthVal);
+
+	void dimondSquareWorker(HeightMap * hm, Square * workOnArea, unsigned char rangeMin, unsigned char rangeMax, float h);
 };
 
 

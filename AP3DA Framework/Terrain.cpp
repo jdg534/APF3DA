@@ -66,9 +66,9 @@ bool Terrain::initAsFlatTerrain(int mRows, int nColumns, float cellWidth, float 
 	std::vector<XMFLOAT3> verts;
 	verts.resize(nVerts);
 
-	for (int i = 0; i < mRows; i++)
+	for (auto i = 0; i < mRows; i++)
 	{
-		for (int j = 0; j < nColumns; j++)
+		for (auto j = 0; j < nColumns; j++)
 		{
 			verts[k].x = j * cellWidth + (-m_width * 0.5f);
 			verts[k].y = 0.0f;
@@ -117,7 +117,7 @@ bool Terrain::initAsFlatTerrain(int mRows, int nColumns, float cellWidth, float 
 
 	XMFLOAT2 topLeft(99999.99f, 99999.99f), bottomRight(-topLeft.x, -topLeft.y);
 
-	for (int i = 0; i < verts.size(); i++)
+	for (auto i = 0; i < verts.size(); i++)
 	{
 		if (topLeft.x > verts[i].x)
 		{
@@ -139,7 +139,7 @@ bool Terrain::initAsFlatTerrain(int mRows, int nColumns, float cellWidth, float 
 	}
 
 	std::vector<SimpleVertex> vertsToSendToD3dBuffer;
-	for (int i = 0; i < verts.size(); i++)
+	for (auto i = 0; i < verts.size(); i++)
 	{
 		SimpleVertex sv;
 		sv.PosL.x = verts[i].x;
@@ -354,7 +354,7 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 
 	XMFLOAT2 topLeft(99999.99f, 99999.99f), bottomRight(-topLeft.x, -topLeft.y);
 
-	for (int i = 0; i < verts.size(); i++)
+	for (auto i = 0; i < verts.size(); i++)
 	{
 		if (topLeft.x > verts[i].pos.x)
 		{
@@ -380,7 +380,7 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 	m_bottomRightPoint = bottomRight;
 
 	std::vector<SimpleVertex> vertsToSendToD3dBuffer;
-	for (int i = 0; i < verts.size(); i++)
+	for (auto i = 0; i < verts.size(); i++)
 	{
 		SimpleVertex sv;
 		sv.PosL.x = verts[i].pos.x;
@@ -393,7 +393,7 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 		// will just have a normals correction func, calc surface normal, then 
 		
 		XMFLOAT3 VertexNormal(0.0, 0.0, 0.0);
-		for (int j = 0; j < verts[i].surfaceNormals.size(); j++)
+		for (auto j = 0; j < verts[i].surfaceNormals.size(); j++)
 		{
 			VertexNormal.x += verts[i].surfaceNormals[j].x;
 			VertexNormal.y += verts[i].surfaceNormals[j].y;
@@ -498,7 +498,7 @@ void Terrain::Draw(ID3D11DeviceContext * pImmediateContext)
 	// just to logic on the game object class
 	// Set vertex and index buffers
 	pImmediateContext->IASetVertexBuffers(0, 1, &m_geometry.vertexBuffer, &m_geometry.vertexBufferStride, &m_geometry.vertexBufferOffset);
-	pImmediateContext->IASetIndexBuffer(m_geometry.indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+	pImmediateContext->IASetIndexBuffer(m_geometry.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	pImmediateContext->DrawIndexed(m_geometry.numberOfIndices, 0, 0);
 }
@@ -702,9 +702,6 @@ float Terrain::getHeightAtLocation(float x, float z)
 		return rv;
 	}
 
-	// return biLerp of the cells
-	
-	return -1.0f;
 }
 
 DirectX::XMFLOAT2 Terrain::positionOnHeightMap(float x, float z)
@@ -749,7 +746,7 @@ void Terrain::correctVertexNormals(std::vector<SimpleVertex> & toCorrect, std::v
 {
 	std::vector<Facet> f;
 	// use the index buffer to determine the correct facets
-	for (int i = 0; i < indices.size(); i += 3)
+	for (auto i = 0; i < indices.size(); i += 3)
 	{
 		Facet tmpf;
 		tmpf.v0 = toCorrect[indices[i]].PosL;
@@ -778,7 +775,7 @@ void Terrain::correctVertexNormals(std::vector<SimpleVertex> & toCorrect, std::v
 	}
 
 	// make the corrections 
-	for (int i = 0; i < toCorrect.size(); i++)
+	for (auto i = 0; i < toCorrect.size(); i++)
 	{
 		std::vector<Facet> connectedFacets = getConnectedFacets(toCorrect[i].PosL, f);
 		std::vector<XMFLOAT3> facetNormals;
@@ -811,7 +808,7 @@ void Terrain::correctVertexNormals(std::vector<SimpleVertex> & toCorrect, std::v
 std::vector<Facet> Terrain::getConnectedFacets(XMFLOAT3 vertex, std::vector<Facet> & facets)
 {
 	std::vector<Facet> rv;
-	for (int i = 0; i < facets.size(); i++)
+	for (auto i = 0; i < facets.size(); i++)
 	{
 		if (vertex.x == facets[i].v0.x &&
 			vertex.y == facets[i].v0.y &&
@@ -837,9 +834,9 @@ std::vector<Facet> Terrain::getConnectedFacets(XMFLOAT3 vertex, std::vector<Face
 
 void Terrain::removeDuplicateNormals(std::vector<DirectX::XMFLOAT3> & n)
 {
-	for (int i = 0; i < n.size(); i++)
+	for (auto i = 0; i < n.size(); i++)
 	{
-		for (int j = 0; j < n.size(); j++)
+		for (auto j = 0; j < n.size(); j++)
 		{
 			if (i == j)
 			{
@@ -860,7 +857,7 @@ void Terrain::altCorrectVertexNormals(std::vector<SimpleVertex> & toCorrect, std
 {
 	std::vector<Facet> f;
 	// use the index buffer to determine the correct facets
-	for (int i = 0; i < indices.size(); i += 3)
+	for (auto i = 0; i < indices.size(); i += 3)
 	{
 		Facet tmpf;
 		tmpf.v0 = toCorrect[indices[i]].PosL;
@@ -891,10 +888,10 @@ void Terrain::altCorrectVertexNormals(std::vector<SimpleVertex> & toCorrect, std
 
 	// set the vertexNormals to be (0,0,0)
 	// loop through all of the vetices add if its part of the facet, add the facet normal to the vertex normal
-	for (int i = 0; i < toCorrect.size(); i++)
+	for (auto i = 0; i < toCorrect.size(); i++)
 	{
 		toCorrect[i].NormL.x = toCorrect[i].NormL.y = toCorrect[i].NormL.z = 0.0f;
-		for (int j = 0; j < f.size(); j++)
+		for (auto j = 0; j < f.size(); j++)
 		{
 			if (toCorrect[i].PosL.x == f[j].v0.x &&
 				toCorrect[i].PosL.y == f[j].v0.y &&

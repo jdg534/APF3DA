@@ -203,7 +203,7 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 			}
 			
 			// now figure out the actual vertex position, via the joints & weights
-			for (int i = 0; i < tmpSMS.vertices.size(); i++)
+			for (auto i = 0; i < tmpSMS.vertices.size(); i++)
 			{
 				SimpleVertex svTmp = tmpSMS.vertices[i];
 				svTmp.PosL = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -230,7 +230,7 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 				tmpSMS.positions.push_back(svTmp.PosL);
 			}
 			
-			for (int i = 0; i < tmpSMS.vertices.size(); i++)
+			for (auto i = 0; i < tmpSMS.vertices.size(); i++)
 			{
 				tmpSMS.vertices[i].PosL = tmpSMS.positions[i];
 			}
@@ -510,7 +510,7 @@ bool ModelLoader::loadMD5Animation(std::string fileLoc, SkeletalModel & md5MdlOu
 			// create frame skeleton
 			std::vector<Joint> tempSkel;
 
-			for (int i = 0; i < ma.jointInfo.size(); i++)
+			for (auto i = 0; i < ma.jointInfo.size(); i++)
 			{
 				int k = 0;
 				// start with base frame joints

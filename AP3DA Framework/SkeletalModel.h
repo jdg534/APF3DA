@@ -118,9 +118,9 @@ struct SkeletalModel // will make into a class later
 			calculatedSkel.push_back(tempJ);
 		}
 
-		for (int currentSubset = 0; currentSubset < nSubsets; currentSubset++)
+		for (auto currentSubset = 0; currentSubset < nSubsets; currentSubset++)
 		{
-			for (int currentVertex = 0; currentVertex < m_subsets[currentSubset].vertices.size(); currentVertex++)
+			for (auto currentVertex = 0; currentVertex < m_subsets[currentSubset].vertices.size(); currentVertex++)
 			{
 				SimpleVertex tempSV = m_subsets[currentSubset].vertices[currentVertex];
 				tempSV.PosL = XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -163,7 +163,7 @@ struct SkeletalModel // will make into a class later
 			}
 
 			// set the positions for vertices via values stored in m_subsets[n].positions
-			for (int i = 0; i < m_subsets[currentSubset].vertices.size(); i++)
+			for (auto i = 0; i < m_subsets[currentSubset].vertices.size(); i++)
 			{
 				m_subsets[currentSubset].vertices[i].PosL = m_subsets[currentSubset].positions[i];
 			}

@@ -221,7 +221,7 @@ struct FaultFormationQuad
 		vecs.push_back(tmp);
 
 		DirectX::XMFLOAT2 sum(0.0f, 0.0f);
-		for (int i = 0; i < vecs.size(); i++)
+		for (auto i = 0; i < vecs.size(); i++)
 		{
 			sum.x += vecs[i].x;
 			sum.y += vecs[i].y;

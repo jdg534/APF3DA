@@ -7,8 +7,9 @@
 
 #include <DirectXMath.h> // for XMINT3, think of it as XM INT 3
 
+#include <cmath>
 
-HeightMap * generateDiamonSquare(int widthDepthVal)
+HeightMap * HeightMapGenerator::generateDiamonSquare(int widthDepthVal, float rangeReductionFactor)
 {
 	/* About
 	widthDepthValue needs to be (2 ^ n) + 1, value e.g. 5, 9.... 
@@ -19,13 +20,57 @@ HeightMap * generateDiamonSquare(int widthDepthVal)
 
 	2. carry out the recursive steps (till all values have been altered):
 	2.1 Diamon step
+	(use the square corner values to set the middle value)
+
 
 	2.2 Square steps
+	(use the corner values to set value for the middle of an edge, takes the corner & middle value into account)
+
 
 	*/
 
+	checkAndFixWidthHeightValForDimondSquare(widthDepthVal);
 
-	return nullptr;
+	HeightMap * rv = new HeightMap();
+
+	rv->setWidth(widthDepthVal);
+	rv->setDepth(widthDepthVal);
+
+	std::vector<unsigned char> initialHeightValues;
+	for (int i = 0; i < widthDepthVal * widthDepthVal; i++)
+	{
+		unsigned char initVal = 0;
+		initialHeightValues.push_back(initVal);
+	}
+	rv->setheightValues(initialHeightValues);
+
+
+	std::default_random_engine rndHeightEng;
+	std::uniform_int_distribution<int> rndHeightDist(0, 255); // this is the starting range
+	auto rndHeightDice = std::bind(rndHeightDist,rndHeightEng);
+
+
+	Square s;
+	s.left = 0;
+	s.top = 0;
+	s.right = widthDepthVal - 1;
+	s.bottom = s.right;
+	
+	// set the corrner values
+	int r = rndHeightDice();
+
+
+	rv->setHeightAt(s.left, s.top, (unsigned char) r);
+	r = rndHeightDice();
+	rv->setHeightAt(s.right, s.top, r);
+	r = rndHeightDice();
+	rv->setHeightAt(s.left, s.bottom, r);
+	r = rndHeightDice();
+	rv->setHeightAt(s.right, s.bottom, r);
+
+	// get the worker to take over
+	dimondSquareWorker(rv, &s, 0, 255, rangeReductionFactor);
+	return rv;
 }
 
 HeightMap * HeightMapGenerator::generateHillCircle(int widthDepthVal, int iterations, int minRadius, int maxRadius, int maxRaiseHeight)
@@ -412,4 +457,57 @@ int HeightMapGenerator::findLinePointOnRow(DirectX::XMFLOAT2 topPoint, DirectX::
 	}
 
 	return -1;
+}
+
+void HeightMapGenerator::checkAndFixWidthHeightValForDimondSquare(int & widthDepthVal)
+{
+	// the value must be (2 ^ n) + 1, 5 min
+	// to get 5 value is (2 ^ 2) + 1
+	// 1000 should be enough / overkill
+
+	std::vector<unsigned int> okVals;
+
+	for (auto i = 2; i < 1000; i++)
+	{
+		unsigned int val = (powf(2, i)) + 1;
+		okVals.push_back(val);
+	}
+
+	// now see if it's already an ok value
+	for (auto i = 0; i < okVals.size(); i++)
+	{
+		if (widthDepthVal == okVals[i])
+		{
+			return;
+		}
+	}
+
+	// need to set it to the next okVal
+	for (auto i = 0; i < okVals.size(); i++)
+	{
+		if (widthDepthVal < okVals[i])
+		{
+			widthDepthVal = okVals[i];
+			return;
+		}
+	}
+
+	widthDepthVal = okVals[okVals.size() -1]; // just give then the max value if they asked for bigger value then is in okVals
+}
+
+void HeightMapGenerator::dimondSquareWorker(HeightMap * hm, Square * workOnArea, unsigned char rangeMin, unsigned char rangeMax, float h)
+{
+	/*
+	2. carry out the recursive steps (till all values have been altered):
+	2.1 Diamon step
+	(use the square corner values to set the middle value)
+
+
+	2.2 Square steps
+	(use the corner values to set value for the middle of an edge, takes the corner & middle value into account)
+	*/
+
+	// for each iteration don't for get the down scale the range
+
+
 }

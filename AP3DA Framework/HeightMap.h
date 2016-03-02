@@ -60,7 +60,7 @@ struct FloatHeightMap
 
 		std::vector<unsigned char> originalValues = hm->getHeightValues();
 
-		for (int i = 0; i < originalValues.size(); i++)
+		for (auto i = 0; i < originalValues.size(); i++)
 		{
 			heightValues.push_back(originalValues[i]);
 		}
