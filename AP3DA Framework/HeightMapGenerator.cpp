@@ -69,7 +69,7 @@ HeightMap * HeightMapGenerator::generateDiamonSquare(int widthDepthVal, float ra
 	rv->setHeightAt(s.right, s.bottom, r);
 
 	// get the worker to take over
-	dimondSquareWorker(rv, &s, 0, 255, rangeReductionFactor);
+	diamondSquareWorker(rv, &s, 0, 255, rangeReductionFactor);
 	return rv;
 }
 
@@ -495,8 +495,10 @@ void HeightMapGenerator::checkAndFixWidthHeightValForDimondSquare(int & widthDep
 	widthDepthVal = okVals[okVals.size() -1]; // just give then the max value if they asked for bigger value then is in okVals
 }
 
-void HeightMapGenerator::dimondSquareWorker(HeightMap * hm, Square * workOnArea, unsigned char rangeMin, unsigned char rangeMax, float h)
+void HeightMapGenerator::diamondSquareWorker(HeightMap * hm, Square * workOnArea, unsigned char rangeMin, unsigned char rangeMax, float h)
 {
+	// this is recursive!
+
 	/*
 	2. carry out the recursive steps (till all values have been altered):
 	2.1 Diamon step
@@ -509,5 +511,111 @@ void HeightMapGenerator::dimondSquareWorker(HeightMap * hm, Square * workOnArea,
 
 	// for each iteration don't for get the down scale the range
 
+	// 1. down scale the range by (range * (2 ^ (-h)))
 
+	int range = rangeMax - rangeMin;
+	int rangeMidPoint = MathFuncs::lerp((float)rangeMin, (float)rangeMax, 0.5f);
+
+
+	float downScaleRangeBy = powf(2.0f, -h);
+	int rangeDownScaled = (float)range * downScaleRangeBy;
+	int halfOfDownScaledRange = rangeDownScaled / 2;
+
+	int newMinRange = rangeMidPoint - halfOfDownScaledRange;
+	int newMaxRange = rangeMidPoint + halfOfDownScaledRange;
+	
+	// 2.1 Diamon step (set the middle value)
+	using namespace DirectX;
+	XMINT2 midPoint;
+	midPoint.x = MathFuncs::lerp(workOnArea->left, workOnArea->right, 0.5f);
+	midPoint.y = MathFuncs::lerp(workOnArea->top, workOnArea->bottom, 0.5f);
+
+	std::default_random_engine randHeightEng;
+	std::uniform_int_distribution<int> randHeightDist(rangeMin, rangeMax);
+	auto randHeightDice = std::bind(randHeightDist, randHeightEng);
+
+	unsigned char tl, tr,
+		bl, br;
+	tl = hm->getHeightAt(workOnArea->left, workOnArea->top);
+	tr = hm->getHeightAt(workOnArea->right, workOnArea->top);
+	bl = hm->getHeightAt(workOnArea->left, workOnArea->bottom);
+	br = hm->getHeightAt(workOnArea->right, workOnArea->bottom);
+	auto avg = (tl + tr + bl + br) / 4;
+
+	unsigned char midPointVal = avg + randHeightDice();
+
+	hm->setHeightAt(midPoint.x, midPoint.y, midPointVal);
+
+	// now the square step
+	XMINT2 lMid, rMid, tMid, bMid;
+
+	lMid.x = workOnArea->left;
+	lMid.y = midPoint.y;
+
+	rMid.x = workOnArea->right;
+	rMid.y = midPoint.y;
+
+	tMid.x = midPoint.x;
+	tMid.y = workOnArea->top;
+
+	bMid.x = midPoint.x;
+	bMid.y = workOnArea->bottom;
+
+	// now set the values, the avg(2 corners) + rand val
+	int lMidVal = (tl + bl) / 2;
+	lMidVal += randHeightDice();
+	
+	int rMidVal = (tr + br) / 2;
+	rMidVal += randHeightDice();
+
+	int tMidVal = (tl + tr) / 2;
+	tMidVal += randHeightDice();
+
+	int bMidVal = (bl + br) / 2;
+	bMidVal += randHeightDice();
+
+	// now set the values in the height map
+	hm->setHeightAt(lMid.x, lMid.y, lMidVal);
+	hm->setHeightAt(rMid.x, rMid.y, rMidVal);
+	hm->setHeightAt(tMid.x, tMid.y, tMidVal);
+	hm->setHeightAt(bMid.x, bMid.y, bMidVal);
+
+	// determin if need to do another recursion(s), 1 per Quad (like Quadtree)
+	if (workOnArea->right - workOnArea->left > 3)
+	{
+		// need to do another recursion
+		Square tlQuad, trQuad,
+			blQuad, brQuad;
+		tlQuad.left = workOnArea->left;
+		tlQuad.top = workOnArea->top;
+		tlQuad.right = midPoint.x;
+		tlQuad.bottom = midPoint.y;
+
+		trQuad.left = midPoint.x;
+		trQuad.top = workOnArea->top;
+		trQuad.right = workOnArea->right;
+		trQuad.bottom = midPoint.y;
+
+		blQuad.left = workOnArea->left;
+		blQuad.top = midPoint.y;
+		blQuad.right = midPoint.x;
+		blQuad.bottom = workOnArea->bottom;
+
+		brQuad.left = midPoint.x;
+		brQuad.top = midPoint.y;
+		brQuad.right = workOnArea->right;
+		brQuad.bottom = workOnArea->bottom;
+
+		diamondSquareWorker(hm, &tlQuad, newMinRange, newMaxRange, h);
+		diamondSquareWorker(hm, &trQuad, newMinRange, newMaxRange, h);
+		diamondSquareWorker(hm, &blQuad, newMinRange, newMaxRange, h);
+		diamondSquareWorker(hm, &brQuad, newMinRange, newMaxRange, h);
+
+	}
+	else
+	{
+		// int dif = workOnArea->right - workOnArea->left;
+		// char e;
+		// e = 'e';
+	}
 }
