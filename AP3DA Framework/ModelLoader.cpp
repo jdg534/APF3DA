@@ -491,6 +491,7 @@ bool ModelLoader::loadMD5Animation(std::string fileLoc, SkeletalModel & md5MdlOu
 					>> currentBit; // (
 				animationFile >> jTmp.orientation.x >> jTmp.orientation.z >> jTmp.orientation.y;
 				std::getline(animationFile, currentBit); // skip ) & rest of line
+
 				ma.baseFrameJoints.push_back(jTmp);
 			}
 		}

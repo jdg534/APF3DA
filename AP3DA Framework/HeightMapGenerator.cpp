@@ -36,13 +36,13 @@ HeightMap * HeightMapGenerator::generateDiamonSquare(int widthDepthVal, float ra
 	rv->setWidth(widthDepthVal);
 	rv->setDepth(widthDepthVal);
 
-	std::vector<unsigned char> initialHeightValues;
+	std::vector<unsigned int> initialHeightValues;
 	for (int i = 0; i < widthDepthVal * widthDepthVal; i++)
 	{
-		unsigned char initVal = 0;
+		unsigned int initVal = 0;
 		initialHeightValues.push_back(initVal);
 	}
-	rv->setheightValues(initialHeightValues);
+	rv->setHeightValues(initialHeightValues);
 
 
 	std::default_random_engine rndHeightEng;
@@ -60,7 +60,7 @@ HeightMap * HeightMapGenerator::generateDiamonSquare(int widthDepthVal, float ra
 	int r = rndHeightDice();
 
 
-	rv->setHeightAt(s.left, s.top, (unsigned char) r);
+	rv->setHeightAt(s.left, s.top, r);
 	r = rndHeightDice();
 	rv->setHeightAt(s.right, s.top, r);
 	r = rndHeightDice();
@@ -70,6 +70,27 @@ HeightMap * HeightMapGenerator::generateDiamonSquare(int widthDepthVal, float ra
 
 	// get the worker to take over
 	diamondSquareWorker(rv, &s, 0, 255, rangeReductionFactor);
+
+	// now rescale back down to 0 - 255 range
+	unsigned int biggestValueEncountered = 0;
+	std::vector<unsigned int> heightValues = rv->getHeightValues();
+	for (auto i = 0; i < heightValues.size(); i++)
+	{
+		if (biggestValueEncountered < heightValues[i])
+		{
+			biggestValueEncountered = heightValues[i];
+		}
+	}
+
+	float downScaleBy = 255.0f / (float)biggestValueEncountered;
+	for (auto i = 0; i < heightValues.size(); i++)
+	{
+		float scaledValue = (float)heightValues[i] * downScaleBy;
+		heightValues[i] = (unsigned int)scaledValue;
+	}
+
+	rv->setHeightValues(heightValues);
+
 	return rv;
 }
 
@@ -96,13 +117,13 @@ HeightMap * HeightMapGenerator::generateHillCircle(int widthDepthVal, int iterat
 	rv->setWidth(widthDepthVal);
 	rv->setDepth(widthDepthVal);
 
-	std::vector<unsigned char> initialHeightValues;
+	std::vector<unsigned int> initialHeightValues;
 	for (int i = 0; i < widthDepthVal * widthDepthVal; i++)
 	{
-		unsigned char initVal = 0;
+		unsigned int initVal = 0;
 		initialHeightValues.push_back(initVal);
 	}
-	rv->setheightValues(initialHeightValues);
+	rv->setHeightValues(initialHeightValues);
 
 	FloatHeightMap fhm;
 	fhm.copyFromHeightMap(rv);
@@ -261,13 +282,13 @@ HeightMap * HeightMapGenerator::generateFaultFormation(int widthDepthVal, int it
 	}
 	*/
 
-	std::vector<unsigned char> initialHeightValues;
+	std::vector<unsigned int> initialHeightValues;
 	for (int i = 0; i < widthDepthVal * widthDepthVal; i++)
 	{
-		unsigned char initVal = 0;
+		unsigned int initVal = 0;
 		initialHeightValues.push_back(initVal);
 	}
-	rv->setheightValues(initialHeightValues);
+	rv->setHeightValues(initialHeightValues);
 
 	bool positiveSideOfLine = true;
 
@@ -495,7 +516,7 @@ void HeightMapGenerator::checkAndFixWidthHeightValForDimondSquare(int & widthDep
 	widthDepthVal = okVals[okVals.size() -1]; // just give then the max value if they asked for bigger value then is in okVals
 }
 
-void HeightMapGenerator::diamondSquareWorker(HeightMap * hm, Square * workOnArea, unsigned char rangeMin, unsigned char rangeMax, float h)
+void HeightMapGenerator::diamondSquareWorker(HeightMap * hm, Square * workOnArea, unsigned int rangeMin, unsigned int rangeMax, float h)
 {
 	// this is recursive!
 
@@ -534,15 +555,15 @@ void HeightMapGenerator::diamondSquareWorker(HeightMap * hm, Square * workOnArea
 	std::uniform_int_distribution<int> randHeightDist(rangeMin, rangeMax);
 	auto randHeightDice = std::bind(randHeightDist, randHeightEng);
 
-	unsigned char tl, tr,
-		bl, br;
-	tl = hm->getHeightAt(workOnArea->left, workOnArea->top);
-	tr = hm->getHeightAt(workOnArea->right, workOnArea->top);
-	bl = hm->getHeightAt(workOnArea->left, workOnArea->bottom);
-	br = hm->getHeightAt(workOnArea->right, workOnArea->bottom);
-	auto avg = (tl + tr + bl + br) / 4;
+	unsigned int topLeft, topRight,
+		bottomLeft, bottomRight;
+	topLeft = hm->getHeightAt(workOnArea->left, workOnArea->top);
+	topRight = hm->getHeightAt(workOnArea->right, workOnArea->top);
+	bottomLeft = hm->getHeightAt(workOnArea->left, workOnArea->bottom);
+	bottomRight = hm->getHeightAt(workOnArea->right, workOnArea->bottom);
+	auto avg = (topLeft + topRight + bottomLeft + bottomRight) / 4;
 
-	unsigned char midPointVal = avg + randHeightDice();
+	unsigned int midPointVal = avg + randHeightDice();
 
 	hm->setHeightAt(midPoint.x, midPoint.y, midPointVal);
 
@@ -562,16 +583,16 @@ void HeightMapGenerator::diamondSquareWorker(HeightMap * hm, Square * workOnArea
 	bMid.y = workOnArea->bottom;
 
 	// now set the values, the avg(2 corners) + rand val
-	int lMidVal = (tl + bl) / 2;
+	int lMidVal = (topLeft + bottomLeft) / 2;
 	lMidVal += randHeightDice();
 	
-	int rMidVal = (tr + br) / 2;
+	int rMidVal = (topRight + bottomRight) / 2;
 	rMidVal += randHeightDice();
 
-	int tMidVal = (tl + tr) / 2;
+	int tMidVal = (topLeft + topRight) / 2;
 	tMidVal += randHeightDice();
 
-	int bMidVal = (bl + br) / 2;
+	int bMidVal = (bottomLeft + bottomRight) / 2;
 	bMidVal += randHeightDice();
 
 	// now set the values in the height map
@@ -612,10 +633,11 @@ void HeightMapGenerator::diamondSquareWorker(HeightMap * hm, Square * workOnArea
 		diamondSquareWorker(hm, &brQuad, newMinRange, newMaxRange, h);
 
 	}
+	/*
 	else
 	{
 		// int dif = workOnArea->right - workOnArea->left;
 		// char e;
 		// e = 'e';
-	}
+	}*/
 }

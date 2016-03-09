@@ -82,7 +82,7 @@ struct SkeletalModel // will make into a class later
 		// determine the current frame
 		float currentFrame = m_animations[activeAnimation].currentAnimationTime * m_animations[activeAnimation].fps;
 
-		int frameA = floorf(currentFrame);
+		int frameA = (int)floorf(currentFrame);
 		int frameB = frameA + 1;
 		if (frameA == m_animations[activeAnimation].nFrames-1)
 		{
@@ -105,12 +105,18 @@ struct SkeletalModel // will make into a class later
 			XMVECTOR jbOri = XMVectorSet(jB.orientation.x, jB.orientation.y, jB.orientation.z, jB.orientation.w);
 
 			// lerp the positions
-			XMVECTOR jaPos = XMLoadFloat3(&jA.pos);
-			XMVECTOR jbPos = XMLoadFloat3(&jB.pos);
+			// XMVECTOR jaPos = XMLoadFloat3(&jA.pos);
+			// XMVECTOR jbPos = XMLoadFloat3(&jB.pos);
 
-			XMVECTOR lerpedPos = XMVectorLerp(jaPos, jbPos, interpolationWeight);
+			// XMVECTOR lerpedPos = XMVectorLerp(jaPos, jbPos, interpolationWeight);
 
-			XMStoreFloat3(&tempJ.pos, lerpedPos);
+			// XMStoreFloat3(&tempJ.pos, lerpedPos);
+
+			tempJ.pos.x = jA.pos.x + (interpolationWeight * (jB.pos.x - jA.pos.x));
+			tempJ.pos.y = jA.pos.y + (interpolationWeight * (jB.pos.y - jA.pos.y));
+			tempJ.pos.z = jA.pos.z + (interpolationWeight * (jB.pos.z - jA.pos.z));
+
+
 
 			// SLERP the orientation Quaternions
 			XMStoreFloat4(&tempJ.orientation, XMQuaternionSlerp(jaOri, jbOri, interpolationWeight));
@@ -127,9 +133,9 @@ struct SkeletalModel // will make into a class later
 				tempSV.NormL = XMFLOAT3(0.0f,0.0f,0.0f);
 
 				// now to Sum the joints & weights, for the position & normal
-				for (int j = 0; j < tempSV.weightCount; j++)
+				for (int currentWeight = 0; currentWeight < tempSV.weightCount; currentWeight++)
 				{
-					Weight wtemp = m_subsets[currentSubset].weights[tempSV.startWeight + j];
+					Weight wtemp = m_subsets[currentSubset].weights[tempSV.startWeight + currentWeight];
 					Joint tempJointFromModel = calculatedSkel[wtemp.jointID];
 
 					// To XMVECTOR form

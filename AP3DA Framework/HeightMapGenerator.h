@@ -27,7 +27,7 @@ private:
 
 	void checkAndFixWidthHeightValForDimondSquare(int & widthDepthVal);
 
-	void diamondSquareWorker(HeightMap * hm, Square * workOnArea, unsigned char rangeMin, unsigned char rangeMax, float h);
+	void diamondSquareWorker(HeightMap * hm, Square * workOnArea, unsigned int rangeMin, unsigned int rangeMax, float h);
 };
 
 

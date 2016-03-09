@@ -281,13 +281,13 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	//hm->loadTerrainFromBMPFile("tt.bmp");
 
 	// hm = hmg.generateHillCircle(512, 5, 5, 25, 15);
-	hm = hmg.generateDiamonSquare(512, 0.1);
+	hm = hmg.generateDiamonSquare(255, 0.2f);
 
 	// testT.initAsFlatTerrain(5, 5, 5.0f, 5.0f, _pd3dDevice);
 	testT.initViaHeightMap(hm, 1.0f, _pd3dDevice, 100.0f, 100.0f);
 	testT.setPosition(0.0f, 0.0f, 0.0f);
 	// testT.setPosition(0.0f, -512.5f, 10.0f);
-
+	
 	
 	gameObject = new MoveOnTerrainGameObject("MoveingCube1", cubeGeometry, shinyMaterial);
 	gameObject->SetScale(0.5f, 0.5f, 0.5f);

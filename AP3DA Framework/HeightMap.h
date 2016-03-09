@@ -17,19 +17,19 @@ public:
 
 	// optionally include .bmp (low priorty)
 
-	unsigned char getHeightAt(int x, int y);
-	void setHeightAt(int x, int y, unsigned char value);
+	unsigned int getHeightAt(int x, int y);
+	void setHeightAt(int x, int y, unsigned int value);
 
 	unsigned int getWidth(){ return m_width; }
 	unsigned int getDepth() { return m_depth; }
-	std::vector<unsigned char> getHeightValues(){ return m_heightValues; }
+	std::vector<unsigned int> getHeightValues(){ return m_heightValues; }
 
 	void setWidth(unsigned int width) { m_width = width; }
 	void setDepth(unsigned int depth) { m_depth = depth; }
 	
 
 
-	void setheightValues(std::vector<unsigned char> heightValues)
+	void setHeightValues(std::vector<unsigned int> heightValues)
 	{ 
 		m_heightValues.clear();
 		for (auto i = 0; i < heightValues.size(); i++)
@@ -41,7 +41,7 @@ public:
 private:
 	unsigned int m_width;
 	unsigned int m_depth;
-	std::vector<unsigned char> m_heightValues;
+	std::vector<unsigned int> m_heightValues;
 };
 
 
@@ -58,7 +58,7 @@ struct FloatHeightMap
 		depth = hm->getDepth();
 		heightValues.clear();
 
-		std::vector<unsigned char> originalValues = hm->getHeightValues();
+		std::vector<unsigned int> originalValues = hm->getHeightValues();
 
 		for (auto i = 0; i < originalValues.size(); i++)
 		{

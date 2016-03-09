@@ -93,7 +93,17 @@ bool HeightMap::loadTerrainFromBMPFile(std::string fileName)
 	if (bih.bitsPerPixel == 8)
 	{
 		// 1 byte per pixel
-		in.read(reinterpret_cast<char *>(&m_heightValues[0]), m_heightValues.size());
+
+		std::vector<unsigned char> readIn;
+		readIn.resize(pixels);
+		in.read(reinterpret_cast<char *>(&readIn[0]), readIn.size());
+
+		for (auto i = 0; i < m_heightValues.size(); i++)
+		{
+			m_heightValues[i] = readIn[i];
+		}
+
+		// in.read(reinterpret_cast<char *>(&m_heightValues[0]), m_heightValues.size());
 	}
 	else if (bih.bitsPerPixel == 16)
 	{
@@ -141,7 +151,7 @@ bool HeightMap::loadTerrainFromBMPFile(std::string fileName)
 	return true;
 }
 
-unsigned char HeightMap::getHeightAt(int x, int y)
+unsigned int HeightMap::getHeightAt(int x, int y)
 {
 	// need to calculate y off set
 	// (x offset = x) anyway
@@ -149,7 +159,7 @@ unsigned char HeightMap::getHeightAt(int x, int y)
 	return m_heightValues[x + yOffset];
 }
 
-void HeightMap::setHeightAt(int x, int y, unsigned char value)
+void HeightMap::setHeightAt(int x, int y, unsigned int value)
 {
 	int yOffset = m_width * y;
 	m_heightValues[yOffset + x] = value;
