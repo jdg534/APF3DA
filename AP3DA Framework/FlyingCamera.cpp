@@ -58,6 +58,12 @@ void FlyingCamera::updateLogic(float dt)
 
 	// Yaw for rotate around Y axis (turn L & R)
 
+	float maxPitchDegrees = 80.0f;// 80 degrees
+
+	float maxPitchRads = maxPitchDegrees * (3.142f / 180.0f);
+
+
+
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
 		m_yaw -= turnSpeed;
@@ -71,10 +77,18 @@ void FlyingCamera::updateLogic(float dt)
 	if (GetAsyncKeyState(VK_UP) & 0x8000)
 	{
 		m_pitch -= turnSpeed;
+		if (m_pitch < -maxPitchRads)
+		{
+			m_pitch = -maxPitchRads;
+		}
 	}
 	else if (GetAsyncKeyState(VK_DOWN) & 0x8000)
 	{
 		m_pitch += turnSpeed;
+		if (m_pitch > maxPitchRads)
+		{
+			m_pitch = maxPitchRads;
+		}
 	}
 
 	/* (old code)
