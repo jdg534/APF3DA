@@ -9,7 +9,7 @@
 
 #include <cmath>
 
-HeightMap * HeightMapGenerator::generateDiamonSquare(int widthDepthVal, float rangeReductionFactor)
+HeightMap * HeightMapGenerator::generateDiamonSquare(int widthDepthVal, float rangeReductionFactor, unsigned int startingRange)
 {
 	/* About
 	widthDepthValue needs to be (2 ^ n) + 1, value e.g. 5, 9.... 
@@ -29,6 +29,10 @@ HeightMap * HeightMapGenerator::generateDiamonSquare(int widthDepthVal, float ra
 
 	*/
 
+
+	// a simpler example: http://gamedev.stackexchange.com/questions/37389/diamond-square-terrain-generation-problem
+
+
 	checkAndFixWidthHeightValForDimondSquare(widthDepthVal);
 
 	HeightMap * rv = new HeightMap();
@@ -46,7 +50,7 @@ HeightMap * HeightMapGenerator::generateDiamonSquare(int widthDepthVal, float ra
 
 
 	std::default_random_engine rndHeightEng;
-	std::uniform_int_distribution<int> rndHeightDist(0, 255); // this is the starting range
+	std::uniform_int_distribution<int> rndHeightDist(0, startingRange); // this is the starting range
 	auto rndHeightDice = std::bind(rndHeightDist,rndHeightEng);
 
 
@@ -60,16 +64,16 @@ HeightMap * HeightMapGenerator::generateDiamonSquare(int widthDepthVal, float ra
 	int r = rndHeightDice();
 
 
-	rv->setHeightAt(s.left, s.top, r);
+	rv->setHeightAt(s.left, s.top, 200);
 	r = rndHeightDice();
-	rv->setHeightAt(s.right, s.top, r);
+	rv->setHeightAt(s.right, s.top, 200);
 	r = rndHeightDice();
-	rv->setHeightAt(s.left, s.bottom, r);
+	rv->setHeightAt(s.left, s.bottom, 200);
 	r = rndHeightDice();
-	rv->setHeightAt(s.right, s.bottom, r);
+	rv->setHeightAt(s.right, s.bottom, 200);
 
 	// get the worker to take over
-	diamondSquareWorker(rv, &s, 0, 255, rangeReductionFactor);
+	diamondSquareWorker(rv, &s, startingRange, rangeReductionFactor);
 
 	// now rescale back down to 0 - 255 range
 	unsigned int biggestValueEncountered = 0;
@@ -516,7 +520,7 @@ void HeightMapGenerator::checkAndFixWidthHeightValForDimondSquare(int & widthDep
 	widthDepthVal = okVals[okVals.size() -1]; // just give then the max value if they asked for bigger value then is in okVals
 }
 
-void HeightMapGenerator::diamondSquareWorker(HeightMap * hm, Square * workOnArea, unsigned int rangeMin, unsigned int rangeMax, float h)
+void HeightMapGenerator::diamondSquareWorker(HeightMap * hm, Square * workOnArea, unsigned int range, float h)
 {
 	// this is recursive!
 
@@ -534,16 +538,13 @@ void HeightMapGenerator::diamondSquareWorker(HeightMap * hm, Square * workOnArea
 
 	// 1. down scale the range by (range * (2 ^ (-h)))
 
-	int range = rangeMax - rangeMin;
-	int rangeMidPoint = MathFuncs::lerp((float)rangeMin, (float)rangeMax, 0.5f);
-
+	
+	
 
 	float downScaleRangeBy = powf(2.0f, -h);
 	int rangeDownScaled = (float)range * downScaleRangeBy;
 	int halfOfDownScaledRange = rangeDownScaled / 2;
-
-	int newMinRange = rangeMidPoint - halfOfDownScaledRange;
-	int newMaxRange = rangeMidPoint + halfOfDownScaledRange;
+	
 	
 	// 2.1 Diamon step (set the middle value)
 	using namespace DirectX;
@@ -552,7 +553,7 @@ void HeightMapGenerator::diamondSquareWorker(HeightMap * hm, Square * workOnArea
 	midPoint.y = MathFuncs::lerp(workOnArea->top, workOnArea->bottom, 0.5f);
 
 	std::default_random_engine randHeightEng;
-	std::uniform_int_distribution<int> randHeightDist(rangeMin, rangeMax);
+	std::uniform_int_distribution<int> randHeightDist(0, range);
 	auto randHeightDice = std::bind(randHeightDist, randHeightEng);
 
 	unsigned int topLeft, topRight,
@@ -627,10 +628,10 @@ void HeightMapGenerator::diamondSquareWorker(HeightMap * hm, Square * workOnArea
 		brQuad.right = workOnArea->right;
 		brQuad.bottom = workOnArea->bottom;
 
-		diamondSquareWorker(hm, &tlQuad, newMinRange, newMaxRange, h);
-		diamondSquareWorker(hm, &trQuad, newMinRange, newMaxRange, h);
-		diamondSquareWorker(hm, &blQuad, newMinRange, newMaxRange, h);
-		diamondSquareWorker(hm, &brQuad, newMinRange, newMaxRange, h);
+		diamondSquareWorker(hm, &tlQuad, rangeDownScaled, h);
+		diamondSquareWorker(hm, &trQuad, rangeDownScaled, h);
+		diamondSquareWorker(hm, &blQuad, rangeDownScaled, h);
+		diamondSquareWorker(hm, &brQuad, rangeDownScaled, h);
 
 	}
 	/*

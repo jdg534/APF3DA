@@ -11,7 +11,7 @@ class HeightMapGenerator
 {
 public:
 
-	HeightMap * generateDiamonSquare(int widthDepthVal, float rangeReductionFactor);
+	HeightMap * generateDiamonSquare(int widthDepthVal, float rangeReductionFactor, unsigned int startingRange);
 
 	HeightMap * generateHillCircle(int widthDepthVal, int iterations, int minRadius, int maxRadius, int maxRaiseHeight);
 
@@ -27,7 +27,7 @@ private:
 
 	void checkAndFixWidthHeightValForDimondSquare(int & widthDepthVal);
 
-	void diamondSquareWorker(HeightMap * hm, Square * workOnArea, unsigned int rangeMin, unsigned int rangeMax, float h);
+	void diamondSquareWorker(HeightMap * hm, Square * workOnArea, unsigned int range, float h);
 };
 
 
