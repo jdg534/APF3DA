@@ -403,6 +403,7 @@
     <ClInclude Include="HeightMap.h" />
     <ClInclude Include="HeightMapGenerator.h" />
     <ClInclude Include="MathFuncs.h" />
+    <ClInclude Include="MD3Model.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="MoveOnTerrainGO.h" />
     <CLInclude Include="resource.h" />

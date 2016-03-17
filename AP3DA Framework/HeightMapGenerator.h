@@ -7,6 +7,15 @@
 #include <DirectXMath.h>
 #include "Structures.h"
 
+
+enum DiamonSquareNeighbourSquareDir
+{
+	DIA_SQUR_NEIGHB_SQUR_DIR_LEFT = 1,
+	DIA_SQUR_NEIGHB_SQUR_DIR_RIGHT,
+	DIA_SQUR_NEIGHB_SQUR_DIR_UP,
+	DIA_SQUR_NEIGHB_SQUR_DIR_DOWN
+};
+
 class HeightMapGenerator
 {
 public:
@@ -28,6 +37,8 @@ private:
 	void checkAndFixWidthHeightValForDimondSquare(int & widthDepthVal);
 
 	void diamondSquareWorker(HeightMap * hm, Square * workOnArea, unsigned int range, float h);
+
+	bool isNaboringSquare(HeightMap * hmBeingGenerated, Square * currentArea, unsigned int DirectionEnum);
 };
 
 

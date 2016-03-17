@@ -30,6 +30,8 @@ public:
 
 	bool loadMD5Animation(std::string fileLoc, SkeletalModel & md5MdlOut);
 
+	bool loadMD3Model(std::string fileLoc);
+
 private:
 	ModelLoader();
 

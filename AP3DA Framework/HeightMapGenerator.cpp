@@ -64,16 +64,21 @@ HeightMap * HeightMapGenerator::generateDiamonSquare(int widthDepthVal, float ra
 	int r = rndHeightDice();
 
 
-	rv->setHeightAt(s.left, s.top, 200);
+	rv->setHeightAt(s.left, s.top, r);
 	r = rndHeightDice();
-	rv->setHeightAt(s.right, s.top, 200);
+	rv->setHeightAt(s.right, s.top, r);
 	r = rndHeightDice();
-	rv->setHeightAt(s.left, s.bottom, 200);
+	rv->setHeightAt(s.left, s.bottom, r);
 	r = rndHeightDice();
-	rv->setHeightAt(s.right, s.bottom, 200);
+	rv->setHeightAt(s.right, s.bottom, r);
 
 	// get the worker to take over
-	diamondSquareWorker(rv, &s, startingRange, rangeReductionFactor);
+
+	// calculate a reduced range
+	float downScaleRangeBy = powf(2.0f, -rangeReductionFactor);
+	unsigned downScaledRange = (float)startingRange * downScaleRangeBy;
+
+	diamondSquareWorker(rv, &s, downScaledRange, rangeReductionFactor);
 
 	// now rescale back down to 0 - 255 range
 	unsigned int biggestValueEncountered = 0;
@@ -543,10 +548,10 @@ void HeightMapGenerator::diamondSquareWorker(HeightMap * hm, Square * workOnArea
 
 	float downScaleRangeBy = powf(2.0f, -h);
 	int rangeDownScaled = (float)range * downScaleRangeBy;
-	int halfOfDownScaledRange = rangeDownScaled / 2;
 	
 	
-	// 2.1 Diamon step (set the middle value)
+	// 2.1 Diamon step (set the middle value, for the edges)
+
 	using namespace DirectX;
 	XMINT2 midPoint;
 	midPoint.x = MathFuncs::lerp(workOnArea->left, workOnArea->right, 0.5f);
@@ -564,11 +569,13 @@ void HeightMapGenerator::diamondSquareWorker(HeightMap * hm, Square * workOnArea
 	bottomRight = hm->getHeightAt(workOnArea->right, workOnArea->bottom);
 	auto avg = (topLeft + topRight + bottomLeft + bottomRight) / 4;
 
-	unsigned int midPointVal = avg + randHeightDice();
+	// unsigned int midPointVal = avg + randHeightDice();
+	unsigned int midPointVal = avg;
+	midPointVal += randHeightDice();
 
 	hm->setHeightAt(midPoint.x, midPoint.y, midPointVal);
 
-	// now the square step
+	// now the square step, take avg off the midpoints for each connected square
 	XMINT2 lMid, rMid, tMid, bMid;
 
 	lMid.x = workOnArea->left;
@@ -584,16 +591,23 @@ void HeightMapGenerator::diamondSquareWorker(HeightMap * hm, Square * workOnArea
 	bMid.y = workOnArea->bottom;
 
 	// now set the values, the avg(2 corners) + rand val
-	int lMidVal = (topLeft + bottomLeft) / 2;
+
+	// should actually take into account naiboring squares, (suare to the left, right, top bottom)
+
+	int squareSize = workOnArea->right - workOnArea->left;
+
+
+	int lMidVal = 0;//  = (topLeft + bottomLeft + midPointVal) / 3;
+
 	lMidVal += randHeightDice();
 	
-	int rMidVal = (topRight + bottomRight) / 2;
+	int rMidVal = (topRight + bottomRight + midPointVal) / 3;
 	rMidVal += randHeightDice();
 
-	int tMidVal = (topLeft + topRight) / 2;
+	int tMidVal = (topLeft + topRight + midPointVal) / 3;
 	tMidVal += randHeightDice();
 
-	int bMidVal = (bottomLeft + bottomRight) / 2;
+	int bMidVal = (bottomLeft + bottomRight + midPointVal) / 3;
 	bMidVal += randHeightDice();
 
 	// now set the values in the height map
@@ -641,4 +655,36 @@ void HeightMapGenerator::diamondSquareWorker(HeightMap * hm, Square * workOnArea
 		// char e;
 		// e = 'e';
 	}*/
+}
+
+bool HeightMapGenerator::isNaboringSquare(HeightMap * hmBeingGenerated, Square * currentArea, unsigned int DirectionEnum)
+{
+	unsigned int squrSize = currentArea->right - currentArea->left;
+
+	unsigned int hightMapWidthHeightVal = hmBeingGenerated->getWidth(); // the width & depth will have the same value
+
+	if (DirectionEnum == DIA_SQUR_NEIGHB_SQUR_DIR_LEFT)
+	{
+		if (currentArea->left - squrSize >= 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else if(DirectionEnum == DIA_SQUR_NEIGHB_SQUR_DIR_RIGHT)
+	{
+		// PICK UP HERE!!!!!
+	}
+	else if (DirectionEnum == DIA_SQUR_NEIGHB_SQUR_DIR_UP)
+	{
+
+	}
+	else if (DirectionEnum == DIA_SQUR_NEIGHB_SQUR_DIR_DOWN)
+	{
+
+	}
+	return false;
 }

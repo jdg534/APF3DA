@@ -18,6 +18,16 @@ struct SimpleVertex
 	int weightCount;
 };
 
+struct SkinnedVertex
+{
+	DirectX::XMFLOAT3 PosL;
+	DirectX::XMFLOAT3 NormL;
+	DirectX::XMFLOAT2 Tex;
+
+	DirectX::XMFLOAT3 Weights;
+	BYTE BoneIndices[4];// based off the frank luna book, page 662
+};
+
 // now the the Skeletal animation related structures
 
 
