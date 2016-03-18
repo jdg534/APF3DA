@@ -39,6 +39,14 @@ private:
 	void diamondSquareWorker(HeightMap * hm, Square * workOnArea, unsigned int range, float h);
 
 	bool isNaboringSquare(HeightMap * hmBeingGenerated, Square * currentArea, unsigned int DirectionEnum);
+
+	unsigned int squareMidpointValue(HeightMap * hmBeingGenerated, Square * areaOfInterest);
+
+	void diamondStep(HeightMap * hmBeingGenerated, Square * areaOfParentSquare, unsigned int range);
+
+	void squareStep(HeightMap * hmBeingGenerated, Square * areaOfSquare, unsigned int range);
+
+	DirectX::XMINT2 midPoint(Diamond * d);
 };
 
 

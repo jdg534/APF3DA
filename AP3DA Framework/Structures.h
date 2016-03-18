@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 
+#include <wtypes.h>
 
 // start of Vertex Structures
 
@@ -191,6 +192,11 @@ struct Square
 {
 	// to be used on the height map generation
 	float top, bottom, left, right;
+};
+
+struct Diamond // this is using for the diamond square algorithum implermentation
+{
+	DirectX::XMFLOAT2 left, right, top, bottom;
 };
 
 struct Triangle
