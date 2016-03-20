@@ -383,6 +383,8 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="HeightMap.cpp" />
     <ClCompile Include="MathFuncs.cpp" />
+    <ClCompile Include="MD3Model.cpp" />
+    <ClCompile Include="MD3ModelStructs.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="MoveOnTerrainGO.cpp" />
     <ClCompile Include="Terrain.cpp" />
@@ -404,6 +406,7 @@
     <ClInclude Include="HeightMapGenerator.h" />
     <ClInclude Include="MathFuncs.h" />
     <ClInclude Include="MD3Model.h" />
+    <ClInclude Include="MD3ModelStructs.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="MoveOnTerrainGO.h" />
     <CLInclude Include="resource.h" />

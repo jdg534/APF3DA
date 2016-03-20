@@ -81,6 +81,9 @@
     <ClInclude Include="MD3Model.h">
       <Filter>Models\MD3Model</Filter>
     </ClInclude>
+    <ClInclude Include="MD3ModelStructs.h">
+      <Filter>Models\MD3Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -119,6 +122,12 @@
     </ClCompile>
     <ClCompile Include="ModelLoader.cpp">
       <Filter>Models</Filter>
+    </ClCompile>
+    <ClCompile Include="MD3Model.cpp">
+      <Filter>Models\MD3Model</Filter>
+    </ClCompile>
+    <ClCompile Include="MD3ModelStructs.cpp">
+      <Filter>Models\MD3Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
