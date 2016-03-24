@@ -3,6 +3,9 @@
 
 #include "GameObject.h"
 #include "SkeletalModel.h"
+#include "MD3Model.h"
+
+#include <fstream>
 
 class ModelLoader
 {
@@ -30,12 +33,16 @@ public:
 
 	bool loadMD5Animation(std::string fileLoc, SkeletalModel & md5MdlOut);
 
-	bool loadMD3Model(std::string fileLoc);
-
+	// bool loadMD3Model(std::string fileLoc, MD3Model & output);
+	// moved to MD3Loader.h to conform with the book
 private:
 	ModelLoader();
 
 	ID3D11Device * m_devicePtr;
+
+
+
+
 };
 
 

@@ -25,6 +25,9 @@
 
 #include "ModelLoader.h"
 #include "SkeletalModel.h"
+#include "MD3Model.h"
+
+#include "TextureManager.h"
 
 class Application
 {
@@ -134,6 +137,9 @@ public:
 
 	ModelLoader * m_modelLoaderInstancePtr;
 
+	TextureManager * m_textureManager;
 	
+	MD3ModelInstance * m_md3ModelInst;
+
 };
 

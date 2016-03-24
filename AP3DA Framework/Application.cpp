@@ -6,6 +6,8 @@
 
 #include "MoveOnTerrainGO.h"
 
+
+
 float calculateTexCoord(float minPoint, float maxPoint, float vertPos) // this function is to be used at load time
 {
 	float stepSize = 0.001f;
@@ -131,6 +133,9 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
         return E_FAIL;
     }
+
+	m_textureManager = TextureManager::getInstance();
+	m_textureManager->init(_pd3dDevice);
 
 	CreateDDSTextureFromFile(_pd3dDevice, L"Resources\\Crate_COLOR.dds", nullptr, &_pTextureRV);
 	// now the terrain textures
@@ -328,7 +333,16 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 		return E_FAIL;
 	}
 
+	m_textureManager = TextureManager::getInstance();
+	m_textureManager->init(_pd3dDevice);
+
 	testSM.m_animationIndex = 0; // start with the first animation
+
+	
+
+	m_md3ModelInst = new MD3ModelInstance();
+	m_md3ModelInst->theModel = new MD3Model(_pd3dDevice, m_textureManager, "soldier.m3d", L"");
+
 
 	return S_OK;
 }

@@ -36,6 +36,9 @@
     <Filter Include="Models\MD5Model">
       <UniqueIdentifier>{fb18e489-1aa5-4374-883e-6701b7454e84}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Texturing">
+      <UniqueIdentifier>{fdc5ebee-ebfa-4f84-9367-27d0e20682a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -43,9 +46,6 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Cameras</Filter>
-    </ClInclude>
-    <ClInclude Include="DDSTextureLoader.h">
-      <Filter>Resource Files\Textures</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>GameObject</Filter>
@@ -84,6 +84,18 @@
     <ClInclude Include="MD3ModelStructs.h">
       <Filter>Models\MD3Model</Filter>
     </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Texturing</Filter>
+    </ClInclude>
+    <ClInclude Include="DDSTextureLoader.h">
+      <Filter>Texturing</Filter>
+    </ClInclude>
+    <ClInclude Include="MD3Loader.h">
+      <Filter>Models\MD3Model</Filter>
+    </ClInclude>
+    <ClInclude Include="MD3ModelGeomatry.h">
+      <Filter>Models\MD3Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -92,9 +104,6 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Cameras</Filter>
-    </ClCompile>
-    <ClCompile Include="DDSTextureLoader.cpp">
-      <Filter>Resource Files\Textures</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>GameObject</Filter>
@@ -129,6 +138,18 @@
     <ClCompile Include="MD3ModelStructs.cpp">
       <Filter>Models\MD3Model</Filter>
     </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Texturing</Filter>
+    </ClCompile>
+    <ClCompile Include="DDSTextureLoader.cpp">
+      <Filter>Texturing</Filter>
+    </ClCompile>
+    <ClCompile Include="MD3ModelGeomatry.cpp">
+      <Filter>Models\MD3Model</Filter>
+    </ClCompile>
+    <ClCompile Include="MD3Loader.cpp">
+      <Filter>Models\MD3Model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CLInclude Include="resource.h">
@@ -147,6 +168,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="DX11 Framework.fx">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="MD3_SHADER.fx">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

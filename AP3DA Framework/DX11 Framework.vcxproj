@@ -383,11 +383,14 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="HeightMap.cpp" />
     <ClCompile Include="MathFuncs.cpp" />
+    <ClCompile Include="MD3Loader.cpp" />
     <ClCompile Include="MD3Model.cpp" />
+    <ClCompile Include="MD3ModelGeomatry.cpp" />
     <ClCompile Include="MD3ModelStructs.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="MoveOnTerrainGO.cpp" />
     <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DX11 Framework.fx">
@@ -405,7 +408,9 @@
     <ClInclude Include="HeightMap.h" />
     <ClInclude Include="HeightMapGenerator.h" />
     <ClInclude Include="MathFuncs.h" />
+    <ClInclude Include="MD3Loader.h" />
     <ClInclude Include="MD3Model.h" />
+    <ClInclude Include="MD3ModelGeomatry.h" />
     <ClInclude Include="MD3ModelStructs.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="MoveOnTerrainGO.h" />
@@ -413,9 +418,13 @@
     <ClInclude Include="SkeletalModel.h" />
     <ClInclude Include="Structures.h" />
     <ClInclude Include="Terrain.h" />
+    <ClInclude Include="TextureManager.h" />
     <ResourceCompile Include="DX11 Framework.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="MD3_SHADER.fx">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
