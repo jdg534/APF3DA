@@ -48,6 +48,19 @@ private:
 	ID3D11PixelShader*      _pPixelShader;
 	ID3D11InputLayout*      _pVertexLayout;
 
+	// start of MD3 skeletal model rendering stuff
+	ID3D11VertexShader * m_skeletalModelVertexShader;
+	ID3D11PixelShader * m_skeletalModelPixelShader;
+	ID3D11InputLayout * m_SkeletalModelVertexLayout;
+	
+	ID3D11Buffer * m_SkeletalModelConstantBuffer;
+	ID3D11Buffer * m_SkeletalModelBonesConstantBuffer;
+
+	// end of MD3 skeletal model rendering stuff
+
+
+
+
 	ID3D11Buffer*           _pVertexBuffer;
 	ID3D11Buffer*           _pIndexBuffer;
 
@@ -115,6 +128,8 @@ private:
 	HRESULT InitShadersAndInputLayout();
 	HRESULT InitVertexBuffer();
 	HRESULT InitIndexBuffer();
+
+	HRESULT InitAssets();
 
 	Geometry * testTerrainData;
 

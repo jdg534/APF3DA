@@ -11,7 +11,7 @@ MD3Model::MD3Model(ID3D11Device * d3dD, TextureManager * tm, std::string modelFi
 	md3l.LoadM3d(modelFile, m_vertices, m_indercies, m_subsets, md3Mats, m_skinnedMeshSkeleton);
 
 	m_modelGeomatry.setVertices(d3dD, &m_vertices[0], m_vertices.size());
-	m_modelGeomatry.SetIndices(d3dD, &m_indercies[0], m_vertices.size());
+	m_modelGeomatry.SetIndices(d3dD, &m_indercies[0], m_indercies.size());
 	m_modelGeomatry.SetSubsetTable(m_subsets);
 
 	m_nSubsets = m_subsets.size();

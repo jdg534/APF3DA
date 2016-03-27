@@ -137,7 +137,12 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	m_textureManager = TextureManager::getInstance();
 	m_textureManager->init(_pd3dDevice);
 
-	CreateDDSTextureFromFile(_pd3dDevice, L"Resources\\Crate_COLOR.dds", nullptr, &_pTextureRV);
+	Texture * tTmpPtr = nullptr;
+
+	m_textureManager->addTexture("Resources\\Crate_COLOR.dds");
+	tTmpPtr = m_textureManager->getTextureWithID("Resources\\Crate_COLOR.dds");
+	_pTextureRV = tTmpPtr->imageMapPtr;
+	// CreateDDSTextureFromFile(_pd3dDevice, L"Resources\\Crate_COLOR.dds", nullptr, &_pTextureRV);
 	// now the terrain textures
 
 	/*
@@ -148,23 +153,29 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	}
 	*/
 
-	CreateDDSTextureFromFile(_pd3dDevice, L"Textures\\lightdirt.dds", nullptr, &m_terrainLightDirtTex);
-	CreateDDSTextureFromFile(_pd3dDevice, L"Textures\\grass.dds", nullptr, &m_terrainGrassTex);
-	CreateDDSTextureFromFile(_pd3dDevice, L"Textures\\darkdirt.dds", nullptr, &m_terrainDarkDirtTex);
-	CreateDDSTextureFromFile(_pd3dDevice, L"Textures\\stone.dds", nullptr, &m_terrainStoneTex);
-	CreateDDSTextureFromFile(_pd3dDevice, L"Textures\\snow.dds", nullptr, &m_terrainSnowTex);
-	
-	
-	/*
-	ID3D11ShaderResourceView * m_terrainLightDirtTex = nullptr; // for aprox sand
-	ID3D11ShaderResourceView * m_terrainGrassTex = nullptr;
-	ID3D11ShaderResourceView * m_terrainDarkDirtTex = nullptr;
-	ID3D11ShaderResourceView * m_terrainStoneTex = nullptr;
-	ID3D11ShaderResourceView * m_terrainSnowTex = nullptr;
-	*/
 
+	m_textureManager->addTexture("Textures\\lightdirt.dds");
+	tTmpPtr = m_textureManager->getTextureWithID("Textures\\lightdirt.dds");
 
-    // Setup Camera
+	m_terrainLightDirtTex = tTmpPtr->imageMapPtr;
+
+	m_textureManager->addTexture("Textures\\grass.dds");
+	tTmpPtr = m_textureManager->getTextureWithID("Textures\\grass.dds");
+	m_terrainGrassTex = tTmpPtr->imageMapPtr;
+
+	m_textureManager->addTexture("Textures\\darkdirt.dds");
+	tTmpPtr = m_textureManager->getTextureWithID("Textures\\darkdirt.dds");
+	m_terrainDarkDirtTex = tTmpPtr->imageMapPtr;
+
+	m_textureManager->addTexture("Textures\\stone.dds");
+	tTmpPtr = m_textureManager->getTextureWithID("Textures\\stone.dds");
+	m_terrainStoneTex = tTmpPtr->imageMapPtr;
+
+	m_textureManager->addTexture("Textures\\snow.dds");
+	tTmpPtr = m_textureManager->getTextureWithID("Textures\\snow.dds");
+	m_terrainSnowTex = tTmpPtr->imageMapPtr;
+	
+	// Setup Camera
 	XMFLOAT3 eye = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	XMFLOAT3 at = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
@@ -342,6 +353,22 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	m_md3ModelInst = new MD3ModelInstance();
 	m_md3ModelInst->theModel = new MD3Model(_pd3dDevice, m_textureManager, "soldier.m3d", L"");
+	m_md3ModelInst->timePoint = 0.0f;
+	m_md3ModelInst->currentAnimationClipName = "Take1";
+	m_md3ModelInst->finalTransforms.resize(m_md3ModelInst->theModel->m_skinnedMeshSkeleton.getBoneCount());
+
+	// init the model's world matrix
+	XMMATRIX mdlTrans, mdlScale, mdlRot;
+	mdlScale = XMMatrixScaling(0.05f, 0.05f, -0.05f);
+	mdlRot = XMMatrixRotationY(XM_PI);
+	mdlTrans = XMMatrixTranslation(-2.0f, 0.0f, -7.0f);
+	
+	// XMStoreFloat4x4(&m_md3ModelInst->WorldMat, mdlScale * mdlRot * mdlTrans);
+
+	// starting with Identity matrix
+	// XMStoreFloat4x4(&m_md3ModelInst->WorldMat, mdlTrans);
+
+	XMStoreFloat4x4(&m_md3ModelInst->WorldMat, mdlScale*mdlRot*mdlTrans);
 
 
 	return S_OK;
@@ -364,6 +391,8 @@ HRESULT Application::InitShadersAndInputLayout()
 
 	// Create the vertex shader
 	hr = _pd3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &_pVertexShader);
+
+	
 
 	if (FAILED(hr))
 	{	
@@ -402,7 +431,7 @@ HRESULT Application::InitShadersAndInputLayout()
     // Create the input layout
 	hr = _pd3dDevice->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(),
                                         pVSBlob->GetBufferSize(), &_pVertexLayout);
-	pVSBlob->Release();
+	
 
 	if (FAILED(hr))
         return hr;
@@ -422,6 +451,78 @@ HRESULT Application::InitShadersAndInputLayout()
 	hr = _pd3dDevice->CreateSamplerState(&sampDesc, &_pSamplerLinear);
 
 
+
+	// now the MD3 model shader stuff
+	// first the vertex shader, m_skeletalModelVertexShader
+	ID3DBlob * ptrSkelMdlVSBlob = nullptr;
+
+	hr = CompileShaderFromFile(L"MD3_SHADER.fx", "VS", "vs_4_0", &ptrSkelMdlVSBlob);
+
+	if (FAILED(hr))
+	{
+		MessageBox(nullptr,
+			L"MD3_SHADER.fx file cannot be compiled (VS stage).  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
+		return hr;
+	}
+
+	// now create the actual shader
+	hr = _pd3dDevice->CreateVertexShader(ptrSkelMdlVSBlob->GetBufferPointer(), ptrSkelMdlVSBlob->GetBufferSize(), nullptr, &m_skeletalModelVertexShader);
+
+	if (FAILED(hr))
+	{
+		ptrSkelMdlVSBlob->Release();
+		return hr;
+	}
+
+	// second the pixel shader, m_skeletalModelPixelShader
+	// Compile the pixel shader
+	ID3DBlob* ptrSkelMdlPSBlob = nullptr;
+	hr = CompileShaderFromFile(L"MD3_SHADER.fx", "PS", "ps_4_0", &ptrSkelMdlPSBlob);
+
+	if (FAILED(hr))
+	{
+		MessageBox(nullptr,
+			L"MD3_SHADER.fx cannot be compiled (PS stage).  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
+		return hr;
+	}
+
+	// Create the pixel shader
+	hr = _pd3dDevice->CreatePixelShader(ptrSkelMdlPSBlob->GetBufferPointer(), ptrSkelMdlPSBlob->GetBufferSize(), nullptr, &m_skeletalModelPixelShader);
+	// ptrSkelMdlPSBlob->Release();
+
+	if (FAILED(hr))
+		return hr;
+
+
+	// third the vertex input layout m_SkeletalModelVertexLayout
+	// Define the input layout
+	D3D11_INPUT_ELEMENT_DESC skelMeshVertLayout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "WEIGHTS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA ,0},
+		{ "BONEINDICES", 0, DXGI_FORMAT_R8G8B8A8_UINT, 0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+
+	UINT nElementsSkelMeshLayout = ARRAYSIZE(skelMeshVertLayout);
+
+	hr = _pd3dDevice->CreateInputLayout(skelMeshVertLayout, nElementsSkelMeshLayout, ptrSkelMdlVSBlob->GetBufferPointer(),
+		ptrSkelMdlVSBlob->GetBufferSize(), &m_SkeletalModelVertexLayout);
+
+
+	if (FAILED(hr))
+		return hr;
+
+
+
+	// relese the blobs
+
+	pVSBlob->Release();
+	// pPSBlob->Release(); // is already relesed
+
+	ptrSkelMdlVSBlob->Release();
+	ptrSkelMdlPSBlob->Release();
 
 	return hr;
 }
@@ -571,6 +672,12 @@ HRESULT Application::InitIndexBuffer()
 	return S_OK;
 }
 
+HRESULT Application::InitAssets()
+{
+	
+	return S_OK;
+}
+
 HRESULT Application::InitWindow(HINSTANCE hInstance, int nCmdShow)
 {
     // Register class
@@ -625,8 +732,12 @@ HRESULT Application::CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoin
     if (FAILED(hr))
     {
         if (pErrorBlob != nullptr)
+		{
             OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
-
+			
+			MessageBoxA(_hWnd, (char*)pErrorBlob->GetBufferPointer(), "Some shader compliation failed", MB_OK);
+			
+		}
         if (pErrorBlob) pErrorBlob->Release();
 
         return hr;
@@ -736,6 +847,23 @@ HRESULT Application::InitDevice()
     if (FAILED(hr))
         return hr;
 
+	// now deal with the skeletal constant buffers
+	D3D11_BUFFER_DESC skelMdlBufDesc;
+	ZeroMemory(&skelMdlBufDesc, sizeof(skelMdlBufDesc));
+	skelMdlBufDesc.Usage = D3D11_USAGE_DEFAULT;
+	skelMdlBufDesc.ByteWidth = sizeof(MD3ModelConstBuffer);
+	skelMdlBufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	skelMdlBufDesc.CPUAccessFlags = 0;
+	hr = _pd3dDevice->CreateBuffer(&skelMdlBufDesc, nullptr, &m_SkeletalModelConstantBuffer);
+
+	D3D11_BUFFER_DESC skelMdlBonesMatBD;
+	ZeroMemory(&skelMdlBonesMatBD, sizeof(skelMdlBonesMatBD));
+	skelMdlBonesMatBD.Usage = D3D11_USAGE_DEFAULT;
+	skelMdlBonesMatBD.ByteWidth = sizeof(MD3ModelBoneMatrixConstBuffer);
+	skelMdlBonesMatBD.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	skelMdlBonesMatBD.CPUAccessFlags = 0;
+	hr = _pd3dDevice->CreateBuffer(&skelMdlBonesMatBD, nullptr, &m_SkeletalModelBonesConstantBuffer);
+
 	D3D11_TEXTURE2D_DESC depthStencilDesc;
 
 	depthStencilDesc.Width = _renderWidth;
@@ -797,6 +925,7 @@ HRESULT Application::InitDevice()
 
 	cmdesc.FillMode = D3D11_FILL_SOLID;
 	cmdesc.CullMode = D3D11_CULL_BACK;
+	// cmdesc.CullMode = D3D11_CULL_NONE;
 
 	cmdesc.FrontCounterClockwise = true;
 	hr = _pd3dDevice->CreateRasterizerState(&cmdesc, &CCWcullMode);
@@ -818,15 +947,18 @@ void Application::Cleanup()
     if (_pImmediateContext) _pImmediateContext->ClearState();
 	if (_pSamplerLinear) _pSamplerLinear->Release();
 
-	if (_pTextureRV) _pTextureRV->Release();
+	// if (_pTextureRV) _pTextureRV->Release(); // handled by the texture manager
 
-	if (m_terrainLightDirtTex) m_terrainLightDirtTex->Release();
+	/*if (m_terrainLightDirtTex) m_terrainLightDirtTex->Release();
 	if (m_terrainGrassTex) m_terrainGrassTex->Release();
 	if (m_terrainDarkDirtTex) m_terrainDarkDirtTex->Release();
 	if (m_terrainStoneTex) m_terrainStoneTex->Release();
-	if (m_terrainSnowTex) m_terrainSnowTex->Release();
+	if (m_terrainSnowTex) m_terrainSnowTex->Release();*/
 
     if (_pConstantBuffer) _pConstantBuffer->Release();
+	if (m_SkeletalModelConstantBuffer)m_SkeletalModelConstantBuffer->Release();
+	if (m_SkeletalModelBonesConstantBuffer) m_SkeletalModelBonesConstantBuffer->Release();
+
 
     if (_pVertexBuffer) _pVertexBuffer->Release();
     if (_pIndexBuffer) _pIndexBuffer->Release();
@@ -864,6 +996,8 @@ void Application::Cleanup()
 			gameObject = nullptr;
 		}
 	}
+
+	m_textureManager->shutdown();
 }
 
 void Application::Update()
@@ -909,6 +1043,7 @@ void Application::Update()
 	// update the sleletal model
 	testSM.update(m_secondsToProcessLastFrame, _pImmediateContext);
 	
+	// m_md3ModelInst->update(m_secondsToProcessLastFrame);
 }
 
 void Application::Draw()
@@ -934,6 +1069,8 @@ void Application::Draw()
 		_pImmediateContext->RSSetState(CWcullMode);
 	}
 
+
+
 	_pImmediateContext->IASetInputLayout(_pVertexLayout);
 
 	_pImmediateContext->VSSetShader(_pVertexShader, nullptr, 0);
@@ -942,6 +1079,8 @@ void Application::Draw()
 	_pImmediateContext->VSSetConstantBuffers(0, 1, &_pConstantBuffer);
 	_pImmediateContext->PSSetConstantBuffers(0, 1, &_pConstantBuffer);
 	_pImmediateContext->PSSetSamplers(0, 1, &_pSamplerLinear);
+
+
 
     ConstantBuffer cb;
 
@@ -975,7 +1114,7 @@ void Application::Draw()
 		if (gameObject->HasTexture())
 		{
 			ID3D11ShaderResourceView * textureRV = gameObject->GetTextureRV();
-			_pImmediateContext->PSSetShaderResources(0, 1, &textureRV);
+			
 			cb.HasTexture = 1.0f;
 		}
 		else
@@ -1051,7 +1190,104 @@ void Application::Draw()
 	cb.World = XMMatrixTranspose(testSM.getWorldMat());
 	_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
 
-	testSM.draw(_pImmediateContext);
+	// testSM.draw(_pImmediateContext);
+
+
+
+
+
+
+	// MD3 stuff below
+
+
+
+
+
+
+
+
+
+
+	// Figure out what need to be done to get, MD3 skeletal model to work 
+	_pImmediateContext->IASetInputLayout(m_SkeletalModelVertexLayout);
+
+	_pImmediateContext->VSSetShader(m_skeletalModelVertexShader, nullptr, 0);
+	_pImmediateContext->PSSetShader(m_skeletalModelPixelShader, nullptr, 0);
+
+	MD3ModelConstBuffer cbForMd3Mesh;
+	MD3ModelBoneMatrixConstBuffer cbForMd3Bones;
+
+
+	_pImmediateContext->VSSetConstantBuffers(0, 1, &m_SkeletalModelConstantBuffer);
+	_pImmediateContext->PSSetConstantBuffers(0, 1, &m_SkeletalModelConstantBuffer);
+	// now the bone index constant buffers
+	_pImmediateContext->VSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
+	_pImmediateContext->PSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
+
+
+	_pImmediateContext->PSSetSamplers(0, 1, &_pSamplerLinear);
+
+	
+	
+	cbForMd3Mesh.World = XMLoadFloat4x4(&m_md3ModelInst->WorldMat);
+	cbForMd3Mesh.World = XMMatrixTranspose(cbForMd3Mesh.World);
+	cbForMd3Mesh.View = cb.View;
+	cbForMd3Mesh.Projection = cb.Projection;
+	
+	cbForMd3Mesh.light = cb.light;
+	cbForMd3Mesh.EyePosW = cb.EyePosW;
+	
+
+	XMVECTOR worldMatrixDeterminate = XMMatrixDeterminant(cbForMd3Mesh.World);
+	cbForMd3Mesh.WorldInverseTranspose = XMMatrixInverse(&worldMatrixDeterminate, cbForMd3Mesh.World);
+	cbForMd3Mesh.WorldInverseTranspose = XMMatrixTranspose(cbForMd3Mesh.WorldInverseTranspose);
+
+	// set the bones constant buffer
+	XMMATRIX idMat = XMMatrixIdentity();
+
+	for (unsigned int i = 0; i < 96; i++)
+	{
+		// cbForMd3Bones.boneMatrices[i] = idMat; // code if ment to pass an XMMATRIX
+		XMStoreFloat4x4(&cbForMd3Bones.boneMatrices[i], XMMatrixIdentity());
+	}
+
+	for (unsigned int i = 0; i < m_md3ModelInst->finalTransforms.size(); i++)
+	{
+		// 96 elements cbForMd3Bones.boneMatrices
+		if (i < 96)
+		{
+			// cbForMd3Bones.boneMatrices[i] = XMLoadFloat4x4(&m_md3ModelInst->finalTransforms[i]);
+			// above if the bone transform matrices are to be stored as XMMATRIX
+
+			// below if they are ment to be stored as XMFLOAT4X4
+			cbForMd3Bones.boneMatrices[i] = m_md3ModelInst->finalTransforms[i];
+		}
+	}
+	
+	// update the bone constant buffer
+	_pImmediateContext->UpdateSubresource(m_SkeletalModelBonesConstantBuffer, 1, nullptr, &cbForMd3Bones, 0, 0);
+
+
+	for (UINT i = 0; i < m_md3ModelInst->theModel->m_nSubsets; i++)
+	{
+		// set the materials, textures, then draw it
+		
+		cbForMd3Mesh.surface = m_md3ModelInst->theModel->m_materials[i];
+		// set the diffuse map
+		_pImmediateContext->PSSetShaderResources(0, 1, &m_md3ModelInst->theModel->m_diffuseMaps[i]);
+
+		cbForMd3Mesh.HasTexture = 1.0f;
+		// Update constant buffer
+		_pImmediateContext->UpdateSubresource(m_SkeletalModelConstantBuffer, 0, nullptr, &cbForMd3Mesh, 0, 0);
+
+		// now the actual drawing
+		m_md3ModelInst->theModel->m_modelGeomatry.draw(_pImmediateContext, i);
+	}
+	
+	
+	
+	
+
 
 
 

@@ -30,7 +30,7 @@ struct SkinnedVertex
 };
 
 // now the the Skeletal animation related structures
-
+// for MD5, didn't work
 
 struct Joint
 {
@@ -128,6 +128,28 @@ struct ConstantBuffer
 	float drawingTerrain;
 	float terrainScaledBy;
 };
+
+struct MD3ModelConstBuffer
+{
+	DirectX::XMMATRIX World;
+	DirectX::XMMATRIX View;
+	DirectX::XMMATRIX Projection;
+
+	SurfaceInfo surface;
+
+	Light light;
+
+	DirectX::XMFLOAT3 EyePosW;
+	float HasTexture;
+
+	DirectX::XMMATRIX WorldInverseTranspose;
+};
+
+struct MD3ModelBoneMatrixConstBuffer
+{
+	DirectX::XMFLOAT4X4 boneMatrices[96]; // going with what is in the book, max 96 bones to be allowed, this seems unnessary
+};
+
 
 struct Facet
 {

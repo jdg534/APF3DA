@@ -57,7 +57,7 @@ struct Light
 	float3 LightVecW;
 };
 
-cbuffer ConstantBuffer : register( b0 )
+cbuffer ConstantBuffer : register( cb0 )
 {
 	matrix World;
 	matrix View;
@@ -70,7 +70,7 @@ cbuffer ConstantBuffer : register( b0 )
 	float HasTexture;
 	float drawingTerrain;
 	float terrainScaledBy;
-}
+};
 
 struct VS_INPUT
 {

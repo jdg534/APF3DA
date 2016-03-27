@@ -37,6 +37,26 @@ bool MD3Loader::LoadM3d(const std::string& filename,
 		ReadMaterials(md3File, nMaterials, mats);
 		ReadSubsetTable(md3File, nMaterials, subsets);
 		ReadSkinnedVertices(md3File, nVertices, vertices);
+		// now check to see if the bones on each vertex are in an ok range
+
+		std::vector<unsigned int> badVertexIndercies;
+		std::vector<BYTE> badWeightIndexValueForVert;
+
+		for (unsigned int i = 0; i < vertices.size(); i++)
+		{
+			for (unsigned int j = 0; j < 4; j++)
+			{
+				if (vertices[i].BoneIndices[j] >= nBones)
+				{
+					BYTE theValue = vertices[i].BoneIndices[j];
+					int badVertexIndex = i;
+					badVertexIndercies.push_back(badVertexIndex);
+					badWeightIndexValueForVert.push_back(theValue);
+				}
+				
+			}
+			
+		}
 		ReadTriangles(md3File, nTriangles, indices);
 		ReadBoneOffsets(md3File, nBones, boneOffsets);
 		ReadBoneHierarchy(md3File, nBones, boneIndexToParentIndex);

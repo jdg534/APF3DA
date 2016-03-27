@@ -72,12 +72,6 @@
     <ClInclude Include="MoveOnTerrainGO.h">
       <Filter>GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="SkeletalModel.h">
-      <Filter>Models</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelLoader.h">
-      <Filter>Models</Filter>
-    </ClInclude>
     <ClInclude Include="MD3Model.h">
       <Filter>Models\MD3Model</Filter>
     </ClInclude>
@@ -95,6 +89,12 @@
     </ClInclude>
     <ClInclude Include="MD3ModelGeomatry.h">
       <Filter>Models\MD3Model</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletalModel.h">
+      <Filter>Models\MD5Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelLoader.h">
+      <Filter>Models\MD5Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -129,9 +129,6 @@
     <ClCompile Include="MoveOnTerrainGO.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="ModelLoader.cpp">
-      <Filter>Models</Filter>
-    </ClCompile>
     <ClCompile Include="MD3Model.cpp">
       <Filter>Models\MD3Model</Filter>
     </ClCompile>
@@ -149,6 +146,9 @@
     </ClCompile>
     <ClCompile Include="MD3Loader.cpp">
       <Filter>Models\MD3Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelLoader.cpp">
+      <Filter>Models\MD5Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -32,14 +32,17 @@ void MD3ModelGeomatry::setVertices(ID3D11Device* device, const SkinnedVertex* ve
 	
 
 	D3D11_BUFFER_DESC vbd;
+	ZeroMemory(&vbd, sizeof(D3D11_BUFFER_DESC));
 	vbd.Usage = D3D11_USAGE_IMMUTABLE;
 	vbd.ByteWidth = sizeof(SkinnedVertex) * count;
 	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbd.CPUAccessFlags = 0;
 	vbd.MiscFlags = 0;
-	vbd.StructureByteStride = 0;
+	// vbd.StructureByteStride = 0;
+	vbd.StructureByteStride = m_vertexStrideSize;
 
 	D3D11_SUBRESOURCE_DATA vinitData;
+	ZeroMemory(&vinitData, sizeof(D3D11_SUBRESOURCE_DATA));
 	vinitData.pSysMem = vertices;
 
 	device->CreateBuffer(&vbd, &vinitData, &m_vbPtr);
@@ -48,17 +51,19 @@ void MD3ModelGeomatry::setVertices(ID3D11Device* device, const SkinnedVertex* ve
 void MD3ModelGeomatry::SetIndices(ID3D11Device* device, const unsigned int * indices, unsigned int count)
 {
 	D3D11_BUFFER_DESC ibd;
+	ZeroMemory(&ibd, sizeof(D3D11_BUFFER_DESC));
 	ibd.Usage = D3D11_USAGE_IMMUTABLE;
 	ibd.ByteWidth = sizeof(unsigned int) * count;
 	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	ibd.CPUAccessFlags = 0;
 	ibd.MiscFlags = 0;
-	ibd.StructureByteStride = 0;
+	ibd.StructureByteStride = sizeof(unsigned int);
 
-	D3D11_SUBRESOURCE_DATA iinitData;
-	iinitData.pSysMem = indices;
+	D3D11_SUBRESOURCE_DATA indBufinitData;
+	ZeroMemory(&indBufinitData, sizeof(D3D11_SUBRESOURCE_DATA));
+	indBufinitData.pSysMem = indices;
 
-	device->CreateBuffer(&ibd, &iinitData, &m_ibPtr);
+	device->CreateBuffer(&ibd, &indBufinitData, &m_ibPtr);
 }
 
 void MD3ModelGeomatry::SetSubsetTable(std::vector<MD3ModelSubSet>& subsetTable)
