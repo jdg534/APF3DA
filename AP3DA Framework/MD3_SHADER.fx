@@ -122,17 +122,22 @@ VS_OUTPUT VS(VS_INPUT input)
 	float3 posLocalSpace = float3(0.0f, 0.0f, 0.0f);
 	float3 normalLocalSpace = float3(0.0f, 0.0f, 0.0f);
 	// no tangent vector
-	for (int i = 0; i < 4; i++)
-	{
-		posLocalSpace += weights[i] * mul(float4(input.PosL.xyz, 1.0f),	boneMats[input.BoneIndices[i]]).xyz;
-		normalLocalSpace += weights[i] * mul(input.NormL, (float3x3)boneMats[input.BoneIndices[i]]);
-			
-	}
+
+	// CCC
+	//for (int i = 0; i < 4; i++)
+	//{
+	//	posLocalSpace += weights[i] * mul(float4(input.PosL.xyz, 1.0f),	boneMats[input.BoneIndices[i]]).xyz;
+	//	normalLocalSpace += weights[i] * mul(input.NormL, (float3x3)boneMats[input.BoneIndices[i]]);
+	//		
+	//}
+
+	// new CCC
+	posLocalSpace = input.PosL.xyz;
+	normalLocalSpace = input.NormL.xyz;
+	// end CCC
 
 	// now the world space transforms
-
-
-
+	
 	// float4 posW = mul(input.PosL, World);
 	float4 posW = mul(float4(posLocalSpace, 1.0f), World);
 	output.PosW = posW.xyz;

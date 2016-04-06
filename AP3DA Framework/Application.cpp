@@ -176,7 +176,7 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	m_terrainSnowTex = tTmpPtr->imageMapPtr;
 	
 	// Setup Camera
-	XMFLOAT3 eye = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMFLOAT3 eye = XMFLOAT3(0.0f, 2.0f, -15.0f);//0.0f, 0.0f, 0.0f);
 	XMFLOAT3 at = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
@@ -326,7 +326,8 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	// _camera = new FirstPersonCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f, &testT, additionalCamHeight);
 
-	_camera = new FlyingCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
+	// _camera = new FlyingCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
+	_camera = new Camera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
 
 
 	// file loading code
@@ -359,9 +360,9 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	// init the model's world matrix
 	XMMATRIX mdlTrans, mdlScale, mdlRot;
-	mdlScale = XMMatrixScaling(0.05f, 0.05f, -0.05f);
+	mdlScale = XMMatrixScaling(0.05f,0.05f,-0.05f);
 	mdlRot = XMMatrixRotationY(XM_PI);
-	mdlTrans = XMMatrixTranslation(-2.0f, 0.0f, -7.0f);
+	mdlTrans = XMMatrixTranslation(0.0, 2.0, 0.0);
 	
 	// XMStoreFloat4x4(&m_md3ModelInst->WorldMat, mdlScale * mdlRot * mdlTrans);
 
@@ -1053,7 +1054,7 @@ void Application::Draw()
     //
 
 	float ClearColor[4] = { 0.5f, 0.5f, 0.5f, 1.0f }; // red,green,blue,alpha
-    _pImmediateContext->ClearRenderTargetView(_pRenderTargetView, ClearColor);
+	_pImmediateContext->ClearRenderTargetView(_pRenderTargetView, ClearColor);
 	_pImmediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
     //
@@ -1180,7 +1181,7 @@ void Application::Draw()
 
 	_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
 
-	testT.Draw(_pImmediateContext);
+	//testT.Draw(_pImmediateContext);
 	
 	// now try the skeletal model
 	// update the CB
@@ -1207,7 +1208,7 @@ void Application::Draw()
 
 
 
-
+	/*
 	// Figure out what need to be done to get, MD3 skeletal model to work 
 	_pImmediateContext->IASetInputLayout(m_SkeletalModelVertexLayout);
 
@@ -1284,7 +1285,7 @@ void Application::Draw()
 		m_md3ModelInst->theModel->m_modelGeomatry.draw(_pImmediateContext, i);
 	}
 	
-	
+	*/
 	
 	
 

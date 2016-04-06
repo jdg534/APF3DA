@@ -43,6 +43,6 @@ public:
 
 	void Reshape(FLOAT windowWidth, FLOAT windowHeight, FLOAT nearDepth, FLOAT farDepth);
 
-	virtual void updateLogic(float dt) = 0; // this is to be overriden
+	virtual void updateLogic(float dt) {} // this is to be overriden
 };
 

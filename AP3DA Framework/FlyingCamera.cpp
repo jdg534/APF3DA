@@ -18,7 +18,11 @@ FlyingCamera::FlyingCamera(XMFLOAT3 position, XMFLOAT3 at, XMFLOAT3 up, FLOAT wi
 	m_yaw = 0.0f; // rotation in Y axis
 	m_pitch = 0.0f; // rotation in 
 
-	m_lookAtDir = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	// m_lookAtDir = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	m_lookAtDir.x = at.x - position.x;
+	m_lookAtDir.y = at.y - position.y;
+	m_lookAtDir.z = at.z - position.z;
+
 
 	XMStoreFloat4x4(&m_rotationMat, XMMatrixIdentity());
 	m_moveSpeed = 0.01f;
