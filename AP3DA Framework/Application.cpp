@@ -1044,7 +1044,7 @@ void Application::Update()
 	// update the sleletal model
 	testSM.update(m_secondsToProcessLastFrame, _pImmediateContext);
 	
-	// m_md3ModelInst->update(m_secondsToProcessLastFrame);
+	m_md3ModelInst->update(m_secondsToProcessLastFrame);
 }
 
 void Application::Draw()
@@ -1115,7 +1115,11 @@ void Application::Draw()
 		if (gameObject->HasTexture())
 		{
 			ID3D11ShaderResourceView * textureRV = gameObject->GetTextureRV();
-			
+			// set the texture here
+
+			_pImmediateContext->PSSetShaderResources(0, 1, &textureRV);
+
+
 			cb.HasTexture = 1.0f;
 		}
 		else

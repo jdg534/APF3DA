@@ -39,6 +39,9 @@
     <Filter Include="Texturing">
       <UniqueIdentifier>{fdc5ebee-ebfa-4f84-9367-27d0e20682a9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{eb272498-894b-4f19-9709-0cc3373b4fd6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -95,6 +98,9 @@
     </ClInclude>
     <ClInclude Include="ModelLoader.h">
       <Filter>Models\MD5Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

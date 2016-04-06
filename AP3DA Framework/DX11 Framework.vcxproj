@@ -414,6 +414,7 @@
     <ClInclude Include="MD3ModelStructs.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="MoveOnTerrainGO.h" />
+    <ClInclude Include="Renderer.h" />
     <CLInclude Include="resource.h" />
     <ClInclude Include="SkeletalModel.h" />
     <ClInclude Include="Structures.h" />
