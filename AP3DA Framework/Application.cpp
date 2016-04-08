@@ -80,6 +80,8 @@ bool Application::HandleKeyboard(MSG msg)
 	case VK_SPACE:
 		if (msg.message == WM_KEYDOWN)
 			_wireFrame = !_wireFrame;
+		
+		m_rendererPtr->setWireFrameMode(_wireFrame);
 		return true;
 		break;
 	}
@@ -91,6 +93,7 @@ Application::Application()
 {
 	_hInst = nullptr;
 	_hWnd = nullptr;
+	/*
 	_driverType = D3D_DRIVER_TYPE_NULL;
 	_featureLevel = D3D_FEATURE_LEVEL_11_0;
 	_pd3dDevice = nullptr;
@@ -106,6 +109,8 @@ Application::Application()
 
 	DSLessEqual = nullptr;
 	RSCullNone = nullptr;
+	*/
+
 
 	m_secondsToProcessLastFrame = 0.0f;
 }
@@ -122,17 +127,24 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
         return E_FAIL;
 	}
 
+
+
     RECT rc;
     GetClientRect(_hWnd, &rc);
     _WindowWidth = rc.right - rc.left;
     _WindowHeight = rc.bottom - rc.top;
 
-    if (FAILED(InitDevice()))
-    {
+	m_rendererPtr = new Renderer();
+
+    // if (FAILED(InitDevice()))
+	if (FAILED(m_rendererPtr->init(_hWnd)))
+	{
         Cleanup();
 
         return E_FAIL;
     }
+
+	ID3D11Device * _pd3dDevice = m_rendererPtr->getDevicePtr();
 
 	m_textureManager = TextureManager::getInstance();
 	m_textureManager->init(_pd3dDevice);
@@ -141,7 +153,7 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	m_textureManager->addTexture("Resources\\Crate_COLOR.dds");
 	tTmpPtr = m_textureManager->getTextureWithID("Resources\\Crate_COLOR.dds");
-	_pTextureRV = tTmpPtr->imageMapPtr;
+	// _pTextureRV = tTmpPtr->imageMapPtr;
 	// CreateDDSTextureFromFile(_pd3dDevice, L"Resources\\Crate_COLOR.dds", nullptr, &_pTextureRV);
 	// now the terrain textures
 
@@ -154,26 +166,7 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	*/
 
 
-	m_textureManager->addTexture("Textures\\lightdirt.dds");
-	tTmpPtr = m_textureManager->getTextureWithID("Textures\\lightdirt.dds");
-
-	m_terrainLightDirtTex = tTmpPtr->imageMapPtr;
-
-	m_textureManager->addTexture("Textures\\grass.dds");
-	tTmpPtr = m_textureManager->getTextureWithID("Textures\\grass.dds");
-	m_terrainGrassTex = tTmpPtr->imageMapPtr;
-
-	m_textureManager->addTexture("Textures\\darkdirt.dds");
-	tTmpPtr = m_textureManager->getTextureWithID("Textures\\darkdirt.dds");
-	m_terrainDarkDirtTex = tTmpPtr->imageMapPtr;
-
-	m_textureManager->addTexture("Textures\\stone.dds");
-	tTmpPtr = m_textureManager->getTextureWithID("Textures\\stone.dds");
-	m_terrainStoneTex = tTmpPtr->imageMapPtr;
-
-	m_textureManager->addTexture("Textures\\snow.dds");
-	tTmpPtr = m_textureManager->getTextureWithID("Textures\\snow.dds");
-	m_terrainSnowTex = tTmpPtr->imageMapPtr;
+	
 	
 	// Setup Camera
 	XMFLOAT3 eye = XMFLOAT3(0.0f, 2.0f, -15.0f);//0.0f, 0.0f, 0.0f);
@@ -193,6 +186,13 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	basicLight.SpecularPower = 20.0f;
 	basicLight.LightVecW = XMFLOAT3(0.0f, 1.0f, -1.0f);
 
+	m_rendererPtr->setLight(basicLight);
+
+
+	// setup the vertex Buffers
+	InitVertexBuffer();
+	InitIndexBuffer();
+
 	Geometry cubeGeometry;
 	cubeGeometry.indexBuffer = _pIndexBuffer;
 	cubeGeometry.vertexBuffer = _pVertexBuffer;
@@ -200,12 +200,15 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	cubeGeometry.vertexBufferOffset = 0;
 	cubeGeometry.vertexBufferStride = sizeof(SimpleVertex);
 
+	/*
 	Geometry planeGeometry;
 	planeGeometry.indexBuffer = _pPlaneIndexBuffer;
 	planeGeometry.vertexBuffer = _pPlaneVertexBuffer;
 	planeGeometry.numberOfIndices = 6;
 	planeGeometry.vertexBufferOffset = 0;
 	planeGeometry.vertexBufferStride = sizeof(SimpleVertex);
+	*/
+
 
 	Material shinyMaterial;
 	shinyMaterial.ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
@@ -233,31 +236,20 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	gameObject = new GameObject("Cube 1", cubeGeometry, shinyMaterial);
 	gameObject->SetPosition(0.0f, 2.0f, 0.0f);
-	gameObject->SetTextureRV(_pTextureRV);
+	gameObject->SetTextureRV(tTmpPtr->imageMapPtr);
 
 	_gameObjects.push_back(gameObject);
 
 	gameObject = new GameObject("Cube 2", cubeGeometry, shinyMaterial);
 	gameObject->SetScale(0.5f, 0.5f, 0.5f);
 	gameObject->SetPosition(3.0f, 2.0f, 0.0f);
-	gameObject->SetTextureRV(_pTextureRV);
+	gameObject->SetTextureRV(tTmpPtr->imageMapPtr);
 
 	_gameObjects.push_back(gameObject);
 
 	
 
-	//testTerrainData = generateFlatTerrain(15, 15, 1.0f, 1.0f);
-
-	/*
-	gameObject = new GameObject("test josh terrain", *testTerrainData, shinyMaterial);
-	gameObject->SetPosition(0.0f, 0.5f, 0.0f);
-	gameObject->SetScale(1.5f, 1.5f, 1.5f);
-	// gameObject->SetRotation(XMConvertToRadians(90.0f), 0.0f, 0.0f);
-	gameObject->SetTextureRV(_pTextureRV);
-
-	_gameObjects.push_back(gameObject);
-	*/
-
+	
 
 	//delete testTerrainData;
 
@@ -308,7 +300,7 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	gameObject = new MoveOnTerrainGameObject("MoveingCube1", cubeGeometry, shinyMaterial);
 	gameObject->SetScale(0.5f, 0.5f, 0.5f);
 	gameObject->SetPosition(0.0f, 0.0f, 0.0f);
-	gameObject->SetTextureRV(_pTextureRV);
+	gameObject->SetTextureRV(tTmpPtr->imageMapPtr);
 
 	MoveOnTerrainGameObject * tmpmotgp = (MoveOnTerrainGameObject *)gameObject;
 	tmpmotgp->setMoveOn(&testT);
@@ -326,13 +318,13 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	// _camera = new FirstPersonCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f, &testT, additionalCamHeight);
 
-	// _camera = new FlyingCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
-	_camera = new Camera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
+	_camera = new FlyingCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
+	// _camera = new Camera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
 
 
 	// file loading code
 	m_modelLoaderInstancePtr = ModelLoader::getInstance();
-	m_modelLoaderInstancePtr->init(this->_pd3dDevice);
+	m_modelLoaderInstancePtr->init(_pd3dDevice);
 
 
 	if (!m_modelLoaderInstancePtr->loadMD5Mesh("bob_lamp_update.md5mesh", testSM, testSMTextures, testSMTextureNames))
@@ -375,162 +367,11 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	return S_OK;
 }
 
-HRESULT Application::InitShadersAndInputLayout()
-{
-	HRESULT hr;
-
-    // Compile the vertex shader
-    ID3DBlob* pVSBlob = nullptr;
-    hr = CompileShaderFromFile(L"DX11 Framework.fx", "VS", "vs_4_0", &pVSBlob);
-
-    if (FAILED(hr))
-    {
-        MessageBox(nullptr,
-                   L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
-        return hr;
-    }
-
-	// Create the vertex shader
-	hr = _pd3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &_pVertexShader);
-
-	
-
-	if (FAILED(hr))
-	{	
-		pVSBlob->Release();
-        return hr;
-	}
-
-	// Compile the pixel shader
-	ID3DBlob* pPSBlob = nullptr;
-    hr = CompileShaderFromFile(L"DX11 Framework.fx", "PS", "ps_4_0", &pPSBlob);
-
-    if (FAILED(hr))
-    {
-        MessageBox(nullptr,
-                   L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
-        return hr;
-    }
-
-	// Create the pixel shader
-	hr = _pd3dDevice->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, &_pPixelShader);
-	pPSBlob->Release();
-
-    if (FAILED(hr))
-        return hr;
-	
-    // Define the input layout
-    D3D11_INPUT_ELEMENT_DESC layout[] =
-    {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-
-	UINT numElements = ARRAYSIZE(layout);
-
-    // Create the input layout
-	hr = _pd3dDevice->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(),
-                                        pVSBlob->GetBufferSize(), &_pVertexLayout);
-	
-
-	if (FAILED(hr))
-        return hr;
-
-    // Set the input layout
-    _pImmediateContext->IASetInputLayout(_pVertexLayout);
-
-	D3D11_SAMPLER_DESC sampDesc;
-	ZeroMemory(&sampDesc, sizeof(sampDesc));
-	sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	sampDesc.MinLOD = 0;
-	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	hr = _pd3dDevice->CreateSamplerState(&sampDesc, &_pSamplerLinear);
-
-
-
-	// now the MD3 model shader stuff
-	// first the vertex shader, m_skeletalModelVertexShader
-	ID3DBlob * ptrSkelMdlVSBlob = nullptr;
-
-	hr = CompileShaderFromFile(L"MD3_SHADER.fx", "VS", "vs_4_0", &ptrSkelMdlVSBlob);
-
-	if (FAILED(hr))
-	{
-		MessageBox(nullptr,
-			L"MD3_SHADER.fx file cannot be compiled (VS stage).  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
-		return hr;
-	}
-
-	// now create the actual shader
-	hr = _pd3dDevice->CreateVertexShader(ptrSkelMdlVSBlob->GetBufferPointer(), ptrSkelMdlVSBlob->GetBufferSize(), nullptr, &m_skeletalModelVertexShader);
-
-	if (FAILED(hr))
-	{
-		ptrSkelMdlVSBlob->Release();
-		return hr;
-	}
-
-	// second the pixel shader, m_skeletalModelPixelShader
-	// Compile the pixel shader
-	ID3DBlob* ptrSkelMdlPSBlob = nullptr;
-	hr = CompileShaderFromFile(L"MD3_SHADER.fx", "PS", "ps_4_0", &ptrSkelMdlPSBlob);
-
-	if (FAILED(hr))
-	{
-		MessageBox(nullptr,
-			L"MD3_SHADER.fx cannot be compiled (PS stage).  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
-		return hr;
-	}
-
-	// Create the pixel shader
-	hr = _pd3dDevice->CreatePixelShader(ptrSkelMdlPSBlob->GetBufferPointer(), ptrSkelMdlPSBlob->GetBufferSize(), nullptr, &m_skeletalModelPixelShader);
-	// ptrSkelMdlPSBlob->Release();
-
-	if (FAILED(hr))
-		return hr;
-
-
-	// third the vertex input layout m_SkeletalModelVertexLayout
-	// Define the input layout
-	D3D11_INPUT_ELEMENT_DESC skelMeshVertLayout[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "WEIGHTS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA ,0},
-		{ "BONEINDICES", 0, DXGI_FORMAT_R8G8B8A8_UINT, 0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
-
-	UINT nElementsSkelMeshLayout = ARRAYSIZE(skelMeshVertLayout);
-
-	hr = _pd3dDevice->CreateInputLayout(skelMeshVertLayout, nElementsSkelMeshLayout, ptrSkelMdlVSBlob->GetBufferPointer(),
-		ptrSkelMdlVSBlob->GetBufferSize(), &m_SkeletalModelVertexLayout);
-
-
-	if (FAILED(hr))
-		return hr;
-
-
-
-	// relese the blobs
-
-	pVSBlob->Release();
-	// pPSBlob->Release(); // is already relesed
-
-	ptrSkelMdlVSBlob->Release();
-	ptrSkelMdlPSBlob->Release();
-
-	return hr;
-}
-
 HRESULT Application::InitVertexBuffer()
 {
 	HRESULT hr;
+
+	ID3D11Device * _pd3dDevice = m_rendererPtr->getDevicePtr();
 
     // Create vertex buffer
     SimpleVertex vertices[] =
@@ -582,28 +423,7 @@ HRESULT Application::InitVertexBuffer()
     if (FAILED(hr))
         return hr;
 
-	// Create vertex buffer
-	SimpleVertex planeVertices[] =
-	{
-		{ XMFLOAT3(-1.0f, -1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 1.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(1.0f, 1.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
-	};
-
-	ZeroMemory(&bd, sizeof(bd));
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(SimpleVertex) * 4;
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.CPUAccessFlags = 0;
-
-	ZeroMemory(&InitData, sizeof(InitData));
-	InitData.pSysMem = planeVertices;
-
-	hr = _pd3dDevice->CreateBuffer(&bd, &InitData, &_pPlaneVertexBuffer);
-
-	if (FAILED(hr))
-		return hr;
+	
 
 	return S_OK;
 }
@@ -611,6 +431,8 @@ HRESULT Application::InitVertexBuffer()
 HRESULT Application::InitIndexBuffer()
 {
 	HRESULT hr;
+
+	ID3D11Device * _pd3dDevice = m_rendererPtr->getDevicePtr();
 
     // Create index buffer
     unsigned int indices[] =
@@ -650,32 +472,13 @@ HRESULT Application::InitIndexBuffer()
     if (FAILED(hr))
         return hr;
 
-	// Create plane index buffer
-	unsigned int planeIndices[] =
-	{
-		0, 3, 1,
-		3, 2, 1,
-	};
-
-	ZeroMemory(&bd, sizeof(bd));
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(unsigned int) * 6;
-	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	bd.CPUAccessFlags = 0;
-
-	ZeroMemory(&InitData, sizeof(InitData));
-	InitData.pSysMem = planeIndices;
-	hr = _pd3dDevice->CreateBuffer(&bd, &InitData, &_pPlaneIndexBuffer);
-
-	if (FAILED(hr))
-		return hr;
-
 	return S_OK;
 }
 
 HRESULT Application::InitAssets()
 {
-	
+	// put code for loading: textures & models in this func
+
 	return S_OK;
 }
 
@@ -700,7 +503,7 @@ HRESULT Application::InitWindow(HINSTANCE hInstance, int nCmdShow)
 
     // Create window
     _hInst = hInstance;
-    RECT rc = {0, 0, 960, 540};
+	RECT rc = { 0, 0, _renderWidth, _renderHeight };
     AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
     _hWnd = CreateWindow(L"TutorialWindowClass", L"FGGC Semester 2 Framework", WS_OVERLAPPEDWINDOW,
                          CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance,
@@ -749,239 +552,13 @@ HRESULT Application::CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoin
     return S_OK;
 }
 
-HRESULT Application::InitDevice()
-{
-    HRESULT hr = S_OK;
-
-    UINT createDeviceFlags = 0;
-
-#ifdef _DEBUG
-    createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
-
-    D3D_DRIVER_TYPE driverTypes[] =
-    {
-        D3D_DRIVER_TYPE_HARDWARE,
-        D3D_DRIVER_TYPE_WARP,
-        D3D_DRIVER_TYPE_REFERENCE,
-    };
-
-    UINT numDriverTypes = ARRAYSIZE(driverTypes);
-
-    D3D_FEATURE_LEVEL featureLevels[] =
-    {
-        D3D_FEATURE_LEVEL_11_0,
-        D3D_FEATURE_LEVEL_10_1,
-        D3D_FEATURE_LEVEL_10_0,
-    };
-
-	UINT numFeatureLevels = ARRAYSIZE(featureLevels);
-
-	UINT sampleCount = 4;
-
-    DXGI_SWAP_CHAIN_DESC sd;
-    ZeroMemory(&sd, sizeof(sd));
-    sd.BufferCount = 1;
-    sd.BufferDesc.Width = _renderWidth;
-    sd.BufferDesc.Height = _renderHeight;
-    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    sd.BufferDesc.RefreshRate.Numerator = 60;
-    sd.BufferDesc.RefreshRate.Denominator = 1;
-    sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    sd.OutputWindow = _hWnd;
-	sd.SampleDesc.Count = sampleCount;
-    sd.SampleDesc.Quality = 0;
-    sd.Windowed = TRUE;
-
-    for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++)
-    {
-        _driverType = driverTypes[driverTypeIndex];
-        hr = D3D11CreateDeviceAndSwapChain(nullptr, _driverType, nullptr, createDeviceFlags, featureLevels, numFeatureLevels,
-                                           D3D11_SDK_VERSION, &sd, &_pSwapChain, &_pd3dDevice, &_featureLevel, &_pImmediateContext);
-        if (SUCCEEDED(hr))
-            break;
-    }
-
-    if (FAILED(hr))
-        return hr;
-
-    // Create a render target view
-    ID3D11Texture2D* pBackBuffer = nullptr;
-    hr = _pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-
-    if (FAILED(hr))
-        return hr;
-
-    hr = _pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, &_pRenderTargetView);
-    pBackBuffer->Release();
-
-    if (FAILED(hr))
-        return hr;
-
-    // Setup the viewport
-    D3D11_VIEWPORT vp;
-    vp.Width = (FLOAT)_renderWidth;
-    vp.Height = (FLOAT)_renderHeight;
-    vp.MinDepth = 0.0f;
-    vp.MaxDepth = 1.0f;
-    vp.TopLeftX = 0;
-    vp.TopLeftY = 0;
-    _pImmediateContext->RSSetViewports(1, &vp);
-
-	InitShadersAndInputLayout();
-
-	InitVertexBuffer();
-	InitIndexBuffer();
-
-    // Set primitive topology
-    _pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	// Create the constant buffer
-	D3D11_BUFFER_DESC bd;
-	ZeroMemory(&bd, sizeof(bd));
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(ConstantBuffer);
-	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bd.CPUAccessFlags = 0;
-    hr = _pd3dDevice->CreateBuffer(&bd, nullptr, &_pConstantBuffer);
-
-    if (FAILED(hr))
-        return hr;
-
-	// now deal with the skeletal constant buffers
-	D3D11_BUFFER_DESC skelMdlBufDesc;
-	ZeroMemory(&skelMdlBufDesc, sizeof(skelMdlBufDesc));
-	skelMdlBufDesc.Usage = D3D11_USAGE_DEFAULT;
-	skelMdlBufDesc.ByteWidth = sizeof(MD3ModelConstBuffer);
-	skelMdlBufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	skelMdlBufDesc.CPUAccessFlags = 0;
-	hr = _pd3dDevice->CreateBuffer(&skelMdlBufDesc, nullptr, &m_SkeletalModelConstantBuffer);
-
-	D3D11_BUFFER_DESC skelMdlBonesMatBD;
-	ZeroMemory(&skelMdlBonesMatBD, sizeof(skelMdlBonesMatBD));
-	skelMdlBonesMatBD.Usage = D3D11_USAGE_DEFAULT;
-	skelMdlBonesMatBD.ByteWidth = sizeof(MD3ModelBoneMatrixConstBuffer);
-	skelMdlBonesMatBD.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	skelMdlBonesMatBD.CPUAccessFlags = 0;
-	hr = _pd3dDevice->CreateBuffer(&skelMdlBonesMatBD, nullptr, &m_SkeletalModelBonesConstantBuffer);
-
-	D3D11_TEXTURE2D_DESC depthStencilDesc;
-
-	depthStencilDesc.Width = _renderWidth;
-	depthStencilDesc.Height = _renderHeight;
-	depthStencilDesc.MipLevels = 1;
-	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.SampleDesc.Count = sampleCount;
-	depthStencilDesc.SampleDesc.Quality = 0;
-	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	depthStencilDesc.CPUAccessFlags = 0;
-	depthStencilDesc.MiscFlags = 0;
-
-	_pd3dDevice->CreateTexture2D(&depthStencilDesc, nullptr, &_depthStencilBuffer);
-	_pd3dDevice->CreateDepthStencilView(_depthStencilBuffer, nullptr, &_depthStencilView);
-
-	_pImmediateContext->OMSetRenderTargets(1, &_pRenderTargetView, _depthStencilView);
-
-	// Rasterizer
-	D3D11_RASTERIZER_DESC cmdesc;
-
-	ZeroMemory(&cmdesc, sizeof(D3D11_RASTERIZER_DESC));
-	cmdesc.FillMode = D3D11_FILL_SOLID;
-	cmdesc.CullMode = D3D11_CULL_NONE;
-	hr = _pd3dDevice->CreateRasterizerState(&cmdesc, &RSCullNone);
-
-	D3D11_DEPTH_STENCIL_DESC dssDesc;
-	ZeroMemory(&dssDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
-	dssDesc.DepthEnable = true;
-	dssDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dssDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-
-	_pd3dDevice->CreateDepthStencilState(&dssDesc, &DSLessEqual);
-
-	// Blending 
-
-	D3D11_BLEND_DESC blendDesc;
-	ZeroMemory(&blendDesc, sizeof(blendDesc));
-
-	D3D11_RENDER_TARGET_BLEND_DESC rtbd;
-	ZeroMemory(&rtbd, sizeof(rtbd));
-
-	rtbd.BlendEnable = true;
-	rtbd.SrcBlend = D3D11_BLEND_SRC_COLOR;
-	rtbd.DestBlend = D3D11_BLEND_BLEND_FACTOR;
-	rtbd.BlendOp = D3D11_BLEND_OP_ADD;
-	rtbd.SrcBlendAlpha = D3D11_BLEND_ONE;
-	rtbd.DestBlendAlpha = D3D11_BLEND_ZERO;
-	rtbd.BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	rtbd.RenderTargetWriteMask = D3D10_COLOR_WRITE_ENABLE_ALL;
-
-	blendDesc.AlphaToCoverageEnable = false;
-	blendDesc.RenderTarget[0] = rtbd;
-
-	_pd3dDevice->CreateBlendState(&blendDesc, &Transparency);
-
-	ZeroMemory(&cmdesc, sizeof(D3D11_RASTERIZER_DESC));
-
-	cmdesc.FillMode = D3D11_FILL_SOLID;
-	cmdesc.CullMode = D3D11_CULL_BACK;
-	// cmdesc.CullMode = D3D11_CULL_NONE;
-
-	cmdesc.FrontCounterClockwise = true;
-	hr = _pd3dDevice->CreateRasterizerState(&cmdesc, &CCWcullMode);
-
-	cmdesc.FrontCounterClockwise = false;
-	hr = _pd3dDevice->CreateRasterizerState(&cmdesc, &CWcullMode);
-
-	_pImmediateContext->RSSetState(CWcullMode);
-
-	cmdesc.FillMode = D3D11_FILL_WIREFRAME;
-	cmdesc.CullMode = D3D11_CULL_NONE;
-	hr = _pd3dDevice->CreateRasterizerState(&cmdesc, &wireframe);
-
-    return S_OK;
-}
-
 void Application::Cleanup()
 {
-    if (_pImmediateContext) _pImmediateContext->ClearState();
-	if (_pSamplerLinear) _pSamplerLinear->Release();
-
-	// if (_pTextureRV) _pTextureRV->Release(); // handled by the texture manager
-
-	/*if (m_terrainLightDirtTex) m_terrainLightDirtTex->Release();
-	if (m_terrainGrassTex) m_terrainGrassTex->Release();
-	if (m_terrainDarkDirtTex) m_terrainDarkDirtTex->Release();
-	if (m_terrainStoneTex) m_terrainStoneTex->Release();
-	if (m_terrainSnowTex) m_terrainSnowTex->Release();*/
-
-    if (_pConstantBuffer) _pConstantBuffer->Release();
-	if (m_SkeletalModelConstantBuffer)m_SkeletalModelConstantBuffer->Release();
-	if (m_SkeletalModelBonesConstantBuffer) m_SkeletalModelBonesConstantBuffer->Release();
-
-
-    if (_pVertexBuffer) _pVertexBuffer->Release();
-    if (_pIndexBuffer) _pIndexBuffer->Release();
-	if (_pPlaneVertexBuffer) _pPlaneVertexBuffer->Release();
-	if (_pPlaneIndexBuffer) _pPlaneIndexBuffer->Release();
-
-    if (_pVertexLayout) _pVertexLayout->Release();
-    if (_pVertexShader) _pVertexShader->Release();
-    if (_pPixelShader) _pPixelShader->Release();
-    if (_pRenderTargetView) _pRenderTargetView->Release();
-    if (_pSwapChain) _pSwapChain->Release();
-    if (_pImmediateContext) _pImmediateContext->Release();
-    if (_pd3dDevice) _pd3dDevice->Release();
-	if (_depthStencilView) _depthStencilView->Release();
-	if (_depthStencilBuffer) _depthStencilBuffer->Release();
-
-	if (DSLessEqual) DSLessEqual->Release();
-	if (RSCullNone) RSCullNone->Release();
-
-	if (Transparency) Transparency->Release();
-	if (CCWcullMode) CCWcullMode->Release();
-	if (CWcullMode) CWcullMode->Release();
+	if (m_rendererPtr != nullptr)
+	{
+		m_rendererPtr->shutdown();
+		delete m_rendererPtr;
+	}
 
 	if (_camera)
 	{
@@ -999,6 +576,7 @@ void Application::Cleanup()
 	}
 
 	m_textureManager->shutdown();
+	delete m_textureManager;
 }
 
 void Application::Update()
@@ -1041,6 +619,8 @@ void Application::Update()
 		float terrainHeigth = testT.getHeightAtLocation(x, z);
 	}
 
+	ID3D11DeviceContext * _pImmediateContext = m_rendererPtr->getDeviceContextPtr();
+
 	// update the sleletal model
 	testSM.update(m_secondsToProcessLastFrame, _pImmediateContext);
 	
@@ -1052,8 +632,22 @@ void Application::Draw()
     //
     // Clear buffers
     //
-
+	
 	float ClearColor[4] = { 0.5f, 0.5f, 0.5f, 1.0f }; // red,green,blue,alpha
+	
+	m_rendererPtr->startDrawing(ClearColor, _camera, _wireFrame);
+	// drawing methords here
+	m_rendererPtr->drawGameObjects(_gameObjects);
+	m_rendererPtr->drawTerrain(&testT);
+
+	m_rendererPtr->drawMD5Model(&testSM);
+	m_rendererPtr->drawMD3Model(m_md3ModelInst);
+
+	m_rendererPtr->finshDrawing();
+
+
+
+	/*
 	_pImmediateContext->ClearRenderTargetView(_pRenderTargetView, ClearColor);
 	_pImmediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -1162,38 +756,38 @@ void Application::Draw()
 
 
 
-	cb.World = XMMatrixTranspose(testT.getWorldMat());
-	cb.drawingTerrain = 1.0f;
-	cb.terrainScaledBy = testT.getHeightScaledBy();
+	//cb.World = XMMatrixTranspose(testT.getWorldMat());
+	//cb.drawingTerrain = 1.0f;
+	//cb.terrainScaledBy = testT.getHeightScaledBy();
 
-	// _pImmediateContext->PSSetShaderResources(0, 1, &m_);
-	/*
-	m_terrainLightDirtTex : Texture2D terrainLightDirtTex : register(t1);
-	m_terrainGrassTex : Texture2D terrainGrassTex : register(t2);
-	m_terrainDarkDirtTex : Texture2D terrainDarkDirtTex : register(t3);
-	m_terrainStoneTex : Texture2D terrainStoneTex : register(t4);
-	m_terrainSnowTex : Texture2D terrainSnowTex : register(t5);
-	
-	*/
+	//// _pImmediateContext->PSSetShaderResources(0, 1, &m_);
+	///*
+	//m_terrainLightDirtTex : Texture2D terrainLightDirtTex : register(t1);
+	//m_terrainGrassTex : Texture2D terrainGrassTex : register(t2);
+	//m_terrainDarkDirtTex : Texture2D terrainDarkDirtTex : register(t3);
+	//m_terrainStoneTex : Texture2D terrainStoneTex : register(t4);
+	//m_terrainSnowTex : Texture2D terrainSnowTex : register(t5);
+	//
+	//*/
 
-	_pImmediateContext->PSSetShaderResources(1, 1, &m_terrainLightDirtTex);
-	_pImmediateContext->PSSetShaderResources(2, 1, &m_terrainGrassTex);
-	_pImmediateContext->PSSetShaderResources(3, 1, &m_terrainDarkDirtTex);
-	_pImmediateContext->PSSetShaderResources(4, 1, &m_terrainStoneTex);
-	_pImmediateContext->PSSetShaderResources(5, 1, &m_terrainSnowTex);
+	//_pImmediateContext->PSSetShaderResources(1, 1, &m_terrainLightDirtTex);
+	//_pImmediateContext->PSSetShaderResources(2, 1, &m_terrainGrassTex);
+	//_pImmediateContext->PSSetShaderResources(3, 1, &m_terrainDarkDirtTex);
+	//_pImmediateContext->PSSetShaderResources(4, 1, &m_terrainStoneTex);
+	//_pImmediateContext->PSSetShaderResources(5, 1, &m_terrainSnowTex);
 
 
-	_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+	//_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
 
-	//testT.Draw(_pImmediateContext);
-	
-	// now try the skeletal model
-	// update the CB
-	cb.drawingTerrain = 0.0f;
-	cb.HasTexture = 0.0f;
-	cb.terrainScaledBy = 0.0f;
-	cb.World = XMMatrixTranspose(testSM.getWorldMat());
-	_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+	////testT.Draw(_pImmediateContext);
+	//
+	//// now try the skeletal model
+	//// update the CB
+	//cb.drawingTerrain = 0.0f;
+	//cb.HasTexture = 0.0f;
+	//cb.terrainScaledBy = 0.0f;
+	//cb.World = XMMatrixTranspose(testSM.getWorldMat());
+	//_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
 
 	// testSM.draw(_pImmediateContext);
 
@@ -1299,8 +893,8 @@ void Application::Draw()
     //
     // Present our back buffer to our front buffer
     //
-    _pSwapChain->Present(0, 0);
-
+    // _pSwapChain->Present(0, 0);
+	
 	using namespace std::chrono;
 
 	m_timeAtEndOfFrame = steady_clock::now();

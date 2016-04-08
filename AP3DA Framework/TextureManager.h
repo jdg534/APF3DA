@@ -32,6 +32,8 @@ private:
 	ID3D11Device * m_devicePtr;
 
 	TextureManager();
+
+	bool textureAlreadyPresent(std::string texID);
 };
 
 

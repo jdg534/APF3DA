@@ -156,6 +156,9 @@
     <ClCompile Include="ModelLoader.cpp">
       <Filter>Models\MD5Model</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CLInclude Include="resource.h">

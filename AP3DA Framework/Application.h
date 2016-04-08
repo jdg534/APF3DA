@@ -29,6 +29,8 @@
 
 #include "TextureManager.h"
 
+#include "Renderer.h"
+
 class Application
 {
 	
@@ -38,6 +40,9 @@ private:
 
 	HINSTANCE               _hInst;
 	HWND                    _hWnd;
+	
+
+	/*
 	D3D_DRIVER_TYPE         _driverType;
 	D3D_FEATURE_LEVEL       _featureLevel;
 	ID3D11Device*           _pd3dDevice;
@@ -61,8 +66,7 @@ private:
 
 
 
-	ID3D11Buffer*           _pVertexBuffer;
-	ID3D11Buffer*           _pIndexBuffer;
+	
 
 	ID3D11Buffer*           _pPlaneVertexBuffer;
 	ID3D11Buffer*           _pPlaneIndexBuffer;
@@ -79,9 +83,12 @@ private:
 	ID3D11ShaderResourceView * m_terrainDarkDirtTex = nullptr;
 	ID3D11ShaderResourceView * m_terrainStoneTex = nullptr;
 	ID3D11ShaderResourceView * m_terrainSnowTex = nullptr;
+	*/
 
+	ID3D11Buffer*           _pVertexBuffer;
+	ID3D11Buffer*           _pIndexBuffer;
 
-	ID3D11SamplerState * _pSamplerLinear = nullptr;
+	// ID3D11SamplerState * _pSamplerLinear = nullptr;
 
 	Light basicLight;
 
@@ -110,6 +117,7 @@ private:
 	UINT _renderHeight = 1080;
 	UINT _renderWidth = 1920;
 
+	/*
 	ID3D11DepthStencilState* DSLessEqual;
 	ID3D11RasterizerState* RSCullNone;
 
@@ -118,14 +126,21 @@ private:
 	ID3D11RasterizerState* CWcullMode;
 
 	ID3D11RasterizerState* wireframe;
+	*/
 	bool _wireFrame = false;
+	
+
+	Renderer * m_rendererPtr;
 
 private:
 	HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow);
-	HRESULT InitDevice();
+	
+	// HRESULT InitDevice();
 	void Cleanup();
+	
 	HRESULT CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
-	HRESULT InitShadersAndInputLayout();
+	// HRESULT InitShadersAndInputLayout();
+	
 	HRESULT InitVertexBuffer();
 	HRESULT InitIndexBuffer();
 

@@ -31,6 +31,11 @@ bool TextureManager::addTexture(std::string filePath)
 	std::wstring fileWSTR;
 	fileWSTR.assign(filePath.begin(), filePath.end());
 	
+	if (textureAlreadyPresent(filePath))
+	{
+		return true;
+	}
+
 	HRESULT res = DirectX::CreateDDSTextureFromFile(m_devicePtr, fileWSTR.c_str(), nullptr, &t->imageMapPtr);
 
 	if (FAILED(res))
@@ -68,4 +73,14 @@ void TextureManager::shutdown()
 		delete m_textures[i];
 	}
 	m_textures.clear();
+}
+
+bool TextureManager::textureAlreadyPresent(std::string texID)
+{
+	for (auto i = 0; i < m_textures.size(); i++)
+	{
+		if (m_textures[i]->ID == texID)
+			return true;
+	}
+	return false;
 }

@@ -389,6 +389,7 @@
     <ClCompile Include="MD3ModelStructs.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="MoveOnTerrainGO.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
