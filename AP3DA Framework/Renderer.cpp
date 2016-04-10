@@ -216,11 +216,15 @@ HRESULT Renderer::init(HWND windowHandle)
 	cmdesc.FrontCounterClockwise = false;
 	hr = m_d3dDevicePtr->CreateRasterizerState(&cmdesc, &m_CWcullMode);
 
+	
+
 	m_d3dDeviceContextPtr->RSSetState(m_CWcullMode);
 
 	cmdesc.FillMode = D3D11_FILL_WIREFRAME;
 	cmdesc.CullMode = D3D11_CULL_NONE;
 	hr = m_d3dDevicePtr->CreateRasterizerState(&cmdesc, &m_wireframe);
+
+
 
 	bool gotTex = loadTerrainTextures();
 
@@ -468,22 +472,28 @@ void Renderer::startDrawing(float * clearColor, Camera * camForFrame, bool wireF
 		m_activeCamera = camForFrame;
 	}
 
-	bool cullFront = true;
-
-	if (wireFrame)
+	int cullMode = m_activeRenderMode;
+	/*
+	0 wire frame,
+	1 cull front,
+	2 cull back,
+	3 no cull
+	*/
+	if (cullMode == 0)
 	{
 		m_d3dDeviceContextPtr->RSSetState(m_wireframe);
 	}
-	else
+	else if (cullMode == 1)
 	{
-		if (cullFront)
-		{
-			m_d3dDeviceContextPtr->RSSetState(m_CWcullMode);
-		}
-		else
-		{
-			m_d3dDeviceContextPtr->RSSetState(m_CCWcullMode);
-		}
+		m_d3dDeviceContextPtr->RSSetState(m_CWcullMode);
+	}
+	else if (cullMode == 2)
+	{
+		m_d3dDeviceContextPtr->RSSetState(m_CCWcullMode);
+	}
+	else if (cullMode == 3)
+	{
+		m_d3dDeviceContextPtr->RSSetState(m_RSCullNone);
 	}
 }
 

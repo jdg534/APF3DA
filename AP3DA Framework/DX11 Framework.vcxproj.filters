@@ -102,6 +102,9 @@
     <ClInclude Include="Renderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="HeightMapManager.h">
+      <Filter>Terrain</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -158,6 +161,9 @@
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="HeightMapManager.cpp">
+      <Filter>Terrain</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

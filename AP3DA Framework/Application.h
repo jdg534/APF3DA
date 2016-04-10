@@ -13,7 +13,7 @@
 #include "FirstPersonCamera.h"
 
 
-#include <vector>
+
 
 #include "GameObject.h"
 
@@ -22,6 +22,7 @@
 #include "Structures.h"
 
 #include <chrono>
+#include <vector>
 
 #include "ModelLoader.h"
 #include "SkeletalModel.h"
@@ -30,6 +31,8 @@
 #include "TextureManager.h"
 
 #include "Renderer.h"
+
+#include "HeightMapManager.h"
 
 class Application
 {
@@ -94,7 +97,7 @@ private:
 
 	vector<GameObject *> _gameObjects;
 
-	
+	unsigned int m_activeHeightMap;
 
 	Camera * _camera;
 	float _cameraOrbitRadius = 7.0f;
@@ -103,7 +106,13 @@ private:
 	float _cameraOrbitAngleXZ = 0.0f;
 	float _cameraSpeed = 2.0f;
 
-	Terrain testT;
+	Terrain m_terrain;
+	float m_scaleTerrainHeigtBy;
+
+	void nextTerrain();
+	
+
+	HeightMapManager * m_heightMapManager;
 
 	std::chrono::steady_clock::time_point m_timeAtStartOfFrame;
 	std::chrono::steady_clock::time_point m_timeAtEndOfFrame;
@@ -147,6 +156,10 @@ private:
 	HRESULT InitAssets();
 
 	Geometry * testTerrainData;
+
+
+	
+
 
 public:
 	Application();

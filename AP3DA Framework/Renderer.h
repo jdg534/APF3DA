@@ -26,7 +26,14 @@ public:
 	ID3D11Device * getDevicePtr(){ return m_d3dDevicePtr; }
 	ID3D11DeviceContext * getDeviceContextPtr(){ return m_d3dDeviceContextPtr; }
 
-	void setWireFrameMode(bool drawAsWireFrame){ m_IsWireFrame = drawAsWireFrame; }
+	void changeRenderMode()
+	{
+		m_activeRenderMode++;
+		if (m_activeRenderMode >= 4)
+		{
+			m_activeRenderMode = 0;
+		}
+	}
 
 	void startDrawing(float * clearColor, Camera * camForFrame, bool wireFrame);
 
@@ -102,13 +109,18 @@ private:
 	UINT m_width = 1920;
 
 	ID3D11DepthStencilState* m_DSLessEqual;
-	ID3D11RasterizerState* m_RSCullNone;
+	
 
 	ID3D11BlendState* m_Transparency;
+	
+	ID3D11RasterizerState* m_RSCullNone;
 	ID3D11RasterizerState* m_CCWcullMode;
 	ID3D11RasterizerState* m_CWcullMode;
-
 	ID3D11RasterizerState* m_wireframe;
+	// ID3D11RasterizerState * m_noneCull;
+	int m_activeRenderMode = 0;
+
+
 	bool m_IsWireFrame = false;
 
 	HRESULT CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);

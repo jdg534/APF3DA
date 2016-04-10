@@ -765,7 +765,13 @@ void HeightMapGenerator::diamondStep(HeightMap * hmBeingGenerated, Square * area
 	
 
 	avg = (diamondTop + diamondBottom + diamondLeft + diamondRight) / 4;
-	avg += rand() % range;
+	int randVal = rand();
+	
+	if (randVal != 0 && range != 0)
+	{
+		avg += randVal % range;
+	}
+	
 
 	diamondTop = diamondBottom = diamondLeft = diamondRight = 0;
 
@@ -781,7 +787,13 @@ void HeightMapGenerator::diamondStep(HeightMap * hmBeingGenerated, Square * area
 	diamondRight = hmBeingGenerated->getHeightAt(bottom.right.x, bottom.right.y);
 
 	avg = (diamondTop + diamondBottom + diamondLeft + diamondRight) / 4;
-	avg += rand() % range;
+	
+	int randValue = rand();
+	if (randValue != 0 && range != 0)
+	{
+		avg += randValue % range;
+	}
+	
 
 	diamondTop = diamondBottom = diamondLeft = diamondRight = 0;
 
@@ -796,7 +808,12 @@ void HeightMapGenerator::diamondStep(HeightMap * hmBeingGenerated, Square * area
 	diamondRight = hmBeingGenerated->getHeightAt(left.right.x, left.right.y);
 
 	avg = (diamondTop + diamondBottom + diamondLeft + diamondRight) / 4;
-	avg += rand() % range;
+	
+	if (range >= 1)
+	{
+		avg += rand() % range;
+	}
+	
 
 	diamondTop = diamondBottom = diamondLeft = diamondRight = 0;
 
@@ -812,7 +829,11 @@ void HeightMapGenerator::diamondStep(HeightMap * hmBeingGenerated, Square * area
 	
 
 	avg = (diamondTop + diamondBottom + diamondLeft + diamondRight) / 4;
-	avg += rand() % range;
+	if (range >= 1)
+	{
+		avg += rand() % range;
+	}
+	
 
 	
 
@@ -830,7 +851,11 @@ void HeightMapGenerator::squareStep(HeightMap * hmBeingGenerated, Square * areaO
 	bottomRight = hmBeingGenerated->getHeightAt(areaOfSquare->right, areaOfSquare->bottom);
 	auto avg = (topLeft + topRight + bottomLeft + bottomRight) / 4;
 
-	avg += rand() % range;
+	int randVal = rand();
+	if (randVal != 0 && range != 0)
+	{
+		avg += randVal % range;
+	}
 
 	DirectX::XMINT2 midpointCoord;
 	midpointCoord.x = MathFuncs::lerp(areaOfSquare->left, areaOfSquare->right, 0.5f);

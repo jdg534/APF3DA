@@ -79,9 +79,15 @@ bool Application::HandleKeyboard(MSG msg)
 
 	case VK_SPACE:
 		if (msg.message == WM_KEYDOWN)
-			_wireFrame = !_wireFrame;
+			//_wireFrame = !_wireFrame;
+			m_rendererPtr->changeRenderMode();
 		
-		m_rendererPtr->setWireFrameMode(_wireFrame);
+		//m_rendererPtr->setWireFrameMode(_wireFrame);
+		return true;
+		break;
+	case VK_TAB:
+		if (msg.message == WM_KEYDOWN)
+			nextTerrain();
 		return true;
 		break;
 	}
@@ -251,7 +257,7 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	
 
-	//delete testTerrainData;
+	//delete m_terrainerrainData;
 
 	HeightMap *hm;
 
@@ -263,10 +269,21 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	then do the skeletal animation
 	*/
 
+	// height map stuff here
+
+	m_heightMapManager = new HeightMapManager();
+
+	if (!m_heightMapManager->loadFromDeffinitionFile("HeightMapsIndex.txt"))
+	{
+		return E_FAIL;
+	}
+
+
 	HeightMapGenerator hmg;
 
 	// hm = hmg.generateFaultFormation(10, 3);
 	// hm = hmg.generateHillCircle(100, 25, 3, 10, 15);
+
 
 
 	/*
@@ -289,12 +306,45 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	//hm->loadTerrainFromBMPFile("tt.bmp");
 
 	// hm = hmg.generateHillCircle(512, 5, 5, 25, 15);
-	hm = hmg.generateDiamonSquare(50, 0.5f, 200);
+	// hm = hmg.generateDiamonSquare(50, 0.5f, 200);
 
-	// testT.initAsFlatTerrain(5, 5, 5.0f, 5.0f, _pd3dDevice);
-	testT.initViaHeightMap(hm, 10.0f, _pd3dDevice, 100.0f, 100.0f);
-	testT.setPosition(0.0f, 0.0f, 0.0f);
-	// testT.setPosition(0.0f, -512.5f, 10.0f);
+	// m_terrain.initAsFlatTerrain(5, 5, 5.0f, 5.0f, _pd3dDevice);
+
+
+	// CHANGE, alter initViaHeightMap to resetViaHeightMap
+	// m_terrain.initAsFlatTerrain() // START with this then, reset the shape
+
+	// temp soluton assign first HM encountered in the manager
+	std::vector<string> hmIDs = m_heightMapManager->getIDs();
+
+	m_activeHeightMap = 0;
+
+	hm = m_heightMapManager->getHeightMapWithID(hmIDs[m_activeHeightMap]);
+
+	int heightMapWidthDepthVal = 0;
+
+	bool allHeightMapsHaveSameWidthDepthVal = m_heightMapManager->getWidthDepthValForHeightMaps(heightMapWidthDepthVal);
+
+	if (!allHeightMapsHaveSameWidthDepthVal)
+	{
+		// it doesn't work
+		return E_FAIL;
+	}
+
+	float cellWidth = 100.0f / (float) heightMapWidthDepthVal;
+
+	m_terrain.initAsFlatTerrain(heightMapWidthDepthVal, heightMapWidthDepthVal, cellWidth, cellWidth, _pd3dDevice);
+
+	ID3D11DeviceContext * dc = m_rendererPtr->getDeviceContextPtr();
+
+	m_scaleTerrainHeigtBy = 10.0f;
+
+	m_terrain.resetShapeViaHeightMap(hm, m_scaleTerrainHeigtBy, _pd3dDevice, dc, heightMapWidthDepthVal, heightMapWidthDepthVal);
+	
+
+	// m_terrain.initViaHeightMap(hm, 10.0f, _pd3dDevice,100.0f, 100.0f);
+	m_terrain.setPosition(0.0f, 0.0f, 0.0f);
+	// m_terrain.setPosition(0.0f, -512.5f, 10.0f);
 	
 	
 	gameObject = new MoveOnTerrainGameObject("MoveingCube1", cubeGeometry, shinyMaterial);
@@ -303,12 +353,12 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	gameObject->SetTextureRV(tTmpPtr->imageMapPtr);
 
 	MoveOnTerrainGameObject * tmpmotgp = (MoveOnTerrainGameObject *)gameObject;
-	tmpmotgp->setMoveOn(&testT);
+	tmpmotgp->setMoveOn(&m_terrain);
 
 	_gameObjects.push_back(gameObject);
 	
 	//MoveOnTerrainGameObject * goPtr = new MoveOnTerrainGameObject("MoveingCube1", cubeGeometry, shinyMaterial);
-	//goPtr->setMoveOn(&testT);
+	//goPtr->setMoveOn(&m_terrain);
 
 	// _gameObjects.push_back(goPtr);
 
@@ -316,7 +366,7 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	//float additionalCamHeight = 5.0f;
 	float additionalCamHeight = 0.0f;
 
-	// _camera = new FirstPersonCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f, &testT, additionalCamHeight);
+	// _camera = new FirstPersonCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f, &m_terrain, additionalCamHeight);
 
 	_camera = new FlyingCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
 	// _camera = new Camera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
@@ -365,6 +415,27 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 
 	return S_OK;
+}
+
+void Application::nextTerrain()
+{
+	m_activeHeightMap++;
+	std::vector<std::string> heightMapIDs = m_heightMapManager->getIDs();
+	if (m_activeHeightMap >= heightMapIDs.size())
+	{
+		m_activeHeightMap = 0;
+	}
+	HeightMap * hm = m_heightMapManager->getHeightMapWithID(heightMapIDs[m_activeHeightMap]);
+	int widthDepthVal = 1;
+	bool heghtMapSameWidthDepth = m_heightMapManager->getWidthDepthValForHeightMaps(widthDepthVal);
+
+	ID3D11Device * d3dD = m_rendererPtr->getDevicePtr();
+	ID3D11DeviceContext * d3dDC = m_rendererPtr->getDeviceContextPtr();
+
+	if (heghtMapSameWidthDepth)
+	{
+		m_terrain.resetShapeViaHeightMap(hm, m_scaleTerrainHeigtBy, d3dD, d3dDC, widthDepthVal, widthDepthVal);
+	}
 }
 
 HRESULT Application::InitVertexBuffer()
@@ -609,21 +680,24 @@ void Application::Update()
 	}
 
 	
-	testT.Update(0.0f);
+	m_terrain.Update(0.0f);
 
 	// test the terrain heightAt functions
 	float x = 0.0;
 	float z = 0.0;
-	if (testT.isPositionOnTerrain(x, z))
+	if (m_terrain.isPositionOnTerrain(x, z))
 	{
-		float terrainHeigth = testT.getHeightAtLocation(x, z);
+		float terrainHeigth = m_terrain.getHeightAtLocation(x, z);
 	}
 
 	ID3D11DeviceContext * _pImmediateContext = m_rendererPtr->getDeviceContextPtr();
 
 	// update the sleletal model
-	testSM.update(m_secondsToProcessLastFrame, _pImmediateContext);
 	
+	// testSM.update(m_secondsToProcessLastFrame, _pImmediateContext);
+	XMStoreFloat4x4(&testSM.m_worldMat, XMMatrixTranslation(0.0f,10.0f,0.0f));
+
+
 	m_md3ModelInst->update(m_secondsToProcessLastFrame);
 }
 
@@ -638,7 +712,7 @@ void Application::Draw()
 	m_rendererPtr->startDrawing(ClearColor, _camera, _wireFrame);
 	// drawing methords here
 	m_rendererPtr->drawGameObjects(_gameObjects);
-	m_rendererPtr->drawTerrain(&testT);
+	m_rendererPtr->drawTerrain(&m_terrain);
 
 	m_rendererPtr->drawMD5Model(&testSM);
 	m_rendererPtr->drawMD3Model(m_md3ModelInst);
@@ -756,9 +830,9 @@ void Application::Draw()
 
 
 
-	//cb.World = XMMatrixTranspose(testT.getWorldMat());
+	//cb.World = XMMatrixTranspose(m_terrain.getWorldMat());
 	//cb.drawingTerrain = 1.0f;
-	//cb.terrainScaledBy = testT.getHeightScaledBy();
+	//cb.terrainScaledBy = m_terrain.getHeightScaledBy();
 
 	//// _pImmediateContext->PSSetShaderResources(0, 1, &m_);
 	///*
@@ -779,7 +853,7 @@ void Application::Draw()
 
 	//_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
 
-	////testT.Draw(_pImmediateContext);
+	////m_terrain.Draw(_pImmediateContext);
 	//
 	//// now try the skeletal model
 	//// update the CB

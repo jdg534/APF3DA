@@ -18,8 +18,10 @@ public:
 	~Terrain();
 
 	virtual bool initAsFlatTerrain(int mRows, int nColumns, float cellWidth, float cellDepth, ID3D11Device * devicePtr); // just the func from Application.cpp
+	
 	virtual bool initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device * devicePtr, float width, float depth);
-
+	
+	virtual bool resetShapeViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device * d3dDPtr, ID3D11DeviceContext * d3dDC, float width, float depth);
 
 	virtual void Update(float t); // probably not nessary
 	virtual void Draw(ID3D11DeviceContext * pImmediateContext);

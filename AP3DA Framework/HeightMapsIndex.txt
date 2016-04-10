@@ -1,0 +1,18 @@
+about: (all text before "START" is ignored)
+four height map types:
+1. HeightMapFile ID_STRING_HERE "theHeightMapFolder/AndFilebmp."
+2. GenDiamondSquare ID_STRING_HERE WIDTH_DEPTH_INT_HERE RANGEREDUCTION_FACTOR_FLOAT_HERE STARTING_RANGE_INT_HERE
+3. GenFaultFormation ID_STRING_HERE WIDTH_DEPTH_INT_HERE ITERATION_COUNT_INT_HERE
+4. GenCircleHill ID_STRING_HERE WIDTH_DEPTH_INT_HERE ITERATION_COUNT_INT_HERE MIN_RADIUS_INT_HERE MAX_RADIUS_INT_HERE MAX_RAISE_HEIGHT_INT_HERE
+
+the generated height maps must have the same width/depth value as the height maps
+starting with 513
+
+START
+HeightMapFile initialTestFile "Textures/JokeTextHeightMap.bmp"
+GenDiamondSquare initialDiamondSquare 513 0.8 200
+GenFaultFormation initialFaultFormation 513 1000
+GenCircleHill initialCircleHill 513 27 3 47 48
+
+
+END

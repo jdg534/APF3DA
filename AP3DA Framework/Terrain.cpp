@@ -486,6 +486,264 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 	return true;
 }
 
+bool Terrain::resetShapeViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device * d3dDPtr, ID3D11DeviceContext * d3dDC, float width, float depth)
+{
+	// this is really a modified version of initViaHeightMap
+
+	m_rows = hm->getWidth();
+	m_columns = hm->getDepth();
+	m_cellRows = m_rows - 1;
+	m_cellColumns = m_columns - 1;
+
+	m_scaleHeightBy = scaleHeightBy;
+
+	m_width = width;
+	m_depth = depth;
+
+	m_cellWidth = m_width / (float)m_rows;
+	m_cellDepth = m_depth / (float)m_columns;
+
+	int nCells = m_cellRows * m_cellColumns;
+	int nTriangles = nCells * 2;
+	int nVerts = m_rows * m_columns;
+
+	XMFLOAT2 t;
+	t.x = -(m_width / 2.0f);
+	t.y = m_depth / 2.0f;
+
+	int k = 0;
+
+	std::vector<VertexForVertexNormalCalc> verts;
+	verts.resize(nVerts);
+
+	for (int i = 0; i < m_rows; i++)
+	{
+		for (int j = 0; j < m_columns; j++)
+		{
+			verts[k].pos.x = j * m_cellWidth + (-m_width * 0.5f);
+			// verts[k].y = 0.0f; original
+
+			unsigned char hmVal = hm->getHeightAt(i, j);
+
+			// hmVal is 0 - 255, scale to 0.0 - 1.0
+			float downScale = 1.0f / 255.0f;
+			float downScaled = static_cast<float>(hmVal)* downScale;
+
+			// rescale to the scale use requested
+
+			verts[k].pos.y = downScaled * scaleHeightBy;
+
+			verts[k].pos.z = -(i * m_cellDepth) + (m_depth * 0.5f);
+			k++;
+		}
+	}
+
+	std::vector<unsigned int> indices;
+
+	// for the ijth Quad
+
+
+	// code partly based off slide 9 of first lecture
+
+	for (int i = 0; i < m_rows - 1; i++)
+	{
+		for (int j = 0; j < m_columns - 1; j++)
+		{
+			// treat each tri as a facet
+
+			XMINT3 abc;
+			abc.x = i * m_rows + j;
+			abc.y = i * m_rows + j + 1;
+			abc.z = (i + 1) * m_rows + j;
+
+			XMFLOAT3 abcSn = calcSurfaceNormal(XMLoadFloat3(&verts[abc.x].pos),
+				XMLoadFloat3(&verts[abc.y].pos),
+				XMLoadFloat3(&verts[abc.z].pos));
+
+
+
+
+			XMINT3 cbd;
+			cbd.x = (i + 1) * m_rows + j;
+			cbd.y = i * m_rows + j + 1;
+			cbd.z = (i + 1) * m_rows + j + 1;
+
+			XMFLOAT3 cbdSn = calcSurfaceNormal(XMLoadFloat3(&verts[cbd.x].pos),
+				XMLoadFloat3(&verts[cbd.y].pos),
+				XMLoadFloat3(&verts[cbd.z].pos));
+
+			verts[abc.x].surfaceNormals.push_back(abcSn);
+			verts[abc.y].surfaceNormals.push_back(abcSn);
+			verts[abc.z].surfaceNormals.push_back(abcSn);
+
+			verts[cbd.x].surfaceNormals.push_back(cbdSn);
+			verts[cbd.y].surfaceNormals.push_back(cbdSn);
+			verts[cbd.z].surfaceNormals.push_back(cbdSn);
+
+			// add to the vector as WORD use static_cast<WORD>()
+			indices.push_back(static_cast<unsigned int>(abc.x));
+			indices.push_back(static_cast<unsigned int>(abc.y));
+			indices.push_back(static_cast<unsigned int>(abc.z));
+
+			indices.push_back(static_cast<unsigned int>(cbd.x));
+			indices.push_back(static_cast<unsigned int>(cbd.y));
+			indices.push_back(static_cast<unsigned int>(cbd.z));
+		}
+	}
+
+
+
+	/*
+	0,0---1,0
+	|		|
+	0,1---1,1
+	*/
+
+	XMFLOAT2 topLeft(99999.99f, 99999.99f), bottomRight(-topLeft.x, -topLeft.y);
+
+	for (auto i = 0; i < verts.size(); i++)
+	{
+		if (topLeft.x > verts[i].pos.x)
+		{
+			topLeft.x = verts[i].pos.x;
+		}
+		if (topLeft.y > verts[i].pos.z)
+		{
+			topLeft.y = verts[i].pos.z;
+		}
+
+		if (bottomRight.x < verts[i].pos.x)
+		{
+			bottomRight.x = verts[i].pos.x;
+		}
+		if (bottomRight.y < verts[i].pos.z)
+		{
+			bottomRight.y = verts[i].pos.z;
+		}
+	}
+
+	// set the m_ versions topLeft & bottomRight
+	m_topLeftPoint = topLeft;
+	m_bottomRightPoint = bottomRight;
+
+	std::vector<SimpleVertex> vertsToSendToD3dBuffer;
+	for (auto i = 0; i < verts.size(); i++)
+	{
+		SimpleVertex sv;
+		sv.PosL.x = verts[i].pos.x;
+		sv.PosL.y = verts[i].pos.y;
+		sv.PosL.z = verts[i].pos.z;
+
+
+
+		// this has to be changed
+		// will just have a normals correction func, calc surface normal, then 
+
+		XMFLOAT3 VertexNormal(0.0, 0.0, 0.0);
+		for (auto j = 0; j < verts[i].surfaceNormals.size(); j++)
+		{
+			VertexNormal.x += verts[i].surfaceNormals[j].x;
+			VertexNormal.y += verts[i].surfaceNormals[j].y;
+			VertexNormal.z += verts[i].surfaceNormals[j].z;
+		}
+		float downScaleVNBy = 1.0f / (float)verts[i].surfaceNormals.size();
+		sv.NormL.x = VertexNormal.x * downScaleVNBy;
+		sv.NormL.y = VertexNormal.y * downScaleVNBy;
+		sv.NormL.z = VertexNormal.z * downScaleVNBy;
+
+		/*
+		float scaleXBy = (1.0f / width);
+		float scaleYBy = (1.0f / depth); // technically scale Z
+
+		sv.Tex.x = sv.PosL.x * scaleXBy;
+		sv.Tex.y = sv.PosL.z * scaleYBy;
+
+		// tec coords now in range -1.0 to 1.0
+
+		// need 0.0 to 1.0?
+		sv.Tex.x = (sv.Tex.x + 1.0f) / 2.0f;
+		sv.Tex.y = (sv.Tex.y + 1.0f) / 2.0f;
+		*/
+
+		sv.Tex.x = calculateTextureCoord(topLeft.x, bottomRight.x, sv.PosL.x);
+		sv.Tex.y = calculateTextureCoord(topLeft.y, bottomRight.y, sv.PosL.z);
+
+		vertsToSendToD3dBuffer.push_back(sv);
+	}
+
+	m_heightMap = hm; // height maps are actually deleted in the height map manager class (don't worry about memory leaks)
+
+	
+
+
+
+
+
+	// handle sending the data to actual d3d buffers, (override, NOT create!)
+	
+	/*
+	// now move to vertex & index buffers
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory(&bd, sizeof(bd));
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(SimpleVertex) * vertsToSendToD3dBuffer.size();
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA InitData;
+	ZeroMemory(&InitData, sizeof(InitData));
+	InitData.pSysMem = &vertsToSendToD3dBuffer[0];
+
+
+	// Geometry * rv = new Geometry();
+
+	// m_geometry instead of: Geometry * rv = new Geometry();
+
+	HRESULT hr = d3dDPtr->CreateBuffer(&bd, &InitData, &m_geometry.vertexBuffer);
+	m_geometry.vertexBufferStride = sizeof(SimpleVertex);
+	m_geometry.vertexBufferOffset = 0; // would be somethign else, if got to start with verts that don't stat at beginning of the buffer
+
+
+
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+
+	// now create the index buffer, and set the number of indecies used by the buffer
+
+	D3D11_BUFFER_DESC indBufdesc;
+	ZeroMemory(&indBufdesc, sizeof(indBufdesc));
+
+	indBufdesc.Usage = D3D11_USAGE_DEFAULT;
+	indBufdesc.ByteWidth = sizeof(unsigned int) * indices.size();
+	indBufdesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indBufdesc.CPUAccessFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA indBufInitData;
+	ZeroMemory(&indBufInitData, sizeof(indBufInitData));
+	indBufInitData.pSysMem = &indices[0];
+	hr = devicePtr->CreateBuffer(&indBufdesc, &indBufInitData, &m_geometry.indexBuffer);
+
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	m_geometry.numberOfIndices = indices.size();
+	*/
+
+	// above is the original code (for creating the buffer with the correct data)
+
+	d3dDC->UpdateSubresource(m_geometry.vertexBuffer, 0, NULL, &vertsToSendToD3dBuffer[0], 0, 0);
+
+	d3dDC->UpdateSubresource(m_geometry.indexBuffer, 0, NULL, &indices[0], 0, 0);
+	
+
+	return true;
+}
+
 void Terrain::Update(float t)
 {
 	// just update the world matrix to be a translation matrix
