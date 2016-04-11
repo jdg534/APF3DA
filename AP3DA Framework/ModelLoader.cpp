@@ -48,16 +48,18 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 	md5MdlOut.nSubsets = 0;
 
 	std::string currentBit = "";
+	std::string commandLineStr = "";
+	int md5Version = 0;
 	while (!theFile.eof())
 	{
 		theFile >> currentBit;
 		if (currentBit == "MD5Version")
 		{
-			// should be 10
+			theFile >> md5Version;
 		}
 		else if (currentBit == "commandline")
 		{
-			// will be ignored
+			std::getline(theFile, commandLineStr);
 		}
 		else if (currentBit == "numJoints")
 		{
@@ -101,7 +103,7 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 				// the orientation
 				// theFile >> j.orientation.x >> j.orientation.y >> j.orientation.z;
 				
-				// MD5 is right handed
+				// MD5 is right handed, this system is left handed
 				theFile >> j.orientation.x >> j.orientation.z >> j.orientation.y;
 
 				// calc the rotation for w (see: http://www.braynzarsoft.net/viewtutorial/q16390-27-loading-an-md5-model)
@@ -139,7 +141,9 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 				{
 					// texture?
 					// have a material manager, that gives then material or a given material name
-
+					std::string textureMapString = "";
+					std::getline(theFile, textureMapString);
+					
 				}
 				else if (currentBit == "numverts")
 				{
