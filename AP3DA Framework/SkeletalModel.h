@@ -13,6 +13,22 @@
 
 struct SkeletalModelSubset
 {
+	SkeletalModelSubset()
+	{
+		texureArrayIndex = 0;
+		nTriangles = 0;
+		nVerts = 0;
+		nWeights = 0;
+
+		
+
+		Geometry geomatry;
+
+		DirectX::XMStoreFloat4x4(&worldMat, DirectX::XMMatrixIdentity());
+
+		diffuseMap = nullptr;
+	}
+
 	int texureArrayIndex;
 	int nTriangles;
 	int nVerts;
@@ -31,15 +47,18 @@ struct SkeletalModelSubset
 
 	DirectX::XMFLOAT4X4 worldMat;
 
+	ID3D11ShaderResourceView * diffuseMap;
+
 	void draw(ID3D11DeviceContext * dc)
 	{
 		dc->IASetVertexBuffers(0,1,&geomatry.vertexBuffer, &geomatry.vertexBufferStride, &geomatry.vertexBufferOffset);
-		dc->IASetIndexBuffer(geomatry.indexBuffer, DXGI_FORMAT_R16_UINT,0);
+		
+		dc->IASetIndexBuffer(geomatry.indexBuffer, DXGI_FORMAT_R32_UINT,0);
 		dc->DrawIndexed(geomatry.numberOfIndices, 0 ,0);
 	}
 
-	DirectX::XMFLOAT4X4 m_worldMat;
-	DirectX::XMFLOAT3 m_pos;
+	// DirectX::XMFLOAT4X4 m_worldMat;
+	// DirectX::XMFLOAT3 m_pos;
 };
 
 struct SkeletalModel // will make into a class later

@@ -172,6 +172,46 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	*/
 
 
+	// file loading code
+	m_modelLoaderInstancePtr = ModelLoader::getInstance();
+	m_modelLoaderInstancePtr->init(_pd3dDevice);
+
+
+	if (!m_modelLoaderInstancePtr->loadMD5Mesh("bob_lamp_update.md5mesh", testSM, testSMTextures, testSMTextureNames))
+	{
+		return E_FAIL;
+	}
+
+	if (!m_modelLoaderInstancePtr->loadMD5Animation("bob_lamp_update.md5anim", testSM))
+	{
+		return E_FAIL;
+	}
+
+	m_textureManager = TextureManager::getInstance();
+	m_textureManager->init(_pd3dDevice);
+
+	testSM.m_animationIndex = 0; // start with the first animation
+
+
+
+	m_md3ModelInst = new MD3ModelInstance();
+	m_md3ModelInst->theModel = new MD3Model(_pd3dDevice, m_textureManager, "soldier.m3d", L"");
+	m_md3ModelInst->timePoint = 0.0f;
+	m_md3ModelInst->currentAnimationClipName = "Take1";
+	m_md3ModelInst->finalTransforms.resize(m_md3ModelInst->theModel->m_skinnedMeshSkeleton.getBoneCount());
+
+	// init the model's world matrix
+	XMMATRIX mdlTrans, mdlScale, mdlRot;
+	mdlScale = XMMatrixScaling(0.05f, 0.05f, -0.05f);
+	mdlRot = XMMatrixRotationY(XM_PI);
+	mdlTrans = XMMatrixTranslation(0.0, 2.0, 0.0);
+
+	// XMStoreFloat4x4(&m_md3ModelInst->WorldMat, mdlScale * mdlRot * mdlTrans);
+
+	// starting with Identity matrix
+	// XMStoreFloat4x4(&m_md3ModelInst->WorldMat, mdlTrans);
+
+	XMStoreFloat4x4(&m_md3ModelInst->WorldMat, mdlScale*mdlRot*mdlTrans);
 	
 	
 	// Setup Camera
@@ -372,46 +412,6 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	// _camera = new Camera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
 
 
-	// file loading code
-	m_modelLoaderInstancePtr = ModelLoader::getInstance();
-	m_modelLoaderInstancePtr->init(_pd3dDevice);
-
-
-	if (!m_modelLoaderInstancePtr->loadMD5Mesh("bob_lamp_update.md5mesh", testSM, testSMTextures, testSMTextureNames))
-	{
-		return E_FAIL;
-	}
-
-	if (!m_modelLoaderInstancePtr->loadMD5Animation("bob_lamp_update.md5anim", testSM))
-	{
-		return E_FAIL;
-	}
-
-	m_textureManager = TextureManager::getInstance();
-	m_textureManager->init(_pd3dDevice);
-
-	testSM.m_animationIndex = 0; // start with the first animation
-
-	
-
-	m_md3ModelInst = new MD3ModelInstance();
-	m_md3ModelInst->theModel = new MD3Model(_pd3dDevice, m_textureManager, "soldier.m3d", L"");
-	m_md3ModelInst->timePoint = 0.0f;
-	m_md3ModelInst->currentAnimationClipName = "Take1";
-	m_md3ModelInst->finalTransforms.resize(m_md3ModelInst->theModel->m_skinnedMeshSkeleton.getBoneCount());
-
-	// init the model's world matrix
-	XMMATRIX mdlTrans, mdlScale, mdlRot;
-	mdlScale = XMMatrixScaling(0.05f,0.05f,-0.05f);
-	mdlRot = XMMatrixRotationY(XM_PI);
-	mdlTrans = XMMatrixTranslation(0.0, 2.0, 0.0);
-	
-	// XMStoreFloat4x4(&m_md3ModelInst->WorldMat, mdlScale * mdlRot * mdlTrans);
-
-	// starting with Identity matrix
-	// XMStoreFloat4x4(&m_md3ModelInst->WorldMat, mdlTrans);
-
-	XMStoreFloat4x4(&m_md3ModelInst->WorldMat, mdlScale*mdlRot*mdlTrans);
 
 
 	return S_OK;

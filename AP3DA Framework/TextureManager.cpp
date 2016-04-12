@@ -40,7 +40,10 @@ bool TextureManager::addTexture(std::string filePath)
 
 	if (FAILED(res))
 	{
-		t->imageMapPtr->Release();
+		if (t->imageMapPtr != nullptr)
+		{
+			t->imageMapPtr->Release();
+		}
 		delete t;
 		return false;
 	}

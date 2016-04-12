@@ -1,5 +1,7 @@
 #include "ModelLoader.h"
 
+#include "TextureManager.h"
+
 #include <fstream>
 
 ModelLoader * fileScopeInstancePtr = nullptr;
@@ -50,6 +52,9 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 	std::string currentBit = "";
 	std::string commandLineStr = "";
 	int md5Version = 0;
+
+	TextureManager * tm = TextureManager::getInstance();
+ 
 	while (!theFile.eof())
 	{
 		theFile >> currentBit;
@@ -144,6 +149,17 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 					std::string textureMapString = "";
 					std::getline(theFile, textureMapString);
 					
+					int q1, q2;
+					q1 = textureMapString.find_first_of("\"");
+					q2 = textureMapString.find_last_of("\"");
+					textureMapString = textureMapString.substr(q1 + 1, q2 - q1 - 1);
+					
+					bool texLoaded = tm->addTexture(textureMapString);
+					if (texLoaded)
+					{
+						Texture * t = tm->getTextureWithID(textureMapString);
+						tmpSMS.diffuseMap = t->imageMapPtr;
+					}
 				}
 				else if (currentBit == "numverts")
 				{
@@ -175,7 +191,7 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 						theFile >> currentBit; // tri
 						theFile >> currentBit; // triangle index
 
-						DWORD vertIndex;  // TODO: Change this??
+						unsigned int vertIndex;
 						for (int j = 0; j < 3; j++)
 						{
 							theFile >> vertIndex;
@@ -211,12 +227,14 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 			{
 				SimpleVertex svTmp = tmpSMS.vertices[i];
 				svTmp.PosL = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+				
 				for (int j = 0; j < svTmp.weightCount; j++)
 				{
 					Weight tempW = tmpSMS.weights[svTmp.startWeight + j];
 					Joint tempJ = md5MdlOut.m_joints[tempW.jointID];
 
-					XMVECTOR tempJointOrientation = XMLoadFloat4(&tempJ.orientation);
+					XMVECTOR tempJointOrientation = XMVectorSet(tempJ.orientation.x, tempJ.orientation.y, tempJ.orientation.z, tempJ.orientation.w);// XMLoadFloat4(&tempJ.orientation);
+
 					XMVECTOR tempWeightPos = XMVectorSet(tempW.position.x, tempW.position.y, tempW.position.z, 0.0f);
 
 					// calc the condugate of joint orientation Quaternion
@@ -265,13 +283,18 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 				vz = tmpSMS.vertices[tmpSMS.indices[(i * 3) + 2]].PosL.z - tmpSMS.vertices[tmpSMS.indices[(i * 3) + 1]].PosL.z;
 				edge2 = XMVectorSet(vx, vy, vz, 0.0f);    //Create our second edge
 
+
+				/* (DON'T NORMALISE YET!!!)
 				XMVECTOR crossed = XMVector3Cross(edge1, edge2);
 				crossed = XMVector3Normalize(crossed);
 
 
 				// cross edge1 with edge2
+				
+				*/
+				
+				XMVECTOR crossed = XMVector3Cross(edge1, edge2);
 				XMStoreFloat3(&unnormalized, crossed);
-
 
 
 				tempNormals.push_back(unnormalized);
@@ -286,7 +309,7 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 			float tx, ty, tz;
 			for (int i = 0; i < tmpSMS.vertices.size(); i++)
 			{
-				// determine which faces the vertex[i] is part of
+				// determine which triangles the vertex[i]
 				for (int j = 0; j < tmpSMS.nTriangles; j++) 
 				{
 					if (tmpSMS.indices[j * 3] == i ||
@@ -308,8 +331,8 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 
 
 				tmpSMS.vertices[i].NormL.x = -XMVectorGetX(normalSum);
-				tmpSMS.vertices[i].NormL.y = -XMVectorGetX(normalSum);
-				tmpSMS.vertices[i].NormL.z = -XMVectorGetX(normalSum);
+				tmpSMS.vertices[i].NormL.y = -XMVectorGetY(normalSum);
+				tmpSMS.vertices[i].NormL.z = -XMVectorGetZ(normalSum);
 
 				// clear normalSum and facesVertexUsedIn for the next normal
 				normalSum = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
@@ -331,12 +354,13 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 			ZeroMemory(&indBufDesc, sizeof(indBufDesc));
 
 			indBufDesc.Usage = D3D11_USAGE_DEFAULT;
-			indBufDesc.ByteWidth = sizeof(DWORD) * tmpSMS.indices.size();
+			indBufDesc.ByteWidth = sizeof(unsigned int) * tmpSMS.nTriangles * 3;
 			indBufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 			indBufDesc.CPUAccessFlags = 0;
 			indBufDesc.MiscFlags = 0;
 
 			D3D11_SUBRESOURCE_DATA indBufInitData;
+			ZeroMemory(&indBufInitData, sizeof(indBufInitData));
 			indBufInitData.pSysMem = &tmpSMS.indices[0];
 			m_devicePtr->CreateBuffer(&indBufDesc, &indBufInitData, &g.indexBuffer);
 
@@ -386,16 +410,26 @@ bool ModelLoader::loadMD5Animation(std::string fileLoc, SkeletalModel & md5MdlOu
 	ModelAnimation ma;
 
 	std::string currentBit = "";
+
+	std::string cmdLnStr = "";
+	int md5Version = 0;
+
 	while (!animationFile.eof())
 	{
 		animationFile >> currentBit;
 		if (currentBit == "MD5Version")
 		{
 			// ignor it, just dealing with version 10
+			animationFile >> md5Version;
 		}
 		else if (currentBit == "commandline")
 		{
 			// also ignor it
+			std::getline(animationFile, cmdLnStr);
+			int q1, q2;
+			q1 = cmdLnStr.find_first_of("\"");
+			q2 = cmdLnStr.find_last_of("\"");
+			cmdLnStr = cmdLnStr.substr(q1 + 1, q2 - q1 - 1);
 		}
 		else if (currentBit == "numFrames")
 		{
@@ -571,9 +605,9 @@ bool ModelLoader::loadMD5Animation(std::string fileLoc, SkeletalModel & md5MdlOu
 					Joint jTmpParent = tempSkel[jTmp.parentID];
 
 					XMVECTOR parentJointOrienation = XMVectorSet(jTmpParent.orientation.x, jTmpParent.orientation.y, jTmpParent.orientation.z, jTmpParent.orientation.w);
-					XMVECTOR jointpos = XMLoadFloat3(&jTmp.pos);
+					XMVECTOR jointpos = XMVectorSet(jTmp.pos.x, jTmp.pos.y, jTmp.pos.z, 0.0f); // XMLoadFloat3(&jTmp.pos);
 
-					XMVECTOR parentOrientationJointCondugate = XMVectorSet(-jTmpParent.orientation.x, -jTmpParent.orientation.y, -jTmpParent.orientation.z, jTmpParent.orientation.w);;
+					XMVECTOR parentOrientationJointCondugate = XMVectorSet(-jTmpParent.orientation.x, -jTmpParent.orientation.y, -jTmpParent.orientation.z, jTmpParent.orientation.w);
 
 					// position
 					XMFLOAT3 rotatedPosition;
