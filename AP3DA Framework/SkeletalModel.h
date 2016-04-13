@@ -108,10 +108,11 @@ struct SkeletalModel // will make into a class later
 			frameB = 0;
 		}
 
-		float interpolationWeight = currentFrame - frameA;
+		float interpolationWeight = currentFrame - (float) frameA;
 
 		std::vector<Joint> calculatedSkel;
 
+		// create the interpolated skeleton
 		for (int i = 0; i < m_animations[activeAnimation].nJoints; i++)
 		{
 			Joint tempJ;

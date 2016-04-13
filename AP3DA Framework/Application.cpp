@@ -694,7 +694,7 @@ void Application::Update()
 
 	// update the sleletal model
 	
-	// testSM.update(m_secondsToProcessLastFrame, _pImmediateContext);
+	testSM.update(m_secondsToProcessLastFrame, _pImmediateContext);
 	XMStoreFloat4x4(&testSM.m_worldMat, XMMatrixTranslation(0.0f,10.0f,0.0f));
 
 
