@@ -661,7 +661,7 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 
 	cb.drawingTerrain = 0.0f;
 	cb.terrainScaledBy = 0.0f;
-	cb.HasTexture = 0.0f;
+	
 
 	// material
 	SurfaceInfo whiteMat;
@@ -674,9 +674,24 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 	whiteMat.SpecularMtrl = DirectX::XMFLOAT4(speCol, speCol, speCol, 1.0f);
 	cb.surface = whiteMat;
 
-	m_d3dDeviceContextPtr->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+	for (int i = 0; i < toDraw->nSubsets; i++)
+	{
+		if (toDraw->m_subsets[i].diffuseMap != nullptr)
+		{
+			cb.HasTexture = 1.0f;
+			m_d3dDeviceContextPtr->PSSetShaderResources(0, 1, &toDraw->m_subsets[i].diffuseMap);
+		}
+		else
+		{
+			cb.HasTexture = 0.0f;
+		}
+		m_d3dDeviceContextPtr->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+		toDraw->m_subsets[i].draw(m_d3dDeviceContextPtr);
+	}
 
-	toDraw->draw(m_d3dDeviceContextPtr);
+	
+
+	// toDraw->draw(m_d3dDeviceContextPtr);
 	
 	//m_d3dDeviceContextPtr->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
 

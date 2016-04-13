@@ -179,6 +179,7 @@ bool Terrain::initAsFlatTerrain(int mRows, int nColumns, float cellWidth, float 
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 
+
 	D3D11_SUBRESOURCE_DATA InitData;
 	ZeroMemory(&InitData, sizeof(InitData));
 	InitData.pSysMem = &vertsToSendToD3dBuffer[0];

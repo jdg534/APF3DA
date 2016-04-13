@@ -20,10 +20,6 @@ struct SkeletalModelSubset
 		nVerts = 0;
 		nWeights = 0;
 
-		
-
-		Geometry geomatry;
-
 		DirectX::XMStoreFloat4x4(&worldMat, DirectX::XMMatrixIdentity());
 
 		diffuseMap = nullptr;
@@ -98,6 +94,8 @@ struct SkeletalModel // will make into a class later
 			m_animations[activeAnimation].currentAnimationTime = 0.0f;
 		}
 
+		m_animations[activeAnimation].currentAnimationTime = 0.11f;
+
 		// determine the current frame
 		float currentFrame = m_animations[activeAnimation].currentAnimationTime * m_animations[activeAnimation].fps;
 
@@ -110,10 +108,17 @@ struct SkeletalModel // will make into a class later
 
 		float interpolationWeight = currentFrame - (float) frameA;
 
+		if (interpolationWeight > 0.0f)
+		{
+			bool breakHere = true;
+		}
+
 		std::vector<Joint> calculatedSkel;
 
+		ModelAnimation & ac = m_animations[activeAnimation];
+
 		// create the interpolated skeleton
-		for (int i = 0; i < m_animations[activeAnimation].nJoints; i++)
+		for (int i = 0; i < ac.nJoints; i++)
 		{
 			Joint tempJ;
 			Joint jA = m_animations[activeAnimation].frameSkeleton[frameA][i];
@@ -186,24 +191,32 @@ struct SkeletalModel // will make into a class later
 				m_subsets[currentSubset].positions[currentVertex] = tempSV.PosL;
 				m_subsets[currentSubset].vertices[currentVertex].NormL = tempSV.NormL;
 				XMStoreFloat3(&m_subsets[currentSubset].vertices[currentVertex].NormL, XMVector3Normalize(XMLoadFloat3(&m_subsets[currentSubset].vertices[currentVertex].NormL)));
+				
 			}
 
+			
 			// set the positions for vertices via values stored in m_subsets[n].positions
 			for (auto i = 0; i < m_subsets[currentSubset].vertices.size(); i++)
 			{
 				m_subsets[currentSubset].vertices[i].PosL = m_subsets[currentSubset].positions[i];
 			}
+			
 
 			// finally update the vertex buffer with the Vertex buffer for each subset, index buffer can stay the same
 
+			/*
 			// Lock the Buffer
 			D3D11_MAPPED_SUBRESOURCE mappedVertBuf;
+			ZeroMemory(&mappedVertBuf, sizeof(D3D11_MAPPED_SUBRESOURCE));
 			HRESULT hr = d3dDeviceContextPtr->Map(m_subsets[currentSubset].geomatry.vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedVertBuf);
 
 			// copy data to mappedVertBuf, changes the value in the vertex buffer
 			memcpy(mappedVertBuf.pData, &m_subsets[currentSubset].vertices[0], (sizeof(SimpleVertex) * m_subsets[currentSubset].vertices.size()));
 
 			d3dDeviceContextPtr->Unmap(m_subsets[currentSubset].geomatry.vertexBuffer, 0);
+			*/
+
+			d3dDeviceContextPtr->UpdateSubresource(m_subsets[currentSubset].geomatry.vertexBuffer, 0, NULL, &this->m_subsets[currentSubset].vertices[0], 0, 0);
 
 			// correct this later, see: http://www.braynzarsoft.net/viewtutorial/q16390-28-skeletal-animation-based-on-the-md5-format
 		}

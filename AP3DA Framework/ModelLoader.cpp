@@ -152,7 +152,23 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 					int q1, q2;
 					q1 = textureMapString.find_first_of("\"");
 					q2 = textureMapString.find_last_of("\"");
+
 					textureMapString = textureMapString.substr(q1 + 1, q2 - q1 - 1);
+
+					// is there isn't an extention find the extention
+					int extStart = -1;
+					for (auto i = 0; i < textureMapString.size(); i++)
+					{
+						if (textureMapString[i] == '.')
+						{
+							extStart = i;
+						}
+					}
+
+					if (extStart == -1)
+					{
+						textureMapString += ".dds";
+					}
 					
 					bool texLoaded = tm->addTexture(textureMapString);
 					if (texLoaded)
@@ -368,10 +384,12 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 			D3D11_BUFFER_DESC vertBufDesc;
 			ZeroMemory(&vertBufDesc, sizeof(vertBufDesc));
 
-			vertBufDesc.Usage = D3D11_USAGE_DYNAMIC;
+			// vertBufDesc.Usage = D3D11_USAGE_DYNAMIC; // trying different approach
+			vertBufDesc.Usage = D3D11_USAGE_DEFAULT;
 			vertBufDesc.ByteWidth = sizeof(SimpleVertex) * tmpSMS.vertices.size();
 			vertBufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-			vertBufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // allows CPU the write data to the Vewrtex Buffer
+			// vertBufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // allows CPU the write data to the Vewrtex Buffer
+			vertBufDesc.CPUAccessFlags = 0; // allows CPU the write data to the Vewrtex Buffer
 			vertBufDesc.MiscFlags = 0;
 
 			D3D11_SUBRESOURCE_DATA vertBufInitData;
@@ -600,6 +618,7 @@ bool ModelLoader::loadMD5Animation(std::string fileLoc, SkeletalModel & md5MdlOu
 				}
 
 				// deal with the transformation, relative to patent
+				// 
 				if (jTmp.parentID >= 0) // The root Joint have -1 as its parent index
 				{
 					Joint jTmpParent = tempSkel[jTmp.parentID];
@@ -613,6 +632,7 @@ bool ModelLoader::loadMD5Animation(std::string fileLoc, SkeletalModel & md5MdlOu
 					XMFLOAT3 rotatedPosition;
 					XMStoreFloat3(&rotatedPosition, XMQuaternionMultiply(XMQuaternionMultiply(parentJointOrienation, jointpos), parentOrientationJointCondugate));
 
+					// sets jTmp's position to be its parent's position + the joint position after being rotated relative to the parent
 					jTmp.pos.x = rotatedPosition.x + jTmpParent.pos.x;
 					jTmp.pos.y = rotatedPosition.y + jTmpParent.pos.y;
 					jTmp.pos.z = rotatedPosition.z + jTmpParent.pos.z;
