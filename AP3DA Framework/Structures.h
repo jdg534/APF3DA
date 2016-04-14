@@ -15,8 +15,15 @@ struct SimpleVertex
 	DirectX::XMFLOAT3 NormL;
 	DirectX::XMFLOAT2 Tex;
 
+	// when impleremnting m3d animation, from frank luna book
+	DirectX::XMFLOAT3 Weights;
+	BYTE BoneIndices[4];
+	
+	// when attempting to try MD5 animation
 	int startWeight;
 	int weightCount;
+
+	
 };
 
 struct SkinnedVertex
@@ -125,8 +132,9 @@ struct ConstantBuffer
 
 	DirectX::XMFLOAT3 EyePosW;
 	float HasTexture;
-	float drawingTerrain;
+	float drawingMode;
 	float terrainScaledBy;
+	DirectX::XMMATRIX WorldInverseTranspose;
 };
 
 struct MD3ModelConstBuffer

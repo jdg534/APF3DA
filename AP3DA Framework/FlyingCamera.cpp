@@ -46,13 +46,17 @@ void FlyingCamera::updateLogic(float dt)
 	*/
 	if (GetAsyncKeyState('Q') & 0x8000)
 	{
-		m_moveSpeed += 0.00001f;
+		m_moveSpeed += 0.0001f;
 	}
 	else if (GetAsyncKeyState('E') & 0x8000)
 	{
-		m_moveSpeed -= 0.00001f;
+		m_moveSpeed -= 0.0001f;
 	}
 
+	if (m_moveSpeed < 0.0f)
+	{
+		m_moveSpeed = 0.000001f;
+	}
 
 	float moveSpeed = m_moveSpeed * dt;
 

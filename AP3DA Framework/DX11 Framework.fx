@@ -68,8 +68,14 @@ cbuffer ConstantBuffer : register( cb0 )
 
 	float3 EyePosW;
 	float HasTexture;
-	float drawingTerrain;
+	float drawingMode;
 	float terrainScaledBy;
+	matrix WorldInverseTranspose;
+};
+
+cbuffer BoneMatrixBuffer : register (cb1)
+{
+	float4x4 boneMatrices[96];
 };
 
 struct VS_INPUT
@@ -77,6 +83,8 @@ struct VS_INPUT
 	float4 PosL : POSITION;
 	float3 NormL : NORMAL;
 	float2 Tex : TEXCOORD0;
+	float3 weights : WEIGHTS;
+	uint4 BoneIndices : BONEINDICES;
 };
 
 //--------------------------------------------------------------------------------------
@@ -95,6 +103,44 @@ struct VS_OUTPUT
 VS_OUTPUT VS(VS_INPUT input)
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
+
+	if (false)//(drawingMode == 2.0f) // its an M3D mesh
+	{
+		// logic from MD3_SHADER.fx here
+		// get array for the blend weights
+		float weights[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		weights[0] = input.weights.x;
+		weights[1] = input.weights.y;
+		weights[2] = input.weights.z;
+		weights[3] = 1.0f - weights[0] - weights[1] - weights[2];
+
+		float3 posLocalSpace = float3(0.0f, 0.0f, 0.0f);
+		float3 normalLocalSpace = float3(0.0f, 0.0f, 0.0f);
+
+		/*for (int i = 0; i < 4; i++)
+		{
+			posLocalSpace += weights[i] * mul(float4(input.PosL.xyz, 1.0f), boneMatrices[input.BoneIndices[i]]).xyz;
+			normalLocalSpace += weights[i] * mul(input.NormL, (float3x3)boneMatrices[input.BoneIndices[i]]);
+		}*/
+
+		posLocalSpace = input.PosL.xyz;
+		normalLocalSpace = input.NormL.xyz;
+
+
+		float4x4 wvpMat = World * View * Projection;
+		float4 posW = mul(float4(posLocalSpace, 1.0f), World);
+		output.PosW = posW.xyz;
+
+		output.PosH = mul(float4(posLocalSpace, 1.0f), wvpMat);
+
+		output.Tex = input.Tex;
+
+		float3 normalWorldSpace = mul(normalLocalSpace, (float3x3)WorldInverseTranspose);
+		normalWorldSpace = normalize(normalWorldSpace);
+		output.NormW = normalWorldSpace;
+		return output;
+	}
+
 
 	float4 posW = mul(input.PosL, World);
 	output.PosW = posW.xyz;
@@ -292,7 +338,7 @@ float4 drawTerrain(VS_OUTPUT input)
 
 float4 PS(VS_OUTPUT input) : SV_Target
 {
-	if (drawingTerrain == 1.0f)
+	if (drawingMode == 1.0f)
 	{
 		return drawTerrain(input);
 	}

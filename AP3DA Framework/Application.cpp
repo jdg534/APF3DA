@@ -715,8 +715,9 @@ void Application::Draw()
 	m_rendererPtr->drawTerrain(&m_terrain);
 
 	m_rendererPtr->drawMD5Model(&testSM);
-	m_rendererPtr->drawMD3Model(m_md3ModelInst);
-
+	// change to the alt version
+	// m_rendererPtr->drawMD3Model(m_md3ModelInst);
+	m_rendererPtr->altDrawMD3Model(m_md3ModelInst);
 	m_rendererPtr->finshDrawing();
 
 

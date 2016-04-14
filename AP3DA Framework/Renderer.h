@@ -43,6 +43,7 @@ public:
 
 	void drawMD5Model(SkeletalModel * toDraw);
 	void drawMD3Model(MD3ModelInstance * toDraw);
+	void altDrawMD3Model(MD3ModelInstance * toDraw);
 
 	void finshDrawing();
 

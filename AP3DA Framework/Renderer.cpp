@@ -327,7 +327,11 @@ HRESULT Renderer::InitShadersAndInputLayout()
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "WEIGHTS", 0, DXGI_FORMAT_R32G32B32_FLOAT,0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{ "BONEINDICES", 0, DXGI_FORMAT_R8G8B8A8_UINT,0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
+
+	
 
 	UINT numElements = ARRAYSIZE(layout);
 
@@ -554,7 +558,7 @@ void Renderer::drawGameObjects(std::vector<GameObject *> & toDraw)
 			cb.HasTexture = 0.0f;
 		}
 
-		cb.drawingTerrain = 0.0f;
+		cb.drawingMode = 0.0f;
 		cb.terrainScaledBy = 0.0f;
 
 		// Update constant buffer
@@ -622,7 +626,7 @@ void Renderer::drawTerrain(Terrain * toDraw)
 	m_d3dDeviceContextPtr->PSSetShaderResources(4, 1, &m_terrainStoneTex);
 	m_d3dDeviceContextPtr->PSSetShaderResources(5, 1, &m_terrainSnowTex);
 
-	cb.drawingTerrain = 1.0f;
+	cb.drawingMode = 1.0f;
 	cb.World = XMMatrixTranspose(toDraw->getWorldMat());
 	cb.terrainScaledBy = toDraw->getHeightScaledBy();
 
@@ -659,7 +663,7 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 	cb.World = toDraw->getWorldMat();
 	cb.World = DirectX::XMMatrixTranspose(cb.World);
 
-	cb.drawingTerrain = 0.0f;
+	cb.drawingMode = 0.0f;
 	cb.terrainScaledBy = 0.0f;
 	
 
@@ -806,6 +810,84 @@ void Renderer::drawMD3Model(MD3ModelInstance * toDraw)
 	}
 
 	
+}
+
+void Renderer::altDrawMD3Model(MD3ModelInstance * toDraw)
+{
+	// just use the original vertex shader (modded to all in one)
+
+	ConstantBuffer cb;
+	MD3ModelBoneMatrixConstBuffer boneCB;
+
+	m_d3dDeviceContextPtr->IASetInputLayout(_pVertexLayout);
+
+	m_d3dDeviceContextPtr->VSSetShader(_pVertexShader, nullptr, 0);
+	m_d3dDeviceContextPtr->PSSetShader(_pPixelShader, nullptr, 0);
+
+	m_d3dDeviceContextPtr->VSSetConstantBuffers(0, 1, &_pConstantBuffer);
+	m_d3dDeviceContextPtr->PSSetConstantBuffers(0, 1, &_pConstantBuffer);
+	m_d3dDeviceContextPtr->PSSetSamplers(0, 1, &_pSamplerLinear);
+
+	m_d3dDeviceContextPtr->VSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
+	m_d3dDeviceContextPtr->PSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
+
+	// init the bone constant buffer with the boen matrices, start with identity matrices
+	for (UINT i = 0; i < 96; i++)
+	{
+		XMStoreFloat4x4(&boneCB.boneMatrices[i], XMMatrixIdentity());
+	}
+
+	for (UINT i = 0; i < toDraw->finalTransforms.size(); i++)
+	{
+		boneCB.boneMatrices[i] = toDraw->finalTransforms[i];
+	}
+
+	m_d3dDeviceContextPtr->UpdateSubresource(m_SkeletalModelBonesConstantBuffer, 1, nullptr, &boneCB, 0, 0);
+
+	// now the main constant buffer
+
+	cb.World = XMLoadFloat4x4(&toDraw->WorldMat);
+
+	XMFLOAT4X4 viewAsFloats = m_activeCamera->GetView();
+	XMFLOAT4X4 projectionAsFloats = m_activeCamera->GetProjection();
+
+	XMMATRIX view = XMLoadFloat4x4(&viewAsFloats);
+	XMMATRIX projection = XMLoadFloat4x4(&projectionAsFloats);
+
+	cb.View = XMMatrixTranspose(view);
+	cb.Projection = XMMatrixTranspose(projection);
+	
+	
+	XMVECTOR determinant = XMMatrixDeterminant(cb.World);
+	
+	cb.WorldInverseTranspose = XMMatrixInverse(&determinant,cb.World);
+	cb.WorldInverseTranspose = XMMatrixTranspose(cb.WorldInverseTranspose);
+	
+
+	cb.light = basicLight;
+
+	cb.EyePosW = m_activeCamera->GetPosition();
+	
+	cb.drawingMode = 2.0f; // 0.0 for normal rendering (), 1.0  for terrain, 2.0 for the m3d as per the frank luna book
+	cb.terrainScaledBy = 0.0f;
+	
+	for (auto i = 0; i < toDraw->theModel->m_nSubsets; i++)
+	{
+		// figure out if the subset has a texture
+		// set the texture
+		SurfaceInfo surface;
+		float HasTexture;
+		cb.surface = toDraw->theModel->m_materials[i];
+		cb.HasTexture = 1.0f;
+		m_d3dDeviceContextPtr->PSSetShaderResources(0, 1, &toDraw->theModel->m_diffuseMaps[i]);
+
+		// now update the constant buffer.
+		m_d3dDeviceContextPtr->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+		toDraw->theModel->m_modelGeomatry.draw(m_d3dDeviceContextPtr, i);
+	}
+
+	
+
 }
 
 void Renderer::finshDrawing()
