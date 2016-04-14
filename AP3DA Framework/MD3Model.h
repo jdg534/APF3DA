@@ -38,7 +38,7 @@ public: // keep simple for now
 	std::vector<ID3D11ShaderResourceView *> m_diffuseMaps;
 
 	// tutorial requires CPU side versions of vertex data
-	std::vector<SkinnedVertex> m_vertices;
+	std::vector<SimpleVertex> m_vertices;
 	std::vector<unsigned int> m_indercies;
 	std::vector<MD3ModelSubSet> m_subsets;
 

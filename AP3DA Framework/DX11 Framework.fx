@@ -104,7 +104,8 @@ VS_OUTPUT VS(VS_INPUT input)
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
 
-	if (false)//(drawingMode == 2.0f) // its an M3D mesh
+	if (false)
+	//if (drawingMode == 2.0f) // its an M3D mesh
 	{
 		// logic from MD3_SHADER.fx here
 		// get array for the blend weights

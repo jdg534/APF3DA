@@ -13,7 +13,7 @@ public:
 	~MD3ModelGeomatry();
 
 
-	void setVertices(ID3D11Device* device, const SkinnedVertex* vertices, unsigned int count);
+	void setVertices(ID3D11Device* device, const SimpleVertex* vertices, unsigned int count);
 
 	void SetIndices(ID3D11Device* device, const unsigned int * indices, unsigned int count);
 

@@ -4,7 +4,7 @@
 #include <string>
 
 bool MD3Loader::LoadM3d(const std::string& filename,
-	std::vector<SkinnedVertex>& vertices,
+	std::vector<SimpleVertex>& vertices,
 	std::vector<unsigned int>& indices,
 	std::vector<MD3ModelSubSet>& subsets,
 	std::vector<MD3Material>& mats,
@@ -123,7 +123,7 @@ void MD3Loader::ReadSubsetTable(std::ifstream& fin, UINT numSubsets, std::vector
 	}
 }
 	
-void MD3Loader::ReadVertices(std::ifstream& fin, UINT numVertices, std::vector<SkinnedVertex>& vertices)
+void MD3Loader::ReadVertices(std::ifstream& fin, UINT numVertices, std::vector<SimpleVertex>& vertices)
 {
 	std::string	skipStr = "";
 	vertices.resize(numVertices);
@@ -142,7 +142,7 @@ void MD3Loader::ReadVertices(std::ifstream& fin, UINT numVertices, std::vector<S
 	}
 }
 	
-void MD3Loader::ReadSkinnedVertices(std::ifstream& fin, UINT numVertices, std::vector<SkinnedVertex>& vertices)
+void MD3Loader::ReadSkinnedVertices(std::ifstream& fin, UINT numVertices, std::vector<SimpleVertex>& vertices)
 {
 	// call this one, not the above version
 	std::string	skipStr = "";

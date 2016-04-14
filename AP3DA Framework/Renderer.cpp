@@ -832,6 +832,12 @@ void Renderer::altDrawMD3Model(MD3ModelInstance * toDraw)
 	m_d3dDeviceContextPtr->PSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
 
 	// init the bone constant buffer with the boen matrices, start with identity matrices
+
+	// bool transposeBoneTransformMats = false;
+	bool transposeBoneTransformMats = true;
+
+
+
 	for (UINT i = 0; i < 96; i++)
 	{
 		XMStoreFloat4x4(&boneCB.boneMatrices[i], XMMatrixIdentity());
@@ -839,7 +845,13 @@ void Renderer::altDrawMD3Model(MD3ModelInstance * toDraw)
 
 	for (UINT i = 0; i < toDraw->finalTransforms.size(); i++)
 	{
-		boneCB.boneMatrices[i] = toDraw->finalTransforms[i];
+		XMMATRIX boneMat = XMLoadFloat4x4(&toDraw->finalTransforms[i]);
+		if (transposeBoneTransformMats)
+		{
+			boneMat = XMMatrixTranspose(boneMat);
+		}
+		// boneCB.boneMatrices[i] = toDraw->finalTransforms[i];
+		XMStoreFloat4x4(&boneCB.boneMatrices[i], boneMat);
 	}
 
 	m_d3dDeviceContextPtr->UpdateSubresource(m_SkeletalModelBonesConstantBuffer, 1, nullptr, &boneCB, 0, 0);
@@ -863,6 +875,7 @@ void Renderer::altDrawMD3Model(MD3ModelInstance * toDraw)
 	cb.WorldInverseTranspose = XMMatrixInverse(&determinant,cb.World);
 	cb.WorldInverseTranspose = XMMatrixTranspose(cb.WorldInverseTranspose);
 	
+	cb.World = XMMatrixTranspose(cb.World);
 
 	cb.light = basicLight;
 

@@ -202,7 +202,8 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	// init the model's world matrix
 	XMMATRIX mdlTrans, mdlScale, mdlRot;
-	mdlScale = XMMatrixScaling(0.05f, 0.05f, -0.05f);
+	mdlScale = XMMatrixScaling(0.5f, 0.5f, -0.5f);
+	//mdlScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 	mdlRot = XMMatrixRotationY(XM_PI);
 	mdlTrans = XMMatrixTranslation(0.0, 2.0, 0.0);
 
@@ -210,7 +211,9 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	// starting with Identity matrix
 	// XMStoreFloat4x4(&m_md3ModelInst->WorldMat, mdlTrans);
-
+	
+	// XMStoreFloat4x4(&m_md3ModelInst->WorldMat, XMMatrixIdentity());
+	// XMStoreFloat4x4(&m_md3ModelInst->WorldMat, mdlScale);
 	XMStoreFloat4x4(&m_md3ModelInst->WorldMat, mdlScale*mdlRot*mdlTrans);
 	
 	

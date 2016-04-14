@@ -20,21 +20,21 @@ MD3ModelGeomatry::~MD3ModelGeomatry()
 	}
 }
 
-void MD3ModelGeomatry::setVertices(ID3D11Device* device, const SkinnedVertex* vertices, unsigned int count)
+void MD3ModelGeomatry::setVertices(ID3D11Device* device, const SimpleVertex* vertices, unsigned int count)
 {
 	if (m_vbPtr != nullptr)
 	{
 		m_vbPtr->Release();
 		m_vbPtr = nullptr;
 	}
-	m_vertexStrideSize = sizeof(SkinnedVertex);
+	m_vertexStrideSize = sizeof(SimpleVertex);
 
 	
 
 	D3D11_BUFFER_DESC vbd;
 	ZeroMemory(&vbd, sizeof(D3D11_BUFFER_DESC));
 	vbd.Usage = D3D11_USAGE_IMMUTABLE;
-	vbd.ByteWidth = sizeof(SkinnedVertex) * count;
+	vbd.ByteWidth = sizeof(SimpleVertex) * count;
 	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbd.CPUAccessFlags = 0;
 	vbd.MiscFlags = 0;
