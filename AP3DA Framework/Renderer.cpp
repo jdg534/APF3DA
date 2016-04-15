@@ -843,25 +843,25 @@ void Renderer::altDrawMD3Model(MD3ModelInstance * toDraw)
 	// maybe taking the wrongapproach, the frank luna book use: ID3DX11EffectMatrixVariable for the bone matrix on the c++ side
 
 	DirectX::XMFLOAT4X4 testMat;
-	testMat._11 = 1;
-	testMat._12 = 2;
-	testMat._13 = 3;
-	testMat._14 = 4;
+	testMat._11 = 1.0f;
+	testMat._12 = 2.0f;
+	testMat._13 = 3.0f;
+	testMat._14 = 4.0f;
 
-	testMat._21 = 5;
-	testMat._22 = 6;
-	testMat._23 = 7;
-	testMat._24 = 8;
+	testMat._21 = 5.0f;
+	testMat._22 = 6.0f;
+	testMat._23 = 7.0f;
+	testMat._24 = 8.0f;
 
-	testMat._31 = 9;
-	testMat._32 = 10;
-	testMat._33 = 11;
-	testMat._34 = 12;
+	testMat._31 = 9.0f;
+	testMat._32 = 10.0f;
+	testMat._33 = 11.0f;
+	testMat._34 = 12.0f;
 
-	testMat._41 = 13;
-	testMat._42 = 14;
-	testMat._43 = 15;
-	testMat._44 = 16;
+	testMat._41 = 13.0f;
+	testMat._42 = 14.0f;
+	testMat._43 = 15.0f;
+	testMat._44 = 16.0f;
 
 	XMMATRIX xmTestMat = DirectX::XMLoadFloat4x4(&testMat);
 	xmTestMat = XMMatrixTranspose(xmTestMat);
@@ -869,6 +869,10 @@ void Renderer::altDrawMD3Model(MD3ModelInstance * toDraw)
 	XMFLOAT4X4 testMatTransposed;
 	XMStoreFloat4x4(&testMatTransposed, xmTestMat);
 
+	XMFLOAT4X4 idMat;
+	XMStoreFloat4x4(&idMat, XMMatrixIdentity());
+
+	/*
 	for (UINT i = 0; i < 96; i++)
 	{
 		XMStoreFloat4x4(&boneCB.boneMatrices[i], XMMatrixIdentity());
@@ -877,7 +881,7 @@ void Renderer::altDrawMD3Model(MD3ModelInstance * toDraw)
 		// boneCB.boneMatrices[i] = testMatTransposed;
 		// XMStoreFloat4x4(&boneCB.boneMatrices[i], xmTestMat);
 	}
-
+	*/
 
 	// testing out with identity matrix
 	/*
@@ -894,7 +898,7 @@ void Renderer::altDrawMD3Model(MD3ModelInstance * toDraw)
 	*/
 
 
-	m_d3dDeviceContextPtr->UpdateSubresource(m_SkeletalModelBonesConstantBuffer, 1, nullptr, &boneCB, 0, 0);
+	// m_d3dDeviceContextPtr->UpdateSubresource(m_SkeletalModelBonesConstantBuffer, 1, nullptr, &boneCB, 0, 0);
 
 	// now the main constant buffer
 
@@ -924,6 +928,28 @@ void Renderer::altDrawMD3Model(MD3ModelInstance * toDraw)
 	cb.drawingMode = 2.0f; // 0.0 for normal rendering (), 1.0  for terrain, 2.0 for the m3d as per the frank luna book
 	cb.terrainScaledBy = 0.0f;
 	
+	// set the bone matrices to be part of the main constant buffer
+	// from testing need to transpose the bone transform matrix
+
+	
+
+	for (unsigned int i = 0; i < 96; i++)
+	{
+		// cb.boneMatrices[i] = testMat;
+		if (i < toDraw->finalTransforms.size())
+		{
+			XMMATRIX mdlTransForm = XMLoadFloat4x4(&toDraw->finalTransforms[i]);
+			mdlTransForm = XMMatrixTranspose(mdlTransForm);
+			XMStoreFloat4x4(&cb.boneMatrices[i], mdlTransForm);
+		}
+		else
+		{
+			cb.boneMatrices[i] = idMat; // identity matrix
+		}
+		
+		// cb.boneMatrices[i] = testMatTransposed;
+	}
+
 	for (auto i = 0; i < toDraw->theModel->m_nSubsets; i++)
 	{
 		// figure out if the subset has a texture

@@ -134,6 +134,8 @@ struct ConstantBuffer
 	float drawingMode;
 	float terrainScaledBy;
 	DirectX::XMMATRIX WorldInverseTranspose;
+
+	DirectX::XMFLOAT4X4 boneMatrices[96];
 };
 
 struct MD3ModelConstBuffer

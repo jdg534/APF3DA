@@ -71,9 +71,10 @@ cbuffer ConstantBuffer : register( cb0 )
 	float drawingMode;
 	float terrainScaledBy;
 	matrix WorldInverseTranspose;
+	float4x4 cb_0_boneMats[96];
 };
 
-cbuffer BoneMatrixBuffer : register (cb1)
+cbuffer BoneMatrixBuffer : register ( cb1 )
 {
 	float4x4 boneMatrices[96];
 };
@@ -198,8 +199,10 @@ VS_OUTPUT VS(VS_INPUT input)
 
 		for (iter = 0; iter < 4; iter++)
 		{
-			posLocalSpace += weights[iter] * mul(float4(input.PosL.xyz, 1.0f), boneMatrices[input.BoneIndices[iter]]).xyz;
-			normalLocalSpace += weights[iter] * mul(input.NormL, (float3x3)boneMatrices[input.BoneIndices[iter]]);
+			// posLocalSpace += weights[iter] * mul(float4(input.PosL.xyz, 1.0f), boneMatrices[input.BoneIndices[iter]]).xyz;
+			// normalLocalSpace += weights[iter] * mul(input.NormL, (float3x3)boneMatrices[input.BoneIndices[iter]]);
+			posLocalSpace += weights[iter] * mul(float4(input.PosL.xyz, 1.0f), cb_0_boneMats[input.BoneIndices[iter]]).xyz;
+			normalLocalSpace += weights[iter] * mul(input.NormL, (float3x3)cb_0_boneMats[input.BoneIndices[iter]]);
 		}
 		
 		float sumWeights = 0.0f;
@@ -228,7 +231,7 @@ VS_OUTPUT VS(VS_INPUT input)
 
 
 		// temp test if the matrices are comming through coheriently
-		bool testingForBoneMatrixBuffer = true;
+		bool testingForBoneMatrixBuffer = false;
 
 		if (testingForBoneMatrixBuffer)
 		{
@@ -251,7 +254,9 @@ VS_OUTPUT VS(VS_INPUT input)
 			for (int i = 0; i < 96; i++)
 			{
 				// if (!matricesTheSame(boneMatrices[i], testMat))
-				if (!matricesTheSame(boneMatrices[i], identity))
+				// if (!matricesTheSame(boneMatrices[i], identity))
+				// if (!matricesTheSame(cb_0_boneMats[i], identity))
+				if (!matricesTheSame(cb_0_boneMats[i], testMat))
 				{
 					if (output.errorColour == 0)
 					{
