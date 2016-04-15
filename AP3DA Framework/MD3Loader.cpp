@@ -204,17 +204,19 @@ void MD3Loader::ReadBoneOffsets(std::ifstream& fin, UINT numBones, std::vector<D
 		DirectX::XMStoreFloat4x4(&boneOffsets[i], DirectX::XMMatrixIdentity());
 
 		fin >> skipStr;
-
+		/*
 		fin >> boneOffsets[i]._11 >> boneOffsets[i]._12 >> boneOffsets[i]._13 >> boneOffsets[i]._14;
 		fin >> boneOffsets[i]._21 >> boneOffsets[i]._22 >> boneOffsets[i]._23 >> boneOffsets[i]._24;
 		fin >> boneOffsets[i]._31 >> boneOffsets[i]._32 >> boneOffsets[i]._33 >> boneOffsets[i]._34;
 		fin >> boneOffsets[i]._41 >> boneOffsets[i]._42 >> boneOffsets[i]._43 >> boneOffsets[i]._44;
-
-		/*
-		boneOffsets[i](1, 0) >> boneOffsets[i](1, 1) >> boneOffsets[i](1, 1) >> boneOffsets[i](1, 2) >> boneOffsets[i](1, 3) >>
-		boneOffsets[i](2, 0) >> boneOffsets[i](2, 1) >> boneOffsets[i](2, 1) >> boneOffsets[i](2, 2) >> boneOffsets[i](2, 3) >>
-		boneOffsets[i](3, 0) >> boneOffsets[i](3, 1) >> boneOffsets[i](3, 1) >> boneOffsets[i](3, 2) >> boneOffsets[i](3, 3);
 		*/
+
+		fin >>
+			boneOffsets[i](0, 0) >> boneOffsets[i](0, 1) >> boneOffsets[i](0, 2) >> boneOffsets[i](0, 3) >>
+			boneOffsets[i](1, 0) >> boneOffsets[i](1, 1) >> boneOffsets[i](1, 2) >> boneOffsets[i](1, 3) >>
+			boneOffsets[i](2, 0) >> boneOffsets[i](2, 1) >> boneOffsets[i](2, 2) >> boneOffsets[i](2, 3) >>
+			boneOffsets[i](3, 0) >> boneOffsets[i](3, 1) >> boneOffsets[i](3, 2) >> boneOffsets[i](3, 3);
+		
 	}
 }
 

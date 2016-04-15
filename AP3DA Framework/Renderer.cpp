@@ -3,6 +3,8 @@
 #include "TextureManager.h"
 #include <DirectXMath.h>
 
+// #include <d3dx11effect.h> // won't work, a different library using by the book
+
 Renderer::Renderer()
 {
 
@@ -143,7 +145,6 @@ HRESULT Renderer::init(HWND windowHandle)
 	skelMdlBonesMatBD.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	skelMdlBonesMatBD.CPUAccessFlags = 0;
 	hr = m_d3dDevicePtr->CreateBuffer(&skelMdlBonesMatBD, nullptr, &m_SkeletalModelBonesConstantBuffer);
-
 
 
 
@@ -824,6 +825,7 @@ void Renderer::altDrawMD3Model(MD3ModelInstance * toDraw)
 	m_d3dDeviceContextPtr->VSSetShader(_pVertexShader, nullptr, 0);
 	m_d3dDeviceContextPtr->PSSetShader(_pPixelShader, nullptr, 0);
 
+	
 	m_d3dDeviceContextPtr->VSSetConstantBuffers(0, 1, &_pConstantBuffer);
 	m_d3dDeviceContextPtr->PSSetConstantBuffers(0, 1, &_pConstantBuffer);
 	m_d3dDeviceContextPtr->PSSetSamplers(0, 1, &_pSamplerLinear);
@@ -838,11 +840,47 @@ void Renderer::altDrawMD3Model(MD3ModelInstance * toDraw)
 
 
 
+	// maybe taking the wrongapproach, the frank luna book use: ID3DX11EffectMatrixVariable for the bone matrix on the c++ side
+
+	DirectX::XMFLOAT4X4 testMat;
+	testMat._11 = 1;
+	testMat._12 = 2;
+	testMat._13 = 3;
+	testMat._14 = 4;
+
+	testMat._21 = 5;
+	testMat._22 = 6;
+	testMat._23 = 7;
+	testMat._24 = 8;
+
+	testMat._31 = 9;
+	testMat._32 = 10;
+	testMat._33 = 11;
+	testMat._34 = 12;
+
+	testMat._41 = 13;
+	testMat._42 = 14;
+	testMat._43 = 15;
+	testMat._44 = 16;
+
+	XMMATRIX xmTestMat = DirectX::XMLoadFloat4x4(&testMat);
+	xmTestMat = XMMatrixTranspose(xmTestMat);
+
+	XMFLOAT4X4 testMatTransposed;
+	XMStoreFloat4x4(&testMatTransposed, xmTestMat);
+
 	for (UINT i = 0; i < 96; i++)
 	{
 		XMStoreFloat4x4(&boneCB.boneMatrices[i], XMMatrixIdentity());
+
+		// boneCB.boneMatrices[i] = testMat;
+		// boneCB.boneMatrices[i] = testMatTransposed;
+		// XMStoreFloat4x4(&boneCB.boneMatrices[i], xmTestMat);
 	}
 
+
+	// testing out with identity matrix
+	/*
 	for (UINT i = 0; i < toDraw->finalTransforms.size(); i++)
 	{
 		XMMATRIX boneMat = XMLoadFloat4x4(&toDraw->finalTransforms[i]);
@@ -853,6 +891,8 @@ void Renderer::altDrawMD3Model(MD3ModelInstance * toDraw)
 		// boneCB.boneMatrices[i] = toDraw->finalTransforms[i];
 		XMStoreFloat4x4(&boneCB.boneMatrices[i], boneMat);
 	}
+	*/
+
 
 	m_d3dDeviceContextPtr->UpdateSubresource(m_SkeletalModelBonesConstantBuffer, 1, nullptr, &boneCB, 0, 0);
 

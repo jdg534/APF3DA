@@ -22,7 +22,6 @@ struct SimpleVertex
 	// when attempting to try MD5 animation
 	int startWeight;
 	int weightCount;
-
 	
 };
 

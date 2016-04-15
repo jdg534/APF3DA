@@ -145,7 +145,7 @@ void SkinnedMeshSkeleton::getFinalTransforms(const std::string & animationClipNa
 	// root bone has index of: 0, m_boneHierarchy stores the parent idex of each bone
 	
 	toRootTransforms[0] = toParentTransforms[0];
-	// find the to root transform for each child
+	// find the toRootTransform for each child
 	for (unsigned int i = 1; i < nBones; i++)
 	{
 		XMMATRIX toParentMat = XMLoadFloat4x4(&toParentTransforms[i]);
@@ -154,7 +154,7 @@ void SkinnedMeshSkeleton::getFinalTransforms(const std::string & animationClipNa
 
 		XMMATRIX parentToRootTransformMat = XMLoadFloat4x4(&toRootTransforms[parentIndex]);
 
-		// pick up here P 660
+		
 		XMMATRIX toRootTransformMat = XMMatrixMultiply(toParentMat, parentToRootTransformMat);
 
 		XMStoreFloat4x4(&toRootTransforms[i], toRootTransformMat);

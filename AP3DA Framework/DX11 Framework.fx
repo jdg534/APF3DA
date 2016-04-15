@@ -95,7 +95,81 @@ struct VS_OUTPUT
 
 	float3 PosW : POSITION;
 	float2 Tex : TEXCOORD0;
+	int errorColour : TEXCOORD1;
 };
+
+bool matricesTheSame(float4x4 a, float4x4 b) // this was used for determeing if the matrices were working correctly
+{
+	if (a._m00 != b._m00)
+	{
+		return false;
+	}
+	else if (a._m01 != b._m01)
+	{
+		return false;
+	}
+	else if (a._m02 != b._m02)
+	{
+		return false;
+	}
+	else if (a._m03 != b._m03)
+	{
+		return false;
+	}
+
+	else if (a._m10 != b._m10)
+	{
+		return false;
+	}
+	else if (a._m11 != b._m11)
+	{
+		return false;
+	}
+	else if (a._m12 != b._m12)
+	{
+		return false;
+	}
+	else if (a._m13 != b._m13)
+	{
+		return false;
+	}
+
+	else if (a._m20 != b._m20)
+	{
+		return false;
+	}
+	else if (a._m21 != b._m21)
+	{
+		return false;
+	}
+	else if (a._m22 != b._m22)
+	{
+		return false;
+	}
+	else if (a._m23 != b._m23)
+	{
+		return false;
+	}
+
+	else if (a._m30 != b._m30)
+	{
+		return false;
+	}
+	else if (a._m31 != b._m31)
+	{
+		return false;
+	}
+	else if (a._m32 != b._m32)
+	{
+		return false;
+	}
+	else if (a._m33 != b._m33)
+	{
+		return false;
+	}
+
+	return true;
+}
 
 //--------------------------------------------------------------------------------------
 // Vertex Shader
@@ -104,8 +178,10 @@ VS_OUTPUT VS(VS_INPUT input)
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
 
-	if (false)
-	//if (drawingMode == 2.0f) // its an M3D mesh
+	output.errorColour = 0;
+
+	//if (false)
+	if (drawingMode == 2.0f) // its an M3D mesh
 	{
 		// logic from MD3_SHADER.fx here
 		// get array for the blend weights
@@ -118,21 +194,97 @@ VS_OUTPUT VS(VS_INPUT input)
 		float3 posLocalSpace = float3(0.0f, 0.0f, 0.0f);
 		float3 normalLocalSpace = float3(0.0f, 0.0f, 0.0f);
 
-		/*for (int i = 0; i < 4; i++)
+		int iter = 0;
+
+		for (iter = 0; iter < 4; iter++)
 		{
-			posLocalSpace += weights[i] * mul(float4(input.PosL.xyz, 1.0f), boneMatrices[input.BoneIndices[i]]).xyz;
-			normalLocalSpace += weights[i] * mul(input.NormL, (float3x3)boneMatrices[input.BoneIndices[i]]);
-		}*/
+			posLocalSpace += weights[iter] * mul(float4(input.PosL.xyz, 1.0f), boneMatrices[input.BoneIndices[iter]]).xyz;
+			normalLocalSpace += weights[iter] * mul(input.NormL, (float3x3)boneMatrices[input.BoneIndices[iter]]);
+		}
+		
+		float sumWeights = 0.0f;
+		for (iter = 0; iter < 4; iter++)
+		{
+			sumWeights += weights[iter];
+		}
 
-		posLocalSpace = input.PosL.xyz;
-		normalLocalSpace = input.NormL.xyz;
+		if (sumWeights == 0.0f)
+		{
+			output.errorColour = 1;
+		}
+
+		// check the bone index
+		int maxBoneIndex = 58; // the original test model
+		for (iter = 0; iter < 4; iter++)
+		{
+			if ((input.BoneIndices[iter] >= maxBoneIndex
+				|| input.BoneIndices[iter] < 0)
+				&& output.errorColour == 0)
+			{
+
+				output.errorColour = 3;
+			}
+		}
 
 
-		float4x4 wvpMat = World * View * Projection;
+		// temp test if the matrices are comming through coheriently
+		bool testingForBoneMatrixBuffer = true;
+
+		if (testingForBoneMatrixBuffer)
+		{
+			float4x4 identity = 
+			{
+				{ 1, 0, 0, 0 },
+				{ 0, 1, 0, 0 },
+				{ 0, 0, 1, 0 },
+				{ 0, 0, 0, 1 }
+			};
+
+			float4x4 testMat =
+			{
+				{ 1, 2, 3, 4 },
+				{ 5, 6, 7, 8 },
+				{ 9, 10, 11, 12 },
+				{ 13, 14, 15, 16 }
+			};
+
+			for (int i = 0; i < 96; i++)
+			{
+				// if (!matricesTheSame(boneMatrices[i], testMat))
+				if (!matricesTheSame(boneMatrices[i], identity))
+				{
+					if (output.errorColour == 0)
+					{
+						output.errorColour = 4;
+					}
+				}
+			}
+		}
+
+
+
+		// check to see if the position isn't (0,0,0)
+		if (posLocalSpace.x == 0.0
+			&& posLocalSpace.y == 0.0
+			&& posLocalSpace.z == 0.0)
+		{
+			posLocalSpace = input.PosL.xyz; // doing this caurses the model to render in bind pose, the weights or bone indercies maybe wrong
+			normalLocalSpace = input.NormL.xyz;
+			if (output.errorColour == 0)
+			{
+				output.errorColour = 2;
+			}
+			
+		}
+		
+
+		//float4x4 wvpMat = World * View * Projection;
 		float4 posW = mul(float4(posLocalSpace, 1.0f), World);
 		output.PosW = posW.xyz;
 
-		output.PosH = mul(float4(posLocalSpace, 1.0f), wvpMat);
+		// output.PosH = mul(float4(posLocalSpace, 1.0f), wvpMat);
+		output.PosH = mul(posW, View);
+		output.PosH = mul(output.PosH, Projection);
 
 		output.Tex = input.Tex;
 
@@ -339,6 +491,23 @@ float4 drawTerrain(VS_OUTPUT input)
 
 float4 PS(VS_OUTPUT input) : SV_Target
 {
+	if (input.errorColour == 1) // the weights all add up to 0
+	{
+		return float4(1.0f, 0.0f, 0.0f, 1.0f); // red
+	}
+	else if (input.errorColour == 2) // the calculated position via weight didn't move
+	{
+		return float4(0.0f, 1.0f, 0.0f, 1.0f); // green
+	}
+	else if (input.errorColour == 3) // the bone matrix index was out of bounds
+	{
+		return float4(0.0f, 0.0f, 1.0f, 1.0f); // blue
+	}
+	else if (input.errorColour == 4) // the bone constant buffer isn't comming through correctly
+	{
+		return float4(1.0, 1.0, 0.0, 1.0); // yellow
+	}
+
 	if (drawingMode == 1.0f)
 	{
 		return drawTerrain(input);
