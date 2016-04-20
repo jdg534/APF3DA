@@ -94,7 +94,7 @@ struct SkeletalModel // will make into a class later
 			m_animations[activeAnimation].currentAnimationTime = 0.0f;
 		}
 
-		m_animations[activeAnimation].currentAnimationTime = 0.11f;
+		// m_animations[activeAnimation].currentAnimationTime = 0.11f;
 
 		// determine the current frame
 		float currentFrame = m_animations[activeAnimation].currentAnimationTime * m_animations[activeAnimation].fps;
@@ -108,10 +108,7 @@ struct SkeletalModel // will make into a class later
 
 		float interpolationWeight = currentFrame - (float) frameA;
 
-		if (interpolationWeight > 0.0f)
-		{
-			bool breakHere = true;
-		}
+		
 
 		std::vector<Joint> calculatedSkel;
 

@@ -37,6 +37,7 @@ protected:
 	XMFLOAT3 m_lookAtDir; // for sub class they need to know the direction that the camera is looking at
 
 	float m_moveSpeed;
+	float m_turnSpeed;
 
 	// lookat == target (external tutorial terminology)
 

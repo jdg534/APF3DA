@@ -118,6 +118,8 @@ private:
 	std::chrono::steady_clock::time_point m_timeAtEndOfFrame;
 	float m_secondsToProcessLastFrame;
 
+	UINT m_frameRateCap = 60; // part of an attempt to fix skeletal animaton (the time point didn't appear to change on the animation class)
+
 
 	UINT _WindowHeight;
 	UINT _WindowWidth;

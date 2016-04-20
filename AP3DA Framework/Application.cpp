@@ -6,6 +6,10 @@
 
 #include "MoveOnTerrainGO.h"
 
+
+#include <cfloat> // for rounding 0.0 seconds to smallest
+// #include <thread> // for std::thread::sleep()
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
@@ -96,7 +100,7 @@ Application::Application()
 	*/
 
 
-	m_secondsToProcessLastFrame = 0.0f;
+	m_secondsToProcessLastFrame = 0.2f; // avoide triggering a false positive on an asertion
 }
 
 Application::~Application()
@@ -703,260 +707,36 @@ void Application::Draw()
 
 
 
-	/*
-	_pImmediateContext->ClearRenderTargetView(_pRenderTargetView, ClearColor);
-	_pImmediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-    //
-    // Setup buffers and render scene
-    //
-
-	if (_wireFrame)
-	{
-		_pImmediateContext->RSSetState(wireframe);
-	}
-	else
-	{
-		_pImmediateContext->RSSetState(CWcullMode);
-	}
-
-
-
-	_pImmediateContext->IASetInputLayout(_pVertexLayout);
-
-	_pImmediateContext->VSSetShader(_pVertexShader, nullptr, 0);
-	_pImmediateContext->PSSetShader(_pPixelShader, nullptr, 0);
-
-	_pImmediateContext->VSSetConstantBuffers(0, 1, &_pConstantBuffer);
-	_pImmediateContext->PSSetConstantBuffers(0, 1, &_pConstantBuffer);
-	_pImmediateContext->PSSetSamplers(0, 1, &_pSamplerLinear);
-
-
-
-    ConstantBuffer cb;
-
-	XMFLOAT4X4 viewAsFloats = _camera->GetView();
-	XMFLOAT4X4 projectionAsFloats = _camera->GetProjection();
-
-	XMMATRIX view = XMLoadFloat4x4(&viewAsFloats);
-	XMMATRIX projection = XMLoadFloat4x4(&projectionAsFloats);
-
-	cb.View = XMMatrixTranspose(view);
-	cb.Projection = XMMatrixTranspose(projection);
-	
-	cb.light = basicLight;
-	cb.EyePosW = _camera->GetPosition();
-
-	// Render all scene objects
-	for (auto gameObject : _gameObjects)
-	{
-		// Get render material
-		Material material = gameObject->GetMaterial();
-
-		// Copy material to shader
-		cb.surface.AmbientMtrl = material.ambient;
-		cb.surface.DiffuseMtrl = material.diffuse;
-		cb.surface.SpecularMtrl = material.specular;
-
-		// Set world matrix
-		cb.World = XMMatrixTranspose(gameObject->GetWorldMatrix());
-
-		// Set texture
-		if (gameObject->HasTexture())
-		{
-			ID3D11ShaderResourceView * textureRV = gameObject->GetTextureRV();
-			// set the texture here
-
-			_pImmediateContext->PSSetShaderResources(0, 1, &textureRV);
-
-
-			cb.HasTexture = 1.0f;
-		}
-		else
-		{
-			cb.HasTexture = 0.0f;
-		}
-
-		cb.drawingTerrain = 0.0f;
-		cb.terrainScaledBy = 0.0f;
-
-		// Update constant buffer
-		_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-
-		// Draw object
-		gameObject->Draw(_pImmediateContext);
-	}
-
-	/*
-	// render the terrain
-	Material terrainMat;
-	terrainMat.ambient.x = 0.2f;
-	terrainMat.ambient.y = 0.2f;
-	terrainMat.ambient.z = 0.2f;
-	terrainMat.ambient.w = 0.2f;
-
-	terrainMat.diffuse.x = 0.6f;
-	terrainMat.diffuse.y = 0.6f;
-	terrainMat.diffuse.z = 0.6f;
-	terrainMat.diffuse.w = 0.6f;
-
-	terrainMat.specular.x = 0.1f;
-	terrainMat.specular.y = 0.1f;
-	terrainMat.specular.z = 0.1f;
-	terrainMat.specular.w = 0.1f;
-	
-	terrainMat.specularPower = 20.0f;
-
-	//_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-	*/
-
-
-
-	//cb.World = XMMatrixTranspose(m_terrain.getWorldMat());
-	//cb.drawingTerrain = 1.0f;
-	//cb.terrainScaledBy = m_terrain.getHeightScaledBy();
-
-	//// _pImmediateContext->PSSetShaderResources(0, 1, &m_);
-	///*
-	//m_terrainLightDirtTex : Texture2D terrainLightDirtTex : register(t1);
-	//m_terrainGrassTex : Texture2D terrainGrassTex : register(t2);
-	//m_terrainDarkDirtTex : Texture2D terrainDarkDirtTex : register(t3);
-	//m_terrainStoneTex : Texture2D terrainStoneTex : register(t4);
-	//m_terrainSnowTex : Texture2D terrainSnowTex : register(t5);
-	//
-	//*/
-
-	//_pImmediateContext->PSSetShaderResources(1, 1, &m_terrainLightDirtTex);
-	//_pImmediateContext->PSSetShaderResources(2, 1, &m_terrainGrassTex);
-	//_pImmediateContext->PSSetShaderResources(3, 1, &m_terrainDarkDirtTex);
-	//_pImmediateContext->PSSetShaderResources(4, 1, &m_terrainStoneTex);
-	//_pImmediateContext->PSSetShaderResources(5, 1, &m_terrainSnowTex);
-
-
-	//_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-
-	////m_terrain.Draw(_pImmediateContext);
-	//
-	//// now try the skeletal model
-	//// update the CB
-	//cb.drawingTerrain = 0.0f;
-	//cb.HasTexture = 0.0f;
-	//cb.terrainScaledBy = 0.0f;
-	//cb.World = XMMatrixTranspose(testSM.getWorldMat());
-	//_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-
-	// testSM.draw(_pImmediateContext);
-
-
-
-
-
-
-	// MD3 stuff below
-
-
-
-
-
-
-
-
-
-	/*
-	// Figure out what need to be done to get, MD3 skeletal model to work 
-	_pImmediateContext->IASetInputLayout(m_SkeletalModelVertexLayout);
-
-	_pImmediateContext->VSSetShader(m_skeletalModelVertexShader, nullptr, 0);
-	_pImmediateContext->PSSetShader(m_skeletalModelPixelShader, nullptr, 0);
-
-	MD3ModelConstBuffer cbForMd3Mesh;
-	MD3ModelBoneMatrixConstBuffer cbForMd3Bones;
-
-
-	_pImmediateContext->VSSetConstantBuffers(0, 1, &m_SkeletalModelConstantBuffer);
-	_pImmediateContext->PSSetConstantBuffers(0, 1, &m_SkeletalModelConstantBuffer);
-	// now the bone index constant buffers
-	_pImmediateContext->VSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
-	_pImmediateContext->PSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
-
-
-	_pImmediateContext->PSSetSamplers(0, 1, &_pSamplerLinear);
-
-	
-	
-	cbForMd3Mesh.World = XMLoadFloat4x4(&m_md3ModelInst->WorldMat);
-	cbForMd3Mesh.World = XMMatrixTranspose(cbForMd3Mesh.World);
-	cbForMd3Mesh.View = cb.View;
-	cbForMd3Mesh.Projection = cb.Projection;
-	
-	cbForMd3Mesh.light = cb.light;
-	cbForMd3Mesh.EyePosW = cb.EyePosW;
-	
-
-	XMVECTOR worldMatrixDeterminate = XMMatrixDeterminant(cbForMd3Mesh.World);
-	cbForMd3Mesh.WorldInverseTranspose = XMMatrixInverse(&worldMatrixDeterminate, cbForMd3Mesh.World);
-	cbForMd3Mesh.WorldInverseTranspose = XMMatrixTranspose(cbForMd3Mesh.WorldInverseTranspose);
-
-	// set the bones constant buffer
-	XMMATRIX idMat = XMMatrixIdentity();
-
-	for (unsigned int i = 0; i < 96; i++)
-	{
-		// cbForMd3Bones.boneMatrices[i] = idMat; // code if ment to pass an XMMATRIX
-		XMStoreFloat4x4(&cbForMd3Bones.boneMatrices[i], XMMatrixIdentity());
-	}
-
-	for (unsigned int i = 0; i < m_md3ModelInst->finalTransforms.size(); i++)
-	{
-		// 96 elements cbForMd3Bones.boneMatrices
-		if (i < 96)
-		{
-			// cbForMd3Bones.boneMatrices[i] = XMLoadFloat4x4(&m_md3ModelInst->finalTransforms[i]);
-			// above if the bone transform matrices are to be stored as XMMATRIX
-
-			// below if they are ment to be stored as XMFLOAT4X4
-			cbForMd3Bones.boneMatrices[i] = m_md3ModelInst->finalTransforms[i];
-		}
-	}
-	
-	// update the bone constant buffer
-	_pImmediateContext->UpdateSubresource(m_SkeletalModelBonesConstantBuffer, 1, nullptr, &cbForMd3Bones, 0, 0);
-
-
-	for (UINT i = 0; i < m_md3ModelInst->theModel->m_nSubsets; i++)
-	{
-		// set the materials, textures, then draw it
-		
-		cbForMd3Mesh.surface = m_md3ModelInst->theModel->m_materials[i];
-		// set the diffuse map
-		_pImmediateContext->PSSetShaderResources(0, 1, &m_md3ModelInst->theModel->m_diffuseMaps[i]);
-
-		cbForMd3Mesh.HasTexture = 1.0f;
-		// Update constant buffer
-		_pImmediateContext->UpdateSubresource(m_SkeletalModelConstantBuffer, 0, nullptr, &cbForMd3Mesh, 0, 0);
-
-		// now the actual drawing
-		m_md3ModelInst->theModel->m_modelGeomatry.draw(_pImmediateContext, i);
-	}
-	
-	*/
-	
-	
-
-
-
-
-    //
-    // Present our back buffer to our front buffer
-    //
-    // _pSwapChain->Present(0, 0);
-	
 	using namespace std::chrono;
 
 	m_timeAtEndOfFrame = steady_clock::now();
 	steady_clock::duration timeTaken = m_timeAtEndOfFrame - m_timeAtStartOfFrame;
 
-	std::chrono::milliseconds ms = duration_cast<milliseconds>(timeTaken);
-	m_secondsToProcessLastFrame = ms.count();
-	m_secondsToProcessLastFrame / 1000.0f;// convert back to seconds
+	std::chrono::milliseconds ms = duration_cast<milliseconds>(timeTaken); // need higher percission
+	// std::chrono::microseconds microSec = duration_cast<microseconds>(timeTaken); // need higher percission
+	// std::chrono::nanoseconds ns = duration_cast<microseconds>(timeTaken); // need higher percission?
+	
+	//double microSecAsDouble = (double)microSec.count();
+	// double inSeconds = microSecAsDouble / 1000000.0;
+	// double nsAsDbl = (double)ns.count();
+	//double inSeconds = nsAsDbl / 1000000000.0;
+
+	// can't use nano seconds, the controls became unresponsive
+
+	double msFlt = ms.count();
+	double inSeconds = msFlt / 1000.0;
+
+	m_secondsToProcessLastFrame = inSeconds;
+
+	// assert(m_secondsToProcessLastFrame > 0.0f);
+
+	if (m_secondsToProcessLastFrame == 0.0f)
+	{
+		// set m_secondsToProcessLastFrame to be smallest non zero value that a float can represent
+
+		m_secondsToProcessLastFrame = FLT_MIN;
+	}
+
+	//m_secondsToProcessLastFrame = ms.count(); // currently in Milliseconds
+	//m_secondsToProcessLastFrame / 1000.0f;// convert back to seconds
 }

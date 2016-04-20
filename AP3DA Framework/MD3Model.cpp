@@ -43,8 +43,11 @@ MD3Model::~MD3Model()
 
 void MD3ModelInstance::update(float dt)
 {
+	assert(dt > 0.0f);
 	timePoint += dt;
 	theModel->m_skinnedMeshSkeleton.getFinalTransforms(currentAnimationClipName, timePoint, finalTransforms);
+	float clipEndTime = theModel->m_skinnedMeshSkeleton.GetClipEndTime(currentAnimationClipName);
+	
 	if (timePoint > theModel->m_skinnedMeshSkeleton.GetClipEndTime(currentAnimationClipName))
 	{
 		timePoint = 0.0f;

@@ -25,7 +25,7 @@ FlyingCamera::FlyingCamera(XMFLOAT3 position, XMFLOAT3 at, XMFLOAT3 up, FLOAT wi
 
 
 	XMStoreFloat4x4(&m_rotationMat, XMMatrixIdentity());
-	m_moveSpeed = 0.01f;
+	m_moveSpeed = 1.1f;
 }
 
 FlyingCamera::~FlyingCamera()
@@ -46,21 +46,21 @@ void FlyingCamera::updateLogic(float dt)
 	*/
 	if (GetAsyncKeyState('Q') & 0x8000)
 	{
-		m_moveSpeed += 0.0001f;
+		m_moveSpeed += 0.1f;
 	}
 	else if (GetAsyncKeyState('E') & 0x8000)
 	{
-		m_moveSpeed -= 0.0001f;
+		m_moveSpeed -= 0.1f;
 	}
 
 	if (m_moveSpeed < 0.0f)
 	{
-		m_moveSpeed = 0.000001f;
+		m_moveSpeed = 0.001f;
 	}
 
 	float moveSpeed = m_moveSpeed * dt;
 
-	float turnSpeed = 0.01f;
+	float turnSpeed = 5.0f;
 	turnSpeed *= dt;
 	// alter yaw & pitch with arrow keys (for now!!!)
 
