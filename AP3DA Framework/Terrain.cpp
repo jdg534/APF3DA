@@ -984,9 +984,10 @@ DirectX::XMFLOAT2 Terrain::positionOnHeightMap(float x, float z)
 
 float Terrain::calculateTextureCoord(float minPos, float maxPos, float pos)
 {
-	float stepSize = 0.01f;
-	float currentStep = 0.0f;
+	// float stepSize = 0.01f;
+	// float currentStep = 0.0f;
 
+	/*
 	while (currentStep < 1.0f)
 	{
 		// float stepPos = Math::lerp(minPos, maxPos, currentStep);
@@ -998,6 +999,17 @@ float Terrain::calculateTextureCoord(float minPos, float maxPos, float pos)
 		}
 		currentStep += stepSize;
 	}
+	*/
+	// better way
+	float diffMinMax = diff(minPos, maxPos);
+	float diffMinPos = diff(minPos, pos);
+	if (diffMinMax == 0.0f)
+	{
+		return 1.0f;
+	}
+
+	return diffMinPos / diffMinMax;
+
 	return 1.0f;
 }
 

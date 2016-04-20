@@ -6,28 +6,6 @@
 
 #include "MoveOnTerrainGO.h"
 
-
-
-float calculateTexCoord(float minPoint, float maxPoint, float vertPos) // this function is to be used at load time
-{
-	float stepSize = 0.001f;
-	float currentStep = 0.0f;
-
-	while (currentStep < 1.0f)
-	{
-		// float stepPos = Math::lerp(minPoint, maxPoint, currentStep);
-
-		float stepPos = (1.0f - currentStep) * minPoint + maxPoint * currentStep;
-
-		if (stepPos >= vertPos)
-		{
-			return currentStep;
-		}
-		currentStep += stepSize;
-	}
-	return 1.0f;
-}
-
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
