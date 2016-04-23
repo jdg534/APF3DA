@@ -155,9 +155,10 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 
 	// file loading code
-	m_modelLoaderInstancePtr = ModelLoader::getInstance();
-	m_modelLoaderInstancePtr->init(_pd3dDevice);
+	// m_modelLoaderInstancePtr = ModelLoader::getInstance();
+	// m_modelLoaderInstancePtr->init(_pd3dDevice);
 
+	/*
 	if (!m_modelLoaderInstancePtr->loadMD5Mesh("bob_lamp_update.md5mesh", testSM, testSMTextures, testSMTextureNames))
 	{
 		return E_FAIL;
@@ -167,12 +168,13 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	{
 		return E_FAIL;
 	}
-	
+	*/
+
 
 	m_textureManager = TextureManager::getInstance();
 	m_textureManager->init(_pd3dDevice);
 
-	testSM.m_animationIndex = 0; // start with the first animation
+	// testSM.m_animationIndex = 0; // start with the first animation
 
 
 
@@ -679,8 +681,8 @@ void Application::Update()
 
 	// update the sleletal model
 	
-	testSM.update(m_secondsToProcessLastFrame, _pImmediateContext);
-	XMStoreFloat4x4(&testSM.m_worldMat, XMMatrixTranslation(0.0f,10.0f,0.0f));
+	//testSM.update(m_secondsToProcessLastFrame, _pImmediateContext);
+	// XMStoreFloat4x4(&testSM.m_worldMat, XMMatrixTranslation(0.0f,10.0f,0.0f));
 
 
 	m_md3ModelInst->update(m_secondsToProcessLastFrame);
@@ -699,7 +701,7 @@ void Application::Draw()
 	m_rendererPtr->drawGameObjects(_gameObjects);
 	m_rendererPtr->drawTerrain(&m_terrain);
 
-	m_rendererPtr->drawMD5Model(&testSM);
+	// m_rendererPtr->drawMD5Model(&testSM);
 	// change to the alt version
 	// m_rendererPtr->drawMD3Model(m_md3ModelInst);
 	m_rendererPtr->altDrawMD3Model(m_md3ModelInst);

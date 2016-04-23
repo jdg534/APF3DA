@@ -10,7 +10,7 @@
 #include "GameObject.h"
 #include "Terrain.h"
 
-#include "SkeletalModel.h" // the partly working MD5 model
+// #include "SkeletalModel.h" // the partly working MD5 model
 #include "MD3Model.h"
 
 class Renderer
@@ -41,7 +41,7 @@ public:
 
 	void drawTerrain(Terrain * toDraw);
 
-	void drawMD5Model(SkeletalModel * toDraw);
+	//void drawMD5Model(SkeletalModel * toDraw);
 	void drawMD3Model(MD3ModelInstance * toDraw);
 	void altDrawMD3Model(MD3ModelInstance * toDraw);
 

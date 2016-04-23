@@ -636,6 +636,7 @@ void Renderer::drawTerrain(Terrain * toDraw)
 	toDraw->Draw(m_d3dDeviceContextPtr);
 }
 
+/*
 void Renderer::drawMD5Model(SkeletalModel * toDraw)
 {
 	ConstantBuffer cb;
@@ -702,7 +703,7 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 
 	// testSM.draw(m_d3dDeviceContextPtr);
 }
-
+*/
 
 void Renderer::drawMD3Model(MD3ModelInstance * toDraw)
 {

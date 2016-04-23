@@ -388,7 +388,6 @@
     <ClCompile Include="MD3Model.cpp" />
     <ClCompile Include="MD3ModelGeomatry.cpp" />
     <ClCompile Include="MD3ModelStructs.cpp" />
-    <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="MoveOnTerrainGO.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Terrain.cpp" />
@@ -415,11 +414,9 @@
     <ClInclude Include="MD3Model.h" />
     <ClInclude Include="MD3ModelGeomatry.h" />
     <ClInclude Include="MD3ModelStructs.h" />
-    <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="MoveOnTerrainGO.h" />
     <ClInclude Include="Renderer.h" />
     <CLInclude Include="resource.h" />
-    <ClInclude Include="SkeletalModel.h" />
     <ClInclude Include="Structures.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="TextureManager.h" />

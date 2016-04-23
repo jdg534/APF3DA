@@ -24,8 +24,8 @@
 #include <chrono>
 #include <vector>
 
-#include "ModelLoader.h"
-#include "SkeletalModel.h"
+// #include "ModelLoader.h"
+// #include "SkeletalModel.h"
 #include "MD3Model.h"
 
 #include "TextureManager.h"
@@ -176,11 +176,11 @@ public:
 
 
 	// stuff for the skeletal model
-	SkeletalModel testSM;
+	// SkeletalModel testSM;
 	std::vector<ID3D11ShaderResourceView  *> testSMTextures;
 	std::vector<std::string> testSMTextureNames;
 
-	ModelLoader * m_modelLoaderInstancePtr;
+	// ModelLoader * m_modelLoaderInstancePtr;
 
 	TextureManager * m_textureManager;
 	

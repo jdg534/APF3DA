@@ -33,9 +33,6 @@
     <Filter Include="Models\MD3Model">
       <UniqueIdentifier>{9d22f929-0c14-4d59-a84c-835acd627d8e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Models\MD5Model">
-      <UniqueIdentifier>{fb18e489-1aa5-4374-883e-6701b7454e84}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Texturing">
       <UniqueIdentifier>{fdc5ebee-ebfa-4f84-9367-27d0e20682a9}</UniqueIdentifier>
     </Filter>
@@ -93,12 +90,6 @@
     <ClInclude Include="MD3ModelGeomatry.h">
       <Filter>Models\MD3Model</Filter>
     </ClInclude>
-    <ClInclude Include="SkeletalModel.h">
-      <Filter>Models\MD5Model</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelLoader.h">
-      <Filter>Models\MD5Model</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
@@ -155,9 +146,6 @@
     </ClCompile>
     <ClCompile Include="MD3Loader.cpp">
       <Filter>Models\MD3Model</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelLoader.cpp">
-      <Filter>Models\MD5Model</Filter>
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>Renderer</Filter>
