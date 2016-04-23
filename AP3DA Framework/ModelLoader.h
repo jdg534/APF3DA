@@ -33,6 +33,10 @@ public:
 
 	bool loadMD5Animation(std::string fileLoc, SkeletalModel & md5MdlOut);
 
+
+	bool loadMD5MeshAlt(std::string fileLoc,
+		MD3Model & md5MdlOut);
+
 	// bool loadMD3Model(std::string fileLoc, MD3Model & output);
 	// moved to MD3Loader.h to conform with the book
 private:

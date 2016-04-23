@@ -27,10 +27,13 @@
 class MD3Model
 {
 public: // keep simple for now
+	MD3Model();
 	MD3Model(ID3D11Device * d3dD, TextureManager * tm, std::string modelFile, std::wstring texturePath);
 
 
 	~MD3Model();
+
+	bool loadMD5Model(ID3D11Device * d3dD, TextureManager * tm, std::string modelFile, std::vector<std::string> animationFiles);
 	
 	unsigned int m_nSubsets;
 

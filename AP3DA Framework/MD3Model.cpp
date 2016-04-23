@@ -2,6 +2,12 @@
 #include "MD3Loader.h"
 #include "TextureManager.h"
 
+#include <fstream>
+
+MD3Model::MD3Model()
+{
+	// this is for the load MD5 functions
+}
 
 MD3Model::MD3Model(ID3D11Device * d3dD, TextureManager * tm, std::string modelFile, std::wstring texturePath)
 {
@@ -9,6 +15,8 @@ MD3Model::MD3Model(ID3D11Device * d3dD, TextureManager * tm, std::string modelFi
 	std::vector<MD3Material> md3Mats;
 
 	md3l.LoadM3d(modelFile, m_vertices, m_indercies, m_subsets, md3Mats, m_skinnedMeshSkeleton);
+	
+	
 
 	m_modelGeomatry.setVertices(d3dD, &m_vertices[0], m_vertices.size());
 	m_modelGeomatry.SetIndices(d3dD, &m_indercies[0], m_indercies.size());
@@ -39,6 +47,17 @@ MD3Model::MD3Model(ID3D11Device * d3dD, TextureManager * tm, std::string modelFi
 
 MD3Model::~MD3Model()
 {
+}
+
+bool loadMD5Model(ID3D11Device * d3dD, TextureManager * tm, std::string modelFile, std::vector<std::string> animationFiles)
+{
+	std::ifstream mdlFile(modelFile);
+	if (!mdlFile.good())
+	{
+		return false;
+	}
+
+
 }
 
 void MD3ModelInstance::update(float dt)

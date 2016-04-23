@@ -4,6 +4,8 @@
 
 #include <fstream>
 
+#include <cassert>
+
 ModelLoader * fileScopeInstancePtr = nullptr;
 
 ModelLoader::ModelLoader()
@@ -96,8 +98,8 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 				theFile >> currentBit;
 
 				// the position
-				// theFile >> j.pos.x >> j.pos.y >> j.pos.z;
-				theFile >> j.pos.x >> j.pos.z >> j.pos.y;
+				theFile >> j.pos.x >> j.pos.y >> j.pos.z;
+				// theFile >> j.pos.x >> j.pos.z >> j.pos.y;
 				
 				// )
 				theFile >> currentBit;
@@ -106,10 +108,10 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 				theFile >> currentBit;
 
 				// the orientation
-				// theFile >> j.orientation.x >> j.orientation.y >> j.orientation.z;
+				theFile >> j.orientation.x >> j.orientation.y >> j.orientation.z;
 				
 				// MD5 is right handed, this system is left handed
-				theFile >> j.orientation.x >> j.orientation.z >> j.orientation.y;
+				//theFile >> j.orientation.x >> j.orientation.z >> j.orientation.y;
 
 				// calc the rotation for w (see: http://www.braynzarsoft.net/viewtutorial/q16390-27-loading-an-md5-model)
 				float t = 1.0f - (j.orientation.x * j.orientation.x)
@@ -181,6 +183,8 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 				{
 					theFile >> tmpSMS.nVerts;
 					
+					bool nWeightsOverFour = false;
+
 					for (int i = 0; i < tmpSMS.nVerts; i++)
 					{
 						SimpleVertex tempV;
@@ -196,8 +200,14 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 						theFile >> tempV.weightCount;
 						//std::getline(theFile, currentBit);
 
+						if (tempV.weightCount > 4)
+						{
+							nWeightsOverFour = true;
+						}
+
 						tmpSMS.vertices.push_back(tempV);
 					}
+					assert(nWeightsOverFour == false); // can convert to work witht the frank luna book
 				}
 				else if (currentBit == "numtris")
 				{
@@ -230,7 +240,8 @@ bool ModelLoader::loadMD5Mesh(std::string fileLoc,
 						theFile >> w.bias;
 
 						theFile >> currentBit; // (
-						theFile >> w.position.x >> w.position.z >> w.position.y;
+						// theFile >> w.position.x >> w.position.z >> w.position.y;
+						theFile >> w.position.x >> w.position.y >> w.position.z;
 
 						std::getline(theFile, currentBit);// )
 						tmpSMS.weights.push_back(w);
@@ -524,10 +535,12 @@ bool ModelLoader::loadMD5Animation(std::string fileLoc, SkeletalModel & md5MdlOu
 
 				BoundingBox bb;
 
-				animationFile >> bb.min.x >> bb.min.z >> bb.min.y;
+				// animationFile >> bb.min.x >> bb.min.z >> bb.min.y;
+				animationFile >> bb.min.x >> bb.min.y >> bb.min.z;
 				animationFile >> currentBit // skip )
 					>> currentBit; // skip (
-				animationFile >> bb.max.x >> bb.max.z >> bb.max.y;
+				// animationFile >> bb.max.x >> bb.max.z >> bb.max.y;
+				animationFile >> bb.max.x >> bb.max.y >> bb.max.z;
 
 				std::getline(animationFile, currentBit); // skip ) & rest of the line
 				ma.frameBoundingBox.push_back(bb);
@@ -542,10 +555,12 @@ bool ModelLoader::loadMD5Animation(std::string fileLoc, SkeletalModel & md5MdlOu
 			{
 				Joint jTmp;
 				animationFile >> currentBit; // (
-				animationFile >> jTmp.pos.x >> jTmp.pos.z >> jTmp.pos.y;
+				// animationFile >> jTmp.pos.x >> jTmp.pos.z >> jTmp.pos.y;
+				animationFile >> jTmp.pos.x >> jTmp.pos.y >> jTmp.pos.z;
 				animationFile >> currentBit // )
 					>> currentBit; // (
-				animationFile >> jTmp.orientation.x >> jTmp.orientation.z >> jTmp.orientation.y;
+				// animationFile >> jTmp.orientation.x >> jTmp.orientation.z >> jTmp.orientation.y;
+				animationFile >> jTmp.orientation.x >> jTmp.orientation.y >> jTmp.orientation.z;
 				std::getline(animationFile, currentBit); // skip ) & rest of line
 
 				ma.baseFrameJoints.push_back(jTmp);
@@ -585,11 +600,13 @@ bool ModelLoader::loadMD5Animation(std::string fileLoc, SkeletalModel & md5MdlOu
 				if (ma.jointInfo[i].flags & 2)
 				{
 					// note in RH coord sys would be setting Y NOT Z
-					jTmp.pos.z = fd.frameData[ma.jointInfo[i].startIndex + k++];
+					// jTmp.pos.z = fd.frameData[ma.jointInfo[i].startIndex + k++];
+					jTmp.pos.y = fd.frameData[ma.jointInfo[i].startIndex + k++];
 				}
 				if (ma.jointInfo[i].flags & 4)
 				{
-					jTmp.pos.y = fd.frameData[ma.jointInfo[i].startIndex + k++];
+					// jTmp.pos.y = fd.frameData[ma.jointInfo[i].startIndex + k++];
+					jTmp.pos.z = fd.frameData[ma.jointInfo[i].startIndex + k++];
 				}
 				if (ma.jointInfo[i].flags & 8)
 				{
@@ -597,11 +614,13 @@ bool ModelLoader::loadMD5Animation(std::string fileLoc, SkeletalModel & md5MdlOu
 				}
 				if (ma.jointInfo[i].flags & 16)
 				{
-					jTmp.orientation.z = fd.frameData[ma.jointInfo[i].startIndex + k++];
+					// jTmp.orientation.z = fd.frameData[ma.jointInfo[i].startIndex + k++];
+					jTmp.orientation.y = fd.frameData[ma.jointInfo[i].startIndex + k++];
 				}
 				if (ma.jointInfo[i].flags & 32)
 				{
-					jTmp.orientation.y = fd.frameData[ma.jointInfo[i].startIndex + k++];
+					// jTmp.orientation.y = fd.frameData[ma.jointInfo[i].startIndex + k++];
+					jTmp.orientation.z = fd.frameData[ma.jointInfo[i].startIndex + k++];
 				}
 				
 				// now the Quaternion W component, rember w != Theta
@@ -668,4 +687,11 @@ bool ModelLoader::loadMD5Animation(std::string fileLoc, SkeletalModel & md5MdlOu
 
 
 	return true;
+}
+
+bool ModelLoader::loadMD5MeshAlt(std::string fileLoc,
+	MD3Model & md5MdlOut)
+{
+	// won't work, the format doesn't gaurentee a skinned vertex only has four effecting joints
+	return false;
 }

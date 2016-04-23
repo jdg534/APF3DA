@@ -158,7 +158,6 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	m_modelLoaderInstancePtr = ModelLoader::getInstance();
 	m_modelLoaderInstancePtr->init(_pd3dDevice);
 
-
 	if (!m_modelLoaderInstancePtr->loadMD5Mesh("bob_lamp_update.md5mesh", testSM, testSMTextures, testSMTextureNames))
 	{
 		return E_FAIL;
@@ -168,6 +167,7 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	{
 		return E_FAIL;
 	}
+	
 
 	m_textureManager = TextureManager::getInstance();
 	m_textureManager->init(_pd3dDevice);
