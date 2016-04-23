@@ -47,7 +47,7 @@ public:
 
 	void finshDrawing();
 
-	void setLight(Light l){ basicLight = l; }
+	void setLight(Light l){ m_basicLight = l; }
 
 private:
 	ID3D11Device * m_d3dDevicePtr;
@@ -101,7 +101,7 @@ private:
 
 	ID3D11SamplerState * _pSamplerLinear = nullptr;
 
-	Light basicLight;
+	Light m_basicLight;
 	Camera * m_activeCamera;
 
 

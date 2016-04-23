@@ -35,30 +35,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 bool Application::HandleKeyboard(MSG msg)
 {
-	XMFLOAT3 cameraPosition = _camera->GetPosition();
+	XMFLOAT3 cameraPosition = m_camera->GetPosition();
 
 	switch (msg.wParam)
 	{
-	case VK_UP:
-		_cameraOrbitRadius = max(_cameraOrbitRadiusMin, _cameraOrbitRadius - (_cameraSpeed * 0.2f));
-		return true;
-		break;
-
-	case VK_DOWN:
-		_cameraOrbitRadius = min(_cameraOrbitRadiusMax, _cameraOrbitRadius + (_cameraSpeed * 0.2f));
-		return true;
-		break;
-
-	case VK_RIGHT:
-		_cameraOrbitAngleXZ += _cameraSpeed;
-		return true;
-		break;
-
-	case VK_LEFT:
-		_cameraOrbitAngleXZ -= _cameraSpeed;
-		return true;
-		break;
-
 	case VK_SPACE:
 		if (msg.message == WM_KEYDOWN)
 			//_wireFrame = !_wireFrame;
@@ -79,8 +59,8 @@ bool Application::HandleKeyboard(MSG msg)
 
 Application::Application()
 {
-	_hInst = nullptr;
-	_hWnd = nullptr;
+	m_hInst = nullptr;
+	m_hWnd = nullptr;
 	/*
 	_driverType = D3D_DRIVER_TYPE_NULL;
 	_featureLevel = D3D_FEATURE_LEVEL_11_0;
@@ -118,14 +98,14 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 
     RECT rc;
-    GetClientRect(_hWnd, &rc);
-    _WindowWidth = rc.right - rc.left;
-    _WindowHeight = rc.bottom - rc.top;
+    GetClientRect(m_hWnd, &rc);
+    m_WindowWidth = rc.right - rc.left;
+    m_WindowHeight = rc.bottom - rc.top;
 
 	m_rendererPtr = new Renderer();
 
     // if (FAILED(InitDevice()))
-	if (FAILED(m_rendererPtr->init(_hWnd)))
+	if (FAILED(m_rendererPtr->init(m_hWnd)))
 	{
         Cleanup();
 
@@ -213,13 +193,13 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 
 	// Setup the scene's light
-	basicLight.AmbientLight = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	basicLight.DiffuseLight = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	basicLight.SpecularLight = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
-	basicLight.SpecularPower = 20.0f;
-	basicLight.LightVecW = XMFLOAT3(0.0f, 1.0f, -1.0f);
+	m_basicLight.AmbientLight = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	m_basicLight.DiffuseLight = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	m_basicLight.SpecularLight = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+	m_basicLight.SpecularPower = 20.0f;
+	m_basicLight.LightVecW = XMFLOAT3(0.0f, 1.0f, -1.0f);
 
-	m_rendererPtr->setLight(basicLight);
+	m_rendererPtr->setLight(m_basicLight);
 
 
 	// setup the vertex Buffers
@@ -395,7 +375,7 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	// _camera = new FirstPersonCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f, &m_terrain, additionalCamHeight);
 
-	_camera = new FlyingCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
+	m_camera = new FlyingCamera(eye, at, up, (float)m_renderWidth, (float)m_renderHeight, 0.01f, 1000.0f);
 	// _camera = new Camera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
 
 
@@ -560,16 +540,16 @@ HRESULT Application::InitWindow(HINSTANCE hInstance, int nCmdShow)
         return E_FAIL;
 
     // Create window
-    _hInst = hInstance;
-	RECT rc = { 0, 0, _renderWidth, _renderHeight };
+    m_hInst = hInstance;
+	RECT rc = { 0, 0, m_renderWidth, m_renderHeight };
     AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-    _hWnd = CreateWindow(L"TutorialWindowClass", L"FGGC Semester 2 Framework", WS_OVERLAPPEDWINDOW,
+    m_hWnd = CreateWindow(L"TutorialWindowClass", L"FGGC Semester 2 Framework", WS_OVERLAPPEDWINDOW,
                          CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance,
                          nullptr);
-    if (!_hWnd)
+    if (!m_hWnd)
 		return E_FAIL;
 
-    ShowWindow(_hWnd, nCmdShow);
+    ShowWindow(m_hWnd, nCmdShow);
 
     return S_OK;
 }
@@ -597,7 +577,7 @@ HRESULT Application::CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoin
 		{
             OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
 			
-			MessageBoxA(_hWnd, (char*)pErrorBlob->GetBufferPointer(), "Some shader compliation failed", MB_OK);
+			MessageBoxA(m_hWnd, (char*)pErrorBlob->GetBufferPointer(), "Some shader compliation failed", MB_OK);
 			
 		}
         if (pErrorBlob) pErrorBlob->Release();
@@ -618,10 +598,10 @@ void Application::Cleanup()
 		delete m_rendererPtr;
 	}
 
-	if (_camera)
+	if (m_camera)
 	{
-		delete _camera;
-		_camera = nullptr;
+		delete m_camera;
+		m_camera = nullptr;
 	}
 
 	for (auto gameObject : _gameObjects)
@@ -656,8 +636,8 @@ void Application::Update()
 	_camera->SetPosition(cameraPos);
 	*/
 
-	_camera->updateLogic(m_secondsToProcessLastFrame);
-	_camera->Update();
+	m_camera->updateLogic(m_secondsToProcessLastFrame);
+	m_camera->Update();
 
 	// Update objects
 
@@ -696,7 +676,7 @@ void Application::Draw()
 	
 	float ClearColor[4] = { 0.5f, 0.5f, 0.5f, 1.0f }; // red,green,blue,alpha
 	
-	m_rendererPtr->startDrawing(ClearColor, _camera, _wireFrame);
+	m_rendererPtr->startDrawing(ClearColor, m_camera, m_wireFrame);
 	// drawing methords here
 	m_rendererPtr->drawGameObjects(_gameObjects);
 	m_rendererPtr->drawTerrain(&m_terrain);

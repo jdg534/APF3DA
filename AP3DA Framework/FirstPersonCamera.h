@@ -6,7 +6,7 @@
 
 class FirstPersonCamera : public FlyingCamera
 {
-	// This camera is to behave like a flying Camera, but with the Y axis coord for the eyePos to be determined via height map value
+	// This camera is to behave like a flying Camera, but with the Y axis coord for the eyePos to be determined via height map value + m_additionalHeight
 
 public:
 	FirstPersonCamera(XMFLOAT3 position, XMFLOAT3 at, XMFLOAT3 up, FLOAT windowWidth, FLOAT windowHeight, FLOAT nearDepth, FLOAT farDepth, Terrain * moveOn, float additionalHeight);

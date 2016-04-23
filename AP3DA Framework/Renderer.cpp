@@ -526,7 +526,7 @@ void Renderer::drawGameObjects(std::vector<GameObject *> & toDraw)
 	cb.View = XMMatrixTranspose(view);
 	cb.Projection = XMMatrixTranspose(projection);
 
-	cb.light = basicLight;
+	cb.light = m_basicLight;
 	cb.EyePosW = m_activeCamera->GetPosition();
 
 	// Render all scene objects
@@ -594,7 +594,7 @@ void Renderer::drawTerrain(Terrain * toDraw)
 	cb.View = XMMatrixTranspose(view);
 	cb.Projection = XMMatrixTranspose(projection);
 
-	cb.light = basicLight;
+	cb.light = m_basicLight;
 	cb.EyePosW = m_activeCamera->GetPosition();
 
 	// render the terrain
@@ -659,7 +659,7 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 	cb.View = XMMatrixTranspose(view);
 	cb.Projection = XMMatrixTranspose(projection);
 
-	cb.light = basicLight;
+	cb.light = m_basicLight;
 	cb.EyePosW = m_activeCamera->GetPosition();
 
 	cb.World = toDraw->getWorldMat();
@@ -743,7 +743,7 @@ void Renderer::drawMD3Model(MD3ModelInstance * toDraw)
 	cbForMd3Mesh.View = XMMatrixTranspose(view);
 	cbForMd3Mesh.Projection = XMMatrixTranspose(projection);
 
-	cbForMd3Mesh.light = basicLight;
+	cbForMd3Mesh.light = m_basicLight;
 	cbForMd3Mesh.EyePosW = m_activeCamera->GetPosition();
 
 
@@ -922,7 +922,7 @@ void Renderer::altDrawMD3Model(MD3ModelInstance * toDraw)
 	
 	cb.World = XMMatrixTranspose(cb.World);
 
-	cb.light = basicLight;
+	cb.light = m_basicLight;
 
 	cb.EyePosW = m_activeCamera->GetPosition();
 	
