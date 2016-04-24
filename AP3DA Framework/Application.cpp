@@ -4,9 +4,6 @@
 
 #include "HeightMapGenerator.h"
 
-#include "MoveOnTerrainGO.h"
-
-
 #include <cfloat> // for rounding 0.0 seconds to smallest
 // #include <thread> // for std::thread::sleep()
 
@@ -235,34 +232,6 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	noSpecMaterial.specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	noSpecMaterial.specularPower = 0.0f;
 	
-	GameObject * gameObject;
-	
-	/*gameObject = new GameObject("Floor", planeGeometry, noSpecMaterial);
-	gameObject->SetPosition(0.0f, 0.0f, 0.0f);
-	gameObject->SetScale(15.0f, 15.0f, 15.0f);
-	gameObject->SetRotation(XMConvertToRadians(90.0f), 0.0f, 0.0f);
-	gameObject->SetTextureRV(_pTextureRV);
-	
-	_gameObjects.push_back(gameObject);
-	*/
-
-
-	gameObject = new GameObject("Cube 1", cubeGeometry, shinyMaterial);
-	gameObject->SetPosition(0.0f, 2.0f, 0.0f);
-	gameObject->SetTextureRV(tTmpPtr->imageMapPtr);
-
-	_gameObjects.push_back(gameObject);
-
-	gameObject = new GameObject("Cube 2", cubeGeometry, shinyMaterial);
-	gameObject->SetScale(0.5f, 0.5f, 0.5f);
-	gameObject->SetPosition(3.0f, 2.0f, 0.0f);
-	gameObject->SetTextureRV(tTmpPtr->imageMapPtr);
-
-	_gameObjects.push_back(gameObject);
-
-	
-
-	
 
 	//delete m_terrainerrainData;
 
@@ -322,7 +291,7 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	// m_terrain.initAsFlatTerrain() // START with this then, reset the shape
 
 	// temp soluton assign first HM encountered in the manager
-	std::vector<string> hmIDs = m_heightMapManager->getIDs();
+	std::vector<std::string> hmIDs = m_heightMapManager->getIDs();
 
 	m_activeHeightMap = 0;
 
@@ -354,21 +323,6 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	// m_terrain.setPosition(0.0f, -512.5f, 10.0f);
 	
 	
-	gameObject = new MoveOnTerrainGameObject("MoveingCube1", cubeGeometry, shinyMaterial);
-	gameObject->SetScale(0.5f, 0.5f, 0.5f);
-	gameObject->SetPosition(0.0f, 0.0f, 0.0f);
-	gameObject->SetTextureRV(tTmpPtr->imageMapPtr);
-
-	MoveOnTerrainGameObject * tmpmotgp = (MoveOnTerrainGameObject *)gameObject;
-	tmpmotgp->setMoveOn(&m_terrain);
-
-	_gameObjects.push_back(gameObject);
-	
-	//MoveOnTerrainGameObject * goPtr = new MoveOnTerrainGameObject("MoveingCube1", cubeGeometry, shinyMaterial);
-	//goPtr->setMoveOn(&m_terrain);
-
-	// _gameObjects.push_back(goPtr);
-
 
 	//float additionalCamHeight = 5.0f;
 	float additionalCamHeight = 0.0f;
@@ -604,6 +558,7 @@ void Application::Cleanup()
 		m_camera = nullptr;
 	}
 
+	/*
 	for (auto gameObject : _gameObjects)
 	{
 		if (gameObject)
@@ -612,6 +567,7 @@ void Application::Cleanup()
 			gameObject = nullptr;
 		}
 	}
+	*/
 
 	m_textureManager->shutdown();
 	delete m_textureManager;
@@ -641,13 +597,9 @@ void Application::Update()
 
 	// Update objects
 
-	for (auto gameObject : _gameObjects)
-	{
-		gameObject->Update(m_secondsToProcessLastFrame);
-	}
 
 	
-	m_terrain.Update(0.0f);
+	m_terrain.Update(m_secondsToProcessLastFrame);
 
 	// test the terrain heightAt functions
 	float x = 0.0;
@@ -678,7 +630,7 @@ void Application::Draw()
 	
 	m_rendererPtr->startDrawing(ClearColor, m_camera, m_wireFrame);
 	// drawing methords here
-	m_rendererPtr->drawGameObjects(_gameObjects);
+	// m_rendererPtr->drawGameObjects(_gameObjects);
 	m_rendererPtr->drawTerrain(&m_terrain);
 
 	// m_rendererPtr->drawMD5Model(&testSM);

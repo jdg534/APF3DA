@@ -7,7 +7,7 @@
 
 #include "Camera.h"
 
-#include "GameObject.h"
+// #include "GameObject.h"
 #include "Terrain.h"
 
 // #include "SkeletalModel.h" // the partly working MD5 model
@@ -37,7 +37,7 @@ public:
 
 	void startDrawing(float * clearColor, Camera * camForFrame, bool wireFrame);
 
-	void drawGameObjects(std::vector<GameObject *> & toDraw);
+	// void drawGameObjects(std::vector<GameObject *> & toDraw);
 
 	void drawTerrain(Terrain * toDraw);
 

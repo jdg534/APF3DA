@@ -15,8 +15,6 @@
 
 
 
-#include "GameObject.h"
-
 #include "Terrain.h"
 
 #include "Structures.h"
@@ -52,7 +50,7 @@ private:
 
 	Light m_basicLight;
 
-	vector<GameObject *> _gameObjects;
+	// vector<GameObject *> _gameObjects;
 
 	unsigned int m_activeHeightMap;
 

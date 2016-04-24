@@ -1,6 +1,7 @@
 #ifndef _STRUCTURES_H_
 #define _STRUCTURES_H_
 
+#include <d3d11.h> // needed for ID3D11Buffer deffinition found in Geomatry structure
 #include <directxmath.h>
 #include <vector>
 #include <string>
@@ -279,6 +280,27 @@ struct FaultFormationQuad
 		}
 		return false;
 	}
+};
+
+
+// structs moved from the provided file: GameObject.h
+
+struct Geometry
+{
+	ID3D11Buffer * vertexBuffer;
+	ID3D11Buffer * indexBuffer;
+	int numberOfIndices;
+
+	UINT vertexBufferStride;
+	UINT vertexBufferOffset;
+};
+
+struct Material
+{
+	DirectX::XMFLOAT4 diffuse;
+	DirectX::XMFLOAT4 ambient;
+	DirectX::XMFLOAT4 specular;
+	float specularPower;
 };
 
 

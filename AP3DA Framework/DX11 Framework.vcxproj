@@ -381,14 +381,12 @@
     <ClCompile Include="HeightMapGenerator.cpp" />
     <ClCompile Include="HeightMapManager.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="HeightMap.cpp" />
     <ClCompile Include="MathFuncs.cpp" />
     <ClCompile Include="MD3Loader.cpp" />
     <ClCompile Include="MD3Model.cpp" />
     <ClCompile Include="MD3ModelGeomatry.cpp" />
     <ClCompile Include="MD3ModelStructs.cpp" />
-    <ClCompile Include="MoveOnTerrainGO.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TextureManager.cpp" />
@@ -405,7 +403,6 @@
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="FirstPersonCamera.h" />
     <ClInclude Include="FlyingCamera.h" />
-    <ClInclude Include="GameObject.h" />
     <ClInclude Include="HeightMap.h" />
     <ClInclude Include="HeightMapGenerator.h" />
     <ClInclude Include="HeightMapManager.h" />
@@ -414,7 +411,6 @@
     <ClInclude Include="MD3Model.h" />
     <ClInclude Include="MD3ModelGeomatry.h" />
     <ClInclude Include="MD3ModelStructs.h" />
-    <ClInclude Include="MoveOnTerrainGO.h" />
     <ClInclude Include="Renderer.h" />
     <CLInclude Include="resource.h" />
     <ClInclude Include="Structures.h" />

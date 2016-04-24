@@ -1,7 +1,7 @@
 #ifndef _TERRAIN_H_
 #define _TERRAIN_H_
 
-#include "GameObject.h" 
+//#include "GameObject.h" 
 #include "HeightMap.h"
 #include "Structures.h"
 
@@ -82,12 +82,12 @@ protected:
 
 	// the following functions are for correcting the vertex normals, however they are all too slow to be used 
 	void correctVertexNormals(std::vector<SimpleVertex> & toCorrect, std::vector<unsigned int> & indices);
-	std::vector<Facet> getConnectedFacets(XMFLOAT3 vertex, std::vector<Facet> & facets);
+	std::vector<Facet> getConnectedFacets(DirectX::XMFLOAT3 vertex, std::vector<Facet> & facets);
 	void removeDuplicateNormals(std::vector<DirectX::XMFLOAT3> & n);
 
 	void altCorrectVertexNormals(std::vector<SimpleVertex> & toCorrect, std::vector<unsigned int> & indices);
 
-	XMFLOAT3 calcSurfaceNormal(XMVECTOR a, XMVECTOR b, XMVECTOR c);
+	DirectX::XMFLOAT3 calcSurfaceNormal(DirectX::XMVECTOR a, DirectX::XMVECTOR b, DirectX::XMVECTOR c);
 
 };
 

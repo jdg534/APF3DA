@@ -18,9 +18,6 @@
     <Filter Include="Cameras">
       <UniqueIdentifier>{0a85b0fa-35ba-4708-8ddf-5f5d6ed33900}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameObject">
-      <UniqueIdentifier>{2465aab1-fb4f-43d3-96ee-db6fff89264f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Terrain">
       <UniqueIdentifier>{416a4ad2-124f-4c55-8573-bc16ff576be7}</UniqueIdentifier>
     </Filter>
@@ -47,9 +44,6 @@
     <ClInclude Include="Camera.h">
       <Filter>Cameras</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>GameObject</Filter>
-    </ClInclude>
     <ClInclude Include="Terrain.h">
       <Filter>Terrain</Filter>
     </ClInclude>
@@ -68,9 +62,6 @@
     </ClInclude>
     <ClInclude Include="FirstPersonCamera.h">
       <Filter>Cameras</Filter>
-    </ClInclude>
-    <ClInclude Include="MoveOnTerrainGO.h">
-      <Filter>GameObject</Filter>
     </ClInclude>
     <ClInclude Include="MD3Model.h">
       <Filter>Models\MD3Model</Filter>
@@ -105,9 +96,6 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Cameras</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>GameObject</Filter>
-    </ClCompile>
     <ClCompile Include="Terrain.cpp">
       <Filter>Terrain</Filter>
     </ClCompile>
@@ -125,9 +113,6 @@
     </ClCompile>
     <ClCompile Include="FirstPersonCamera.cpp">
       <Filter>Cameras</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveOnTerrainGO.cpp">
-      <Filter>GameObject</Filter>
     </ClCompile>
     <ClCompile Include="MD3Model.cpp">
       <Filter>Models\MD3Model</Filter>

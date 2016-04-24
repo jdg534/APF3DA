@@ -57,13 +57,13 @@ bool Terrain::initAsFlatTerrain(int mRows, int nColumns, float cellWidth, float 
 	int nTriangles = nCells * 2;
 	int nVerts = mRows * nColumns;
 
-	XMFLOAT2 t;
+	DirectX::XMFLOAT2 t;
 	t.x = -(m_width / 2.0f);
 	t.y = m_depth / 2.0f;
 
 	int k = 0;
 
-	std::vector<XMFLOAT3> verts;
+	std::vector<DirectX::XMFLOAT3> verts;
 	verts.resize(nVerts);
 
 	for (auto i = 0; i < mRows; i++)
@@ -88,12 +88,12 @@ bool Terrain::initAsFlatTerrain(int mRows, int nColumns, float cellWidth, float 
 	{
 		for (int j = 0; j < nColumns - 1; j++)
 		{
-			XMINT3 abc;
+			DirectX::XMINT3 abc;
 			abc.x = i * mRows + j;
 			abc.y = i * mRows + j + 1;
 			abc.z = (i + 1) * mRows + j;
 
-			XMINT3 cbd;
+			DirectX::XMINT3 cbd;
 			cbd.x = (i + 1) * mRows + j;
 			cbd.y = i * mRows + j + 1;
 			cbd.z = (i + 1) * mRows + j + 1;
@@ -115,7 +115,7 @@ bool Terrain::initAsFlatTerrain(int mRows, int nColumns, float cellWidth, float 
 	0,1---1,1
 	*/
 
-	XMFLOAT2 topLeft(99999.99f, 99999.99f), bottomRight(-topLeft.x, -topLeft.y);
+	DirectX::XMFLOAT2 topLeft(99999.99f, 99999.99f), bottomRight(-topLeft.x, -topLeft.y);
 
 	for (auto i = 0; i < verts.size(); i++)
 	{
@@ -261,7 +261,7 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 	int nTriangles = nCells * 2;
 	int nVerts = m_rows * m_columns;
 
-	XMFLOAT2 t;
+	DirectX::XMFLOAT2 t;
 	t.x = -(m_width / 2.0f);
 	t.y = m_depth / 2.0f;
 
@@ -305,24 +305,24 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 		{
 			// treat each tri as a facet
 			
-			XMINT3 abc;
+			DirectX::XMINT3 abc;
 			abc.x = i * m_rows + j;
 			abc.y = i * m_rows + j + 1;
 			abc.z = (i + 1) * m_rows + j;
 
-			XMFLOAT3 abcSn = calcSurfaceNormal(XMLoadFloat3(&verts[abc.x].pos), 
+			DirectX::XMFLOAT3 abcSn = calcSurfaceNormal(XMLoadFloat3(&verts[abc.x].pos),
 				XMLoadFloat3(&verts[abc.y].pos),
 				XMLoadFloat3(&verts[abc.z].pos));
 
 			
 						
 
-			XMINT3 cbd;
+			DirectX::XMINT3 cbd;
 			cbd.x = (i + 1) * m_rows + j;
 			cbd.y = i * m_rows + j + 1;
 			cbd.z = (i + 1) * m_rows + j + 1;
 
-			XMFLOAT3 cbdSn = calcSurfaceNormal(XMLoadFloat3(&verts[cbd.x].pos),
+			DirectX::XMFLOAT3 cbdSn = calcSurfaceNormal(XMLoadFloat3(&verts[cbd.x].pos),
 				XMLoadFloat3(&verts[cbd.y].pos),
 				XMLoadFloat3(&verts[cbd.z].pos));
 
@@ -353,7 +353,7 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 	0,1---1,1
 	*/
 
-	XMFLOAT2 topLeft(99999.99f, 99999.99f), bottomRight(-topLeft.x, -topLeft.y);
+	DirectX::XMFLOAT2 topLeft(99999.99f, 99999.99f), bottomRight(-topLeft.x, -topLeft.y);
 
 	for (auto i = 0; i < verts.size(); i++)
 	{
@@ -393,7 +393,7 @@ bool Terrain::initViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11Device
 		// this has to be changed
 		// will just have a normals correction func, calc surface normal, then 
 		
-		XMFLOAT3 VertexNormal(0.0, 0.0, 0.0);
+		DirectX::XMFLOAT3 VertexNormal(0.0, 0.0, 0.0);
 		for (auto j = 0; j < verts[i].surfaceNormals.size(); j++)
 		{
 			VertexNormal.x += verts[i].surfaceNormals[j].x;
@@ -508,7 +508,7 @@ bool Terrain::resetShapeViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11
 	int nTriangles = nCells * 2;
 	int nVerts = m_rows * m_columns;
 
-	XMFLOAT2 t;
+	DirectX::XMFLOAT2 t;
 	t.x = -(m_width / 2.0f);
 	t.y = m_depth / 2.0f;
 
@@ -552,24 +552,24 @@ bool Terrain::resetShapeViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11
 		{
 			// treat each tri as a facet
 
-			XMINT3 abc;
+			DirectX::XMINT3 abc;
 			abc.x = i * m_rows + j;
 			abc.y = i * m_rows + j + 1;
 			abc.z = (i + 1) * m_rows + j;
 
-			XMFLOAT3 abcSn = calcSurfaceNormal(XMLoadFloat3(&verts[abc.x].pos),
+			DirectX::XMFLOAT3 abcSn = calcSurfaceNormal(XMLoadFloat3(&verts[abc.x].pos),
 				XMLoadFloat3(&verts[abc.y].pos),
 				XMLoadFloat3(&verts[abc.z].pos));
 
 
 
 
-			XMINT3 cbd;
+			DirectX::XMINT3 cbd;
 			cbd.x = (i + 1) * m_rows + j;
 			cbd.y = i * m_rows + j + 1;
 			cbd.z = (i + 1) * m_rows + j + 1;
 
-			XMFLOAT3 cbdSn = calcSurfaceNormal(XMLoadFloat3(&verts[cbd.x].pos),
+			DirectX::XMFLOAT3 cbdSn = calcSurfaceNormal(XMLoadFloat3(&verts[cbd.x].pos),
 				XMLoadFloat3(&verts[cbd.y].pos),
 				XMLoadFloat3(&verts[cbd.z].pos));
 
@@ -600,7 +600,7 @@ bool Terrain::resetShapeViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11
 	0,1---1,1
 	*/
 
-	XMFLOAT2 topLeft(99999.99f, 99999.99f), bottomRight(-topLeft.x, -topLeft.y);
+	DirectX::XMFLOAT2 topLeft(99999.99f, 99999.99f), bottomRight(-topLeft.x, -topLeft.y);
 
 	for (auto i = 0; i < verts.size(); i++)
 	{
@@ -640,7 +640,7 @@ bool Terrain::resetShapeViaHeightMap(HeightMap * hm, float scaleHeightBy, ID3D11
 		// this has to be changed
 		// will just have a normals correction func, calc surface normal, then 
 
-		XMFLOAT3 VertexNormal(0.0, 0.0, 0.0);
+		DirectX::XMFLOAT3 VertexNormal(0.0, 0.0, 0.0);
 		for (auto j = 0; j < verts[i].surfaceNormals.size(); j++)
 		{
 			VertexNormal.x += verts[i].surfaceNormals[j].x;
@@ -769,8 +769,8 @@ bool Terrain::isPositionOnTerrain(float x, float z)
 
 	// height map position += m_position
 
-	XMFLOAT2 actualTopLeftCoord;
-	XMFLOAT2 actualBottomRight;
+	DirectX::XMFLOAT2 actualTopLeftCoord;
+	DirectX::XMFLOAT2 actualBottomRight;
 	actualTopLeftCoord.x = m_position.x + m_topLeftPoint.x;
 	actualTopLeftCoord.y = m_position.z + m_topLeftPoint.y; // although its denoted as z the value is actually for the z axis
 
@@ -1039,7 +1039,7 @@ void Terrain::correctVertexNormals(std::vector<SimpleVertex> & toCorrect, std::v
 
 		DirectX::XMVECTOR aCrossB = DirectX::XMVector3Cross(a, b);
 
-		XMStoreFloat3(&tmpf.surfaceNormal, XMVector3Normalize(aCrossB));
+		DirectX::XMStoreFloat3(&tmpf.surfaceNormal, DirectX::XMVector3Normalize(aCrossB));
 
 		// add tmpF to f
 		f.push_back(tmpf);
@@ -1049,7 +1049,7 @@ void Terrain::correctVertexNormals(std::vector<SimpleVertex> & toCorrect, std::v
 	for (auto i = 0; i < toCorrect.size(); i++)
 	{
 		std::vector<Facet> connectedFacets = getConnectedFacets(toCorrect[i].PosL, f);
-		std::vector<XMFLOAT3> facetNormals;
+		std::vector<DirectX::XMFLOAT3> facetNormals;
 		for (int j = 0; j < connectedFacets.size(); j++)
 		{
 			facetNormals.push_back(connectedFacets[j].surfaceNormal);
@@ -1057,7 +1057,7 @@ void Terrain::correctVertexNormals(std::vector<SimpleVertex> & toCorrect, std::v
 		// ditch the duplercate normals
 		removeDuplicateNormals(facetNormals);
 
-		XMFLOAT3 normalsSum(0.0f, 0.0f,0.0f);
+		DirectX::XMFLOAT3 normalsSum(0.0f, 0.0f, 0.0f);
 		for (int j = 0; j < facetNormals.size(); j++)
 		{
 			normalsSum.x += facetNormals[j].x;
@@ -1076,7 +1076,7 @@ void Terrain::correctVertexNormals(std::vector<SimpleVertex> & toCorrect, std::v
 	}
 }
 
-std::vector<Facet> Terrain::getConnectedFacets(XMFLOAT3 vertex, std::vector<Facet> & facets)
+std::vector<Facet> Terrain::getConnectedFacets(DirectX::XMFLOAT3 vertex, std::vector<Facet> & facets)
 {
 	std::vector<Facet> rv;
 	for (auto i = 0; i < facets.size(); i++)
@@ -1150,7 +1150,7 @@ void Terrain::altCorrectVertexNormals(std::vector<SimpleVertex> & toCorrect, std
 
 		DirectX::XMVECTOR aCrossB = DirectX::XMVector3Cross(a, b);
 
-		XMStoreFloat3(&tmpf.surfaceNormal, XMVector3Normalize(aCrossB));
+		DirectX::XMStoreFloat3(&tmpf.surfaceNormal, DirectX::XMVector3Normalize(aCrossB));
 
 		// add tmpF to f
 		f.push_back(tmpf);
@@ -1203,13 +1203,13 @@ void Terrain::altCorrectVertexNormals(std::vector<SimpleVertex> & toCorrect, std
 	}
 }
 
-XMFLOAT3 Terrain::calcSurfaceNormal(XMVECTOR a, XMVECTOR b, XMVECTOR c)
+DirectX::XMFLOAT3 Terrain::calcSurfaceNormal(DirectX::XMVECTOR a, DirectX::XMVECTOR b, DirectX::XMVECTOR c)
 {
-	XMVECTOR ab = XMVectorSubtract(b, a);
-	XMVECTOR ac = XMVectorSubtract(c, a);
-	XMVECTOR abCrossAc = XMVector3Cross(ab, ac);
-	XMFLOAT3 rv;
+	DirectX::XMVECTOR ab = DirectX::XMVectorSubtract(b, a);
+	DirectX::XMVECTOR ac = DirectX::XMVectorSubtract(c, a);
+	DirectX::XMVECTOR abCrossAc = DirectX::XMVector3Cross(ab, ac);
+	DirectX::XMFLOAT3 rv;
 	
-	XMStoreFloat3(&rv, XMVector3Normalize(abCrossAc));
+	DirectX::XMStoreFloat3(&rv, DirectX::XMVector3Normalize(abCrossAc));
 	return rv;
 }
