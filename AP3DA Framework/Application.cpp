@@ -153,13 +153,13 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	// testSM.m_animationIndex = 0; // start with the first animation
 
+	
 
-
-	m_md3ModelInst = new MD3ModelInstance();
-	m_md3ModelInst->theModel = new MD3Model(_pd3dDevice, m_textureManager, "soldier.m3d", L"");
-	m_md3ModelInst->timePoint = 0.0f;
-	m_md3ModelInst->currentAnimationClipName = "Take1";
-	m_md3ModelInst->finalTransforms.resize(m_md3ModelInst->theModel->m_skinnedMeshSkeleton.getBoneCount());
+	m_skeletalModelInst = new SkeletalModelInstance();
+	m_skeletalModelInst->theModel = new SkeletalModel(_pd3dDevice, m_textureManager, "soldier.m3d", L"");
+	m_skeletalModelInst->timePoint = 0.0f;
+	m_skeletalModelInst->currentAnimationClipName = "Take1";
+	m_skeletalModelInst->finalTransforms.resize(m_skeletalModelInst->theModel->m_skinnedMeshSkeleton.getBoneCount());
 
 	// init the model's world matrix
 	XMMATRIX mdlTrans, mdlScale, mdlRot;
@@ -168,14 +168,14 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	mdlRot = XMMatrixRotationY(XM_PI);
 	mdlTrans = XMMatrixTranslation(0.0, 2.0, 0.0);
 
-	// XMStoreFloat4x4(&m_md3ModelInst->WorldMat, mdlScale * mdlRot * mdlTrans);
+	// XMStoreFloat4x4(&m_skeletalModelInst->WorldMat, mdlScale * mdlRot * mdlTrans);
 
 	// starting with Identity matrix
-	// XMStoreFloat4x4(&m_md3ModelInst->WorldMat, mdlTrans);
+	// XMStoreFloat4x4(&m_skeletalModelInst->WorldMat, mdlTrans);
 	
-	// XMStoreFloat4x4(&m_md3ModelInst->WorldMat, XMMatrixIdentity());
-	// XMStoreFloat4x4(&m_md3ModelInst->WorldMat, mdlScale);
-	XMStoreFloat4x4(&m_md3ModelInst->WorldMat, mdlScale*mdlRot*mdlTrans);
+	// XMStoreFloat4x4(&m_skeletalModelInst->WorldMat, XMMatrixIdentity());
+	// XMStoreFloat4x4(&m_skeletalModelInst->WorldMat, mdlScale);
+	XMStoreFloat4x4(&m_skeletalModelInst->WorldMat, mdlScale*mdlRot*mdlTrans);
 	
 	
 	// Setup Camera
@@ -617,7 +617,7 @@ void Application::Update()
 	// XMStoreFloat4x4(&testSM.m_worldMat, XMMatrixTranslation(0.0f,10.0f,0.0f));
 
 
-	m_md3ModelInst->update(m_secondsToProcessLastFrame);
+	m_skeletalModelInst->update(m_secondsToProcessLastFrame);
 }
 
 void Application::Draw()
@@ -635,8 +635,8 @@ void Application::Draw()
 
 	// m_rendererPtr->drawMD5Model(&testSM);
 	// change to the alt version
-	// m_rendererPtr->drawMD3Model(m_md3ModelInst);
-	m_rendererPtr->drawSkeletalModel(m_md3ModelInst);
+	// m_rendererPtr->drawMD3Model(m_skeletalModelInst);
+	m_rendererPtr->drawSkeletalModel(m_skeletalModelInst);
 	m_rendererPtr->finshDrawing();
 
 

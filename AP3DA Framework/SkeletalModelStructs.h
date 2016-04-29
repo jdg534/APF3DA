@@ -1,5 +1,5 @@
-#ifndef _MD3_MODEL_STRUCTS_H_
-#define _MD3_MODEL_STRUCTS_H_
+#ifndef _SKELETAL_MODEL_STRUCTS_H_
+#define _SKELETAL_MODEL_STRUCTS_H_
 
 #include <d3d11.h>
 #include <DirectXMath.h>
@@ -67,9 +67,9 @@ private:
 
 
 
-struct MD3ModelSubSet
+struct SkeletalModelSubSet
 {
-	MD3ModelSubSet() :
+	SkeletalModelSubSet() :
 		Id(-1),
 		VertexStart(0), VertexCount(0),
 		FaceStart(0), FaceCount(0)

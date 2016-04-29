@@ -27,14 +27,14 @@
     <Filter Include="Models">
       <UniqueIdentifier>{cc2aaa88-1162-433c-9e01-d4ea675b6cd5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Models\MD3Model">
-      <UniqueIdentifier>{9d22f929-0c14-4d59-a84c-835acd627d8e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Texturing">
       <UniqueIdentifier>{fdc5ebee-ebfa-4f84-9367-27d0e20682a9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Renderer">
       <UniqueIdentifier>{eb272498-894b-4f19-9709-0cc3373b4fd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Models\SkeletalModel">
+      <UniqueIdentifier>{9d22f929-0c14-4d59-a84c-835acd627d8e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -63,29 +63,29 @@
     <ClInclude Include="FirstPersonCamera.h">
       <Filter>Cameras</Filter>
     </ClInclude>
-    <ClInclude Include="MD3Model.h">
-      <Filter>Models\MD3Model</Filter>
-    </ClInclude>
-    <ClInclude Include="MD3ModelStructs.h">
-      <Filter>Models\MD3Model</Filter>
-    </ClInclude>
     <ClInclude Include="TextureManager.h">
       <Filter>Texturing</Filter>
     </ClInclude>
     <ClInclude Include="DDSTextureLoader.h">
       <Filter>Texturing</Filter>
     </ClInclude>
-    <ClInclude Include="MD3Loader.h">
-      <Filter>Models\MD3Model</Filter>
-    </ClInclude>
-    <ClInclude Include="MD3ModelGeomatry.h">
-      <Filter>Models\MD3Model</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="HeightMapManager.h">
       <Filter>Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletalModelStructs.h">
+      <Filter>Models\SkeletalModel</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletalModelGeomatry.h">
+      <Filter>Models\SkeletalModel</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletalModel.h">
+      <Filter>Models\SkeletalModel</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletalModelLoader.h">
+      <Filter>Models\SkeletalModel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -114,29 +114,29 @@
     <ClCompile Include="FirstPersonCamera.cpp">
       <Filter>Cameras</Filter>
     </ClCompile>
-    <ClCompile Include="MD3Model.cpp">
-      <Filter>Models\MD3Model</Filter>
-    </ClCompile>
-    <ClCompile Include="MD3ModelStructs.cpp">
-      <Filter>Models\MD3Model</Filter>
-    </ClCompile>
     <ClCompile Include="TextureManager.cpp">
       <Filter>Texturing</Filter>
     </ClCompile>
     <ClCompile Include="DDSTextureLoader.cpp">
       <Filter>Texturing</Filter>
     </ClCompile>
-    <ClCompile Include="MD3ModelGeomatry.cpp">
-      <Filter>Models\MD3Model</Filter>
-    </ClCompile>
-    <ClCompile Include="MD3Loader.cpp">
-      <Filter>Models\MD3Model</Filter>
-    </ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="HeightMapManager.cpp">
       <Filter>Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletalModelStructs.cpp">
+      <Filter>Models\SkeletalModel</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletalModelGeomatry.cpp">
+      <Filter>Models\SkeletalModel</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletalModel.cpp">
+      <Filter>Models\SkeletalModel</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletalModelLoader.cpp">
+      <Filter>Models\SkeletalModel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

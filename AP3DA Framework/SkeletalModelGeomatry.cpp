@@ -1,6 +1,6 @@
-#include "MD3ModelGeomatry.h"
+#include "SkeletalModelGeomatry.h"
 
-MD3ModelGeomatry::MD3ModelGeomatry()
+SkeletalModelGeomatry::SkeletalModelGeomatry()
 {
 	m_vbPtr = nullptr;
 	m_ibPtr = nullptr;
@@ -8,7 +8,7 @@ MD3ModelGeomatry::MD3ModelGeomatry()
 	m_vertexStrideSize = 0;
 }
 
-MD3ModelGeomatry::~MD3ModelGeomatry()
+SkeletalModelGeomatry::~SkeletalModelGeomatry()
 {
 	if (m_vbPtr != nullptr)
 	{
@@ -20,7 +20,7 @@ MD3ModelGeomatry::~MD3ModelGeomatry()
 	}
 }
 
-void MD3ModelGeomatry::setVertices(ID3D11Device* device, const SimpleVertex* vertices, unsigned int count)
+void SkeletalModelGeomatry::setVertices(ID3D11Device* device, const SimpleVertex* vertices, unsigned int count)
 {
 	if (m_vbPtr != nullptr)
 	{
@@ -48,7 +48,7 @@ void MD3ModelGeomatry::setVertices(ID3D11Device* device, const SimpleVertex* ver
 	device->CreateBuffer(&vbd, &vinitData, &m_vbPtr);
 }
 
-void MD3ModelGeomatry::SetIndices(ID3D11Device* device, const unsigned int * indices, unsigned int count)
+void SkeletalModelGeomatry::SetIndices(ID3D11Device* device, const unsigned int * indices, unsigned int count)
 {
 	D3D11_BUFFER_DESC ibd;
 	ZeroMemory(&ibd, sizeof(D3D11_BUFFER_DESC));
@@ -66,12 +66,12 @@ void MD3ModelGeomatry::SetIndices(ID3D11Device* device, const unsigned int * ind
 	device->CreateBuffer(&ibd, &indBufinitData, &m_ibPtr);
 }
 
-void MD3ModelGeomatry::SetSubsetTable(std::vector<MD3ModelSubSet>& subsetTable)
+void SkeletalModelGeomatry::SetSubsetTable(std::vector<SkeletalModelSubSet>& subsetTable)
 {
 	m_subsets = subsetTable;
 }
 
-void MD3ModelGeomatry::draw(ID3D11DeviceContext * d3dDC, unsigned int nSubset)
+void SkeletalModelGeomatry::draw(ID3D11DeviceContext * d3dDC, unsigned int nSubset)
 {
 	unsigned int offset = 0;
 
@@ -84,7 +84,7 @@ void MD3ModelGeomatry::draw(ID3D11DeviceContext * d3dDC, unsigned int nSubset)
 		0);
 }
 
-MD3ModelGeomatry::MD3ModelGeomatry(const MD3ModelGeomatry & toCopy)
+SkeletalModelGeomatry::SkeletalModelGeomatry(const SkeletalModelGeomatry & toCopy)
 {
 	m_vbPtr = toCopy.m_vbPtr;
 	m_ibPtr = toCopy.m_ibPtr;
@@ -98,7 +98,7 @@ MD3ModelGeomatry::MD3ModelGeomatry(const MD3ModelGeomatry & toCopy)
 }
 
 /*
-MD3ModelGeomatry & MD3ModelGeomatry::operator =(const MD3ModelGeomatry & toCopy)
+SkeletalModelGeomatry & SkeletalModelGeomatry::operator =(const SkeletalModelGeomatry & toCopy)
 {
 	m_vbPtr = toCopy.m_vbPtr;
 	m_ibPtr = toCopy.m_ibPtr;

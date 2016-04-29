@@ -1,13 +1,13 @@
-#include "MD3Loader.h"
+#include "SkeletalModelLoader.h"
 
 #include <fstream>
 #include <string>
 
-bool MD3Loader::LoadM3d(const std::string& filename,
+bool SkeletalModelLoader::LoadM3d(const std::string& filename,
 	std::vector<SimpleVertex>& vertices,
 	std::vector<unsigned int>& indices,
-	std::vector<MD3ModelSubSet>& subsets,
-	std::vector<MD3Material>& mats,
+	std::vector<SkeletalModelSubSet>& subsets,
+	std::vector<SkeletalModelMaterial>& mats,
 	SkinnedMeshSkeleton & skinInfo)
 {
 	std::ifstream md3File(filename);
@@ -69,7 +69,7 @@ bool MD3Loader::LoadM3d(const std::string& filename,
 	return false;
 }
 
-void MD3Loader::ReadMaterials(std::ifstream& fin, UINT numMaterials, std::vector<MD3Material>& mats)
+void SkeletalModelLoader::ReadMaterials(std::ifstream& fin, UINT numMaterials, std::vector<SkeletalModelMaterial>& mats)
 {
 	std::string ignorStr = "";
 	mats.resize(numMaterials);
@@ -100,7 +100,7 @@ void MD3Loader::ReadMaterials(std::ifstream& fin, UINT numMaterials, std::vector
 	}
 }
 	
-void MD3Loader::ReadSubsetTable(std::ifstream& fin, UINT numSubsets, std::vector<MD3ModelSubSet>& subsets)
+void SkeletalModelLoader::ReadSubsetTable(std::ifstream& fin, UINT numSubsets, std::vector<SkeletalModelSubSet>& subsets)
 {
 	std::string skipStr = "";
 
@@ -123,7 +123,7 @@ void MD3Loader::ReadSubsetTable(std::ifstream& fin, UINT numSubsets, std::vector
 	}
 }
 	
-void MD3Loader::ReadVertices(std::ifstream& fin, UINT numVertices, std::vector<SimpleVertex>& vertices)
+void SkeletalModelLoader::ReadVertices(std::ifstream& fin, UINT numVertices, std::vector<SimpleVertex>& vertices)
 {
 	std::string	skipStr = "";
 	vertices.resize(numVertices);
@@ -142,7 +142,7 @@ void MD3Loader::ReadVertices(std::ifstream& fin, UINT numVertices, std::vector<S
 	}
 }
 	
-void MD3Loader::ReadSkinnedVertices(std::ifstream& fin, UINT numVertices, std::vector<SimpleVertex>& vertices)
+void SkeletalModelLoader::ReadSkinnedVertices(std::ifstream& fin, UINT numVertices, std::vector<SimpleVertex>& vertices)
 {
 	// call this one, not the above version
 	std::string	skipStr = "";
@@ -181,7 +181,7 @@ void MD3Loader::ReadSkinnedVertices(std::ifstream& fin, UINT numVertices, std::v
 	}
 }
 	
-void MD3Loader::ReadTriangles(std::ifstream& fin, UINT numTriangles, std::vector<unsigned int>& indices)
+void SkeletalModelLoader::ReadTriangles(std::ifstream& fin, UINT numTriangles, std::vector<unsigned int>& indices)
 {
 	std::string skipStr = "";
 	indices.resize(numTriangles * 3);
@@ -193,7 +193,7 @@ void MD3Loader::ReadTriangles(std::ifstream& fin, UINT numTriangles, std::vector
 	}
 }
 	
-void MD3Loader::ReadBoneOffsets(std::ifstream& fin, UINT numBones, std::vector<DirectX::XMFLOAT4X4>& boneOffsets)
+void SkeletalModelLoader::ReadBoneOffsets(std::ifstream& fin, UINT numBones, std::vector<DirectX::XMFLOAT4X4>& boneOffsets)
 {
 	std::string skipStr = "";
 	boneOffsets.resize(numBones);
@@ -220,7 +220,7 @@ void MD3Loader::ReadBoneOffsets(std::ifstream& fin, UINT numBones, std::vector<D
 	}
 }
 
-void MD3Loader::ReadBoneHierarchy(std::ifstream& fin, UINT numBones, std::vector<int>& boneIndexToParentIndex)
+void SkeletalModelLoader::ReadBoneHierarchy(std::ifstream& fin, UINT numBones, std::vector<int>& boneIndexToParentIndex)
 {
 	std::string junk = "";
 	fin >> junk; // ***************BoneHierarchy*****************
@@ -234,7 +234,7 @@ void MD3Loader::ReadBoneHierarchy(std::ifstream& fin, UINT numBones, std::vector
 	}
 }
 	
-void MD3Loader::ReadAnimationClips(std::ifstream& fin, UINT numBones, UINT numAnimationClips, std::map<std::string, AnimationClip>& animations)
+void SkeletalModelLoader::ReadAnimationClips(std::ifstream& fin, UINT numBones, UINT numAnimationClips, std::map<std::string, AnimationClip>& animations)
 {
 	std::string skipStr = "";
 	fin >> skipStr; // ***************AnimationClips****************
@@ -260,7 +260,7 @@ void MD3Loader::ReadAnimationClips(std::ifstream& fin, UINT numBones, UINT numAn
 	}
 }
 	
-void MD3Loader::ReadBoneKeyframes(std::ifstream& fin, UINT numBones, BoneAnimation& boneAnimation)
+void SkeletalModelLoader::ReadBoneKeyframes(std::ifstream& fin, UINT numBones, BoneAnimation& boneAnimation)
 {
 	std::string junk = "";
 

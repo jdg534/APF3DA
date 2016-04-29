@@ -1,18 +1,19 @@
-#include "MD3Model.h"
-#include "MD3Loader.h"
+#include "SkeletalModel.h"
+//#include "MD3Loader.h"
+#include "SkeletalModelLoader.h"
 #include "TextureManager.h"
 
 #include <fstream>
 
-MD3Model::MD3Model()
+SkeletalModel::SkeletalModel()
 {
 	// this is for the load MD5 functions
 }
 
-MD3Model::MD3Model(ID3D11Device * d3dD, TextureManager * tm, std::string modelFile, std::wstring texturePath)
+SkeletalModel::SkeletalModel(ID3D11Device * d3dD, TextureManager * tm, std::string modelFile, std::wstring texturePath)
 {
-	MD3Loader md3l;
-	std::vector<MD3Material> md3Mats;
+	SkeletalModelLoader md3l;
+	std::vector<SkeletalModelMaterial> md3Mats;
 
 	md3l.LoadM3d(modelFile, m_vertices, m_indercies, m_subsets, md3Mats, m_skinnedMeshSkeleton);
 	
@@ -45,7 +46,7 @@ MD3Model::MD3Model(ID3D11Device * d3dD, TextureManager * tm, std::string modelFi
 	}
 }
 
-MD3Model::~MD3Model()
+SkeletalModel::~SkeletalModel()
 {
 }
 
@@ -60,7 +61,7 @@ bool loadMD5Model(ID3D11Device * d3dD, TextureManager * tm, std::string modelFil
 
 }
 
-void MD3ModelInstance::update(float dt)
+void SkeletalModelInstance::update(float dt)
 {
 	assert(dt > 0.0f);
 	timePoint += dt;

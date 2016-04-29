@@ -134,7 +134,7 @@ HRESULT Renderer::init(HWND windowHandle)
 	D3D11_BUFFER_DESC skelMdlBufDesc;
 	ZeroMemory(&skelMdlBufDesc, sizeof(skelMdlBufDesc));
 	skelMdlBufDesc.Usage = D3D11_USAGE_DEFAULT;
-	skelMdlBufDesc.ByteWidth = sizeof(MD3ModelConstBuffer);
+	skelMdlBufDesc.ByteWidth = sizeof(SkeletalModelConstBuffer);
 	skelMdlBufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	skelMdlBufDesc.CPUAccessFlags = 0;
 	hr = m_d3dDevicePtr->CreateBuffer(&skelMdlBufDesc, nullptr, &m_SkeletalModelConstantBuffer);
@@ -142,7 +142,7 @@ HRESULT Renderer::init(HWND windowHandle)
 	D3D11_BUFFER_DESC skelMdlBonesMatBD;
 	ZeroMemory(&skelMdlBonesMatBD, sizeof(skelMdlBonesMatBD));
 	skelMdlBonesMatBD.Usage = D3D11_USAGE_DEFAULT;
-	skelMdlBonesMatBD.ByteWidth = sizeof(MD3ModelBoneMatrixConstBuffer);
+	skelMdlBonesMatBD.ByteWidth = sizeof(SkeletalModelBoneMatrixConstBuffer);
 	skelMdlBonesMatBD.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	skelMdlBonesMatBD.CPUAccessFlags = 0;
 	hr = m_d3dDevicePtr->CreateBuffer(&skelMdlBonesMatBD, nullptr, &m_SkeletalModelBonesConstantBuffer);
@@ -639,7 +639,7 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 }
 */
 //
-//void Renderer::drawMD3Model(MD3ModelInstance * toDraw)
+//void Renderer::drawSkeletalModel(SkeletalModelInstance * toDraw)
 //{
 //	// MD3 stuff below
 //
@@ -649,8 +649,8 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 //	m_d3dDeviceContextPtr->VSSetShader(m_skeletalModelVertexShader, nullptr, 0);
 //	m_d3dDeviceContextPtr->PSSetShader(m_skeletalModelPixelShader, nullptr, 0);
 //
-//	MD3ModelConstBuffer cbForMd3Mesh;
-//	MD3ModelBoneMatrixConstBuffer cbForMd3Bones;
+//	SkeletalModelConstBuffer cbForMd3Mesh;
+//	SkeletalModelBoneMatrixConstBuffer cbForMd3Bones;
 //
 //
 //	m_d3dDeviceContextPtr->VSSetConstantBuffers(0, 1, &m_SkeletalModelConstantBuffer);
@@ -707,7 +707,7 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 //		// 96 elements cbForMd3Bones.boneMatrices, overkill?
 //		if (i < 96)
 //		{
-//			// cbForMd3Bones.boneMatrices[i] = XMLoadFloat4x4(&m_md3ModelInst->finalTransforms[i]);
+//			// cbForMd3Bones.boneMatrices[i] = XMLoadFloat4x4(&m_SkeletalModelInst->finalTransforms[i]);
 //			// above if the bone transform matrices are to be stored as XMMATRIX
 //
 //			// below if they are ment to be stored as XMFLOAT4X4
@@ -748,12 +748,12 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 //	
 //}
 
-void Renderer::drawSkeletalModel(MD3ModelInstance * toDraw)
+void Renderer::drawSkeletalModel(SkeletalModelInstance * toDraw)
 {
 	// just use the original vertex shader (modded to all in one)
 
 	ConstantBuffer cb;
-	MD3ModelBoneMatrixConstBuffer boneCB;
+	//SkeletalModelBoneMatrixConstBuffer boneCB;
 
 	m_d3dDeviceContextPtr->IASetInputLayout(_pVertexLayout);
 

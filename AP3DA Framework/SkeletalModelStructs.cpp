@@ -1,4 +1,4 @@
-#include "MD3ModelStructs.h"
+#include "SkeletalModelStructs.h"
 
 float BoneAnimation::GetStartTime()
 {

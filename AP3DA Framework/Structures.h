@@ -136,7 +136,8 @@ struct ConstantBuffer
 	DirectX::XMFLOAT4X4 boneMatrices[96];
 };
 
-struct MD3ModelConstBuffer
+/*
+struct SkeletalModelConstBuffer
 {
 	DirectX::XMMATRIX World;
 	DirectX::XMMATRIX View;
@@ -151,12 +152,14 @@ struct MD3ModelConstBuffer
 
 	DirectX::XMMATRIX WorldInverseTranspose;
 };
+*/
 
-struct MD3ModelBoneMatrixConstBuffer
+/*
+struct SkeletalModelBoneMatrixConstBuffer
 {
 	DirectX::XMFLOAT4X4 boneMatrices[96]; // going with what is in the book, max 96 bones to be allowed, this seems unnessary
 };
-
+*/
 
 struct Facet
 {

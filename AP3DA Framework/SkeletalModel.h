@@ -1,5 +1,5 @@
-#ifndef _MD3_MODEL_H_
-#define _MD3_MODEL_H_
+#ifndef _SKELETAL_MODEL_H_
+#define _SKELETAL_MODEL_H_
 
 #include <d3d11.h>
 #include <DirectXMath.h>
@@ -13,8 +13,8 @@
 // start of required structures
 // start with the KeyFrame struct as seen on page 646
 
-#include "MD3ModelStructs.h"
-#include "MD3ModelGeomatry.h"
+#include "SkeletalModelStructs.h"
+#include "SkeletalModelGeomatry.h"
 
 #include "Structures.h"
 
@@ -24,14 +24,14 @@
 
 // end of required structures
 
-class MD3Model
+class SkeletalModel
 {
 public: // keep simple for now
-	MD3Model();
-	MD3Model(ID3D11Device * d3dD, TextureManager * tm, std::string modelFile, std::wstring texturePath);
+	SkeletalModel();
+	SkeletalModel(ID3D11Device * d3dD, TextureManager * tm, std::string modelFile, std::wstring texturePath);
 
 
-	~MD3Model();
+	~SkeletalModel();
 
 	bool loadMD5Model(ID3D11Device * d3dD, TextureManager * tm, std::string modelFile, std::vector<std::string> animationFiles);
 	
@@ -43,20 +43,20 @@ public: // keep simple for now
 	// tutorial requires CPU side versions of vertex data
 	std::vector<SimpleVertex> m_vertices;
 	std::vector<unsigned int> m_indercies;
-	std::vector<MD3ModelSubSet> m_subsets;
+	std::vector<SkeletalModelSubSet> m_subsets;
 
 	
 
 	
 	SkinnedMeshSkeleton m_skinnedMeshSkeleton;
-	MD3ModelGeomatry m_modelGeomatry;
+	SkeletalModelGeomatry m_modelGeomatry;
 
 	
 };
 
-struct MD3ModelInstance
+struct SkeletalModelInstance
 {
-	MD3Model * theModel;
+	SkeletalModel * theModel;
 	float timePoint;
 	std::string currentAnimationClipName;
 	DirectX::XMFLOAT4X4 WorldMat;

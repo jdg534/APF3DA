@@ -23,8 +23,8 @@
 #include <vector>
 
 // #include "ModelLoader.h"
-// #include "SkeletalModel.h"
-#include "MD3Model.h"
+#include "SkeletalModel.h"
+//#include "MD3Model.h"
 
 #include "TextureManager.h"
 
@@ -129,7 +129,7 @@ public:
 
 	TextureManager * m_textureManager;
 	
-	MD3ModelInstance * m_md3ModelInst;
+	SkeletalModelInstance * m_skeletalModelInst;
 
 };
 
