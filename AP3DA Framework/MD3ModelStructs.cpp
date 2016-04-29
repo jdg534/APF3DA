@@ -69,9 +69,9 @@ void BoneAnimation::Interpolate(float t, DirectX::XMFLOAT4X4& M)
 float AnimationClip::getClipStartTime()
 {
 	float rv = FLT_MAX; // FLT_MAX = max value a float can represent
-	for (auto i = 0; i < boneAnimations.size(); i++)
+	for (auto i = 0; i < m_boneAnimations.size(); i++)
 	{
-		float baStart = boneAnimations[i].GetStartTime();
+		float baStart = m_boneAnimations[i].GetStartTime();
 		if (rv > baStart)
 		{
 			rv = baStart;
@@ -83,9 +83,9 @@ float AnimationClip::getClipStartTime()
 float AnimationClip::getClipEndTime()
 {
 	float rv = FLT_MIN;
-	for (auto i = 0; i < boneAnimations.size(); i++)
+	for (auto i = 0; i < m_boneAnimations.size(); i++)
 	{
-		float baEnd = boneAnimations[i].GetEndTime();
+		float baEnd = m_boneAnimations[i].GetEndTime();
 		if (rv < baEnd)
 		{
 			rv = baEnd;
@@ -96,9 +96,9 @@ float AnimationClip::getClipEndTime()
 
 void AnimationClip::interpolate(float t, std::vector<DirectX::XMFLOAT4X4> & boneTransforms)
 {
-	for (auto i = 0; i < boneAnimations.size(); i++)
+	for (auto i = 0; i < m_boneAnimations.size(); i++)
 	{
-		boneAnimations[i].Interpolate(t, boneTransforms[i]);
+		m_boneAnimations[i].Interpolate(t, boneTransforms[i]);
 	}
 }
 

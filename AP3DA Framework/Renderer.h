@@ -42,8 +42,8 @@ public:
 	void drawTerrain(Terrain * toDraw);
 
 	//void drawMD5Model(SkeletalModel * toDraw);
-	void drawMD3Model(MD3ModelInstance * toDraw);
-	void altDrawMD3Model(MD3ModelInstance * toDraw);
+	//void drawMD3Model(MD3ModelInstance * toDraw);
+	void drawSkeletalModel(MD3ModelInstance * toDraw);
 
 	void finshDrawing();
 
@@ -66,6 +66,7 @@ private:
 	ID3D11InputLayout*      _pVertexLayout;
 
 	// start of MD3 skeletal model rendering stuff
+	/*
 	ID3D11VertexShader * m_skeletalModelVertexShader;
 	ID3D11PixelShader * m_skeletalModelPixelShader;
 	
@@ -73,7 +74,7 @@ private:
 
 	ID3D11Buffer * m_SkeletalModelConstantBuffer;
 	ID3D11Buffer * m_SkeletalModelBonesConstantBuffer;
-
+	*/
 	// end of MD3 skeletal model rendering stuff
 
 

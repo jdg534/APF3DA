@@ -19,13 +19,9 @@ struct SimpleVertex
 	// when impleremnting m3d animation, from frank luna book
 	DirectX::XMFLOAT3 Weights;
 	BYTE BoneIndices[4];
-	
-	// when attempting to try MD5 animation
-	int startWeight;
-	int weightCount;
-	
 };
 
+/*
 struct SkinnedVertex
 {
 	DirectX::XMFLOAT3 PosL;
@@ -35,6 +31,7 @@ struct SkinnedVertex
 	DirectX::XMFLOAT3 Weights;
 	BYTE BoneIndices[4];// based off the frank luna book, page 662
 };
+
 
 // now the the Skeletal animation related structures
 // for MD5, didn't work
@@ -94,7 +91,7 @@ struct ModelAnimation
 	std::vector<FrameData> frameData;
 	std::vector<std::vector<Joint>> frameSkeleton;
 };
-
+*/
 // end of skeletal animation related structures
 
 

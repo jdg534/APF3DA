@@ -39,7 +39,7 @@ struct AnimationClip
 
 	float getClipEndTime();
 	void interpolate(float t, std::vector<DirectX::XMFLOAT4X4> & boneTransforms);
-	std::vector<BoneAnimation> boneAnimations;
+	std::vector<BoneAnimation> m_boneAnimations;
 };
 
 // now the skinned data class

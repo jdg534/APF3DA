@@ -636,7 +636,7 @@ void Application::Draw()
 	// m_rendererPtr->drawMD5Model(&testSM);
 	// change to the alt version
 	// m_rendererPtr->drawMD3Model(m_md3ModelInst);
-	m_rendererPtr->altDrawMD3Model(m_md3ModelInst);
+	m_rendererPtr->drawSkeletalModel(m_md3ModelInst);
 	m_rendererPtr->finshDrawing();
 
 

@@ -248,11 +248,11 @@ void MD3Loader::ReadAnimationClips(std::ifstream& fin, UINT numBones, UINT numAn
 		fin >> skipStr; // {
 
 		AnimationClip ac;
-		ac.boneAnimations.resize(numBones);
+		ac.m_boneAnimations.resize(numBones);
 
 		for (auto boneIndex = 0; boneIndex < numBones; boneIndex++)
 		{
-			ReadBoneKeyframes(fin, numBones, ac.boneAnimations[boneIndex]);
+			ReadBoneKeyframes(fin, numBones, ac.m_boneAnimations[boneIndex]);
 		}
 		fin >> skipStr; // }
 

@@ -130,6 +130,7 @@ HRESULT Renderer::init(HWND windowHandle)
 
 
 	// now deal with the skeletal constant buffers
+	/*
 	D3D11_BUFFER_DESC skelMdlBufDesc;
 	ZeroMemory(&skelMdlBufDesc, sizeof(skelMdlBufDesc));
 	skelMdlBufDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -146,7 +147,7 @@ HRESULT Renderer::init(HWND windowHandle)
 	skelMdlBonesMatBD.CPUAccessFlags = 0;
 	hr = m_d3dDevicePtr->CreateBuffer(&skelMdlBonesMatBD, nullptr, &m_SkeletalModelBonesConstantBuffer);
 
-
+*/
 
 	D3D11_TEXTURE2D_DESC depthStencilDesc;
 
@@ -166,7 +167,7 @@ HRESULT Renderer::init(HWND windowHandle)
 	m_d3dDevicePtr->CreateDepthStencilView(_depthStencilBuffer, nullptr, &_depthStencilView);
 
 	m_d3dDeviceContextPtr->OMSetRenderTargets(1, &m_RenderTargetViewPtr, _depthStencilView);
-
+	
 	// Rasterizer
 	D3D11_RASTERIZER_DESC cmdesc;
 
@@ -360,6 +361,7 @@ HRESULT Renderer::InitShadersAndInputLayout()
 
 
 
+	/*
 	// now the MD3 model shader stuff
 	// first the vertex shader, m_skeletalModelVertexShader
 	ID3DBlob * ptrSkelMdlVSBlob = nullptr;
@@ -421,7 +423,7 @@ HRESULT Renderer::InitShadersAndInputLayout()
 
 	if (FAILED(hr))
 		return hr;
-
+		*/
 
 
 	// relese the blobs
@@ -429,8 +431,8 @@ HRESULT Renderer::InitShadersAndInputLayout()
 	pVSBlob->Release();
 	// pPSBlob->Release(); // is already relesed
 
-	ptrSkelMdlVSBlob->Release();
-	ptrSkelMdlPSBlob->Release();
+	//ptrSkelMdlVSBlob->Release();
+	//ptrSkelMdlPSBlob->Release();
 
 	return hr;
 }
@@ -636,117 +638,117 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 	// testSM.draw(m_d3dDeviceContextPtr);
 }
 */
+//
+//void Renderer::drawMD3Model(MD3ModelInstance * toDraw)
+//{
+//	// MD3 stuff below
+//
+//	// Figure out what need to be done to get, MD3 skeletal model to work
+//	m_d3dDeviceContextPtr->IASetInputLayout(m_SkeletalModelVertexLayout);
+//
+//	m_d3dDeviceContextPtr->VSSetShader(m_skeletalModelVertexShader, nullptr, 0);
+//	m_d3dDeviceContextPtr->PSSetShader(m_skeletalModelPixelShader, nullptr, 0);
+//
+//	MD3ModelConstBuffer cbForMd3Mesh;
+//	MD3ModelBoneMatrixConstBuffer cbForMd3Bones;
+//
+//
+//	m_d3dDeviceContextPtr->VSSetConstantBuffers(0, 1, &m_SkeletalModelConstantBuffer);
+//	m_d3dDeviceContextPtr->PSSetConstantBuffers(0, 1, &m_SkeletalModelConstantBuffer);
+//	// now the bone index constant buffers
+//	m_d3dDeviceContextPtr->VSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
+//	m_d3dDeviceContextPtr->PSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
+//
+//
+//	m_d3dDeviceContextPtr->PSSetSamplers(0, 1, &_pSamplerLinear);
+//
+//
+//
+//	cbForMd3Mesh.World = XMLoadFloat4x4(&toDraw->WorldMat);
+//	cbForMd3Mesh.World = XMMatrixTranspose(cbForMd3Mesh.World);
+//	
+//	
+//	XMFLOAT4X4 viewAsFloats = m_activeCamera->GetView();
+//	XMFLOAT4X4 projectionAsFloats = m_activeCamera->GetProjection();
+//
+//	XMMATRIX view = XMLoadFloat4x4(&viewAsFloats);
+//	XMMATRIX projection = XMLoadFloat4x4(&projectionAsFloats);
+//
+//	cbForMd3Mesh.View = XMMatrixTranspose(view);
+//	cbForMd3Mesh.Projection = XMMatrixTranspose(projection);
+//
+//	cbForMd3Mesh.light = m_basicLight;
+//	cbForMd3Mesh.EyePosW = m_activeCamera->GetPosition();
+//
+//
+//	XMMATRIX worldMat = XMLoadFloat4x4(&toDraw->WorldMat);
+//
+//	XMVECTOR worldMatrixDeterminate = XMMatrixDeterminant(worldMat);
+//	cbForMd3Mesh.WorldInverseTranspose = XMMatrixInverse(&worldMatrixDeterminate, worldMat);
+//	cbForMd3Mesh.WorldInverseTranspose = XMMatrixTranspose(cbForMd3Mesh.WorldInverseTranspose);
+//
+//	// transpose cbForMd3Mesh.WorldInverseTranspose as seconds time (all previous matrices had were transposed)
+//	cbForMd3Mesh.WorldInverseTranspose = XMMatrixTranspose(cbForMd3Mesh.WorldInverseTranspose);
+//
+//	// set the bones constant buffer
+//	XMMATRIX idMat = XMMatrixIdentity();
+//
+//	for (unsigned int i = 0; i < 96; i++)
+//	{
+//		
+//		XMMATRIX worldMat = XMMatrixIdentity();
+//		// transpose it (all previous matrices were transposed)
+//		worldMat = XMMatrixTranspose(worldMat);
+//		XMStoreFloat4x4(&cbForMd3Bones.boneMatrices[i], worldMat);
+//	}
+//
+//	for (unsigned int i = 0; i < toDraw->finalTransforms.size(); i++)
+//	{
+//		// 96 elements cbForMd3Bones.boneMatrices, overkill?
+//		if (i < 96)
+//		{
+//			// cbForMd3Bones.boneMatrices[i] = XMLoadFloat4x4(&m_md3ModelInst->finalTransforms[i]);
+//			// above if the bone transform matrices are to be stored as XMMATRIX
+//
+//			// below if they are ment to be stored as XMFLOAT4X4
+//
+//			// transpose?
+//			XMMATRIX boneTransform = XMLoadFloat4x4(&toDraw->finalTransforms[i]);
+//			bool transpose = true;
+//			if (transpose)
+//			{
+//				boneTransform = XMMatrixTranspose(boneTransform);
+//			}
+//
+//			XMStoreFloat4x4(&cbForMd3Bones.boneMatrices[i], boneTransform);
+//		}
+//	}
+//
+//	// update the bone constant buffer
+//	m_d3dDeviceContextPtr->UpdateSubresource(m_SkeletalModelBonesConstantBuffer, 1, nullptr, &cbForMd3Bones, 0, 0);
+//
+//
+//	for (UINT i = 0; i < toDraw->theModel->m_nSubsets; i++)
+//	{
+//		// set the materials, textures, then draw it
+//
+//		cbForMd3Mesh.surface = toDraw->theModel->m_materials[i];
+//		// set the diffuse map
+//		m_d3dDeviceContextPtr->PSSetShaderResources(0, 1, &toDraw->theModel->m_diffuseMaps[i]);
+//
+//		cbForMd3Mesh.HasTexture = 1.0f;
+//		
+//		// Update constant buffer
+//		m_d3dDeviceContextPtr->UpdateSubresource(m_SkeletalModelConstantBuffer, 0, nullptr, &cbForMd3Mesh, 0, 0);
+//
+//		// now the actual drawing
+//		toDraw->theModel->m_modelGeomatry.draw(m_d3dDeviceContextPtr, i);
+//	}
+//
+//	
+//}
 
-void Renderer::drawMD3Model(MD3ModelInstance * toDraw)
-{
-	// MD3 stuff below
-
-	// Figure out what need to be done to get, MD3 skeletal model to work
-	m_d3dDeviceContextPtr->IASetInputLayout(m_SkeletalModelVertexLayout);
-
-	m_d3dDeviceContextPtr->VSSetShader(m_skeletalModelVertexShader, nullptr, 0);
-	m_d3dDeviceContextPtr->PSSetShader(m_skeletalModelPixelShader, nullptr, 0);
-
-	MD3ModelConstBuffer cbForMd3Mesh;
-	MD3ModelBoneMatrixConstBuffer cbForMd3Bones;
-
-
-	m_d3dDeviceContextPtr->VSSetConstantBuffers(0, 1, &m_SkeletalModelConstantBuffer);
-	m_d3dDeviceContextPtr->PSSetConstantBuffers(0, 1, &m_SkeletalModelConstantBuffer);
-	// now the bone index constant buffers
-	m_d3dDeviceContextPtr->VSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
-	m_d3dDeviceContextPtr->PSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
-
-
-	m_d3dDeviceContextPtr->PSSetSamplers(0, 1, &_pSamplerLinear);
-
-
-
-	cbForMd3Mesh.World = XMLoadFloat4x4(&toDraw->WorldMat);
-	cbForMd3Mesh.World = XMMatrixTranspose(cbForMd3Mesh.World);
-	
-	
-	XMFLOAT4X4 viewAsFloats = m_activeCamera->GetView();
-	XMFLOAT4X4 projectionAsFloats = m_activeCamera->GetProjection();
-
-	XMMATRIX view = XMLoadFloat4x4(&viewAsFloats);
-	XMMATRIX projection = XMLoadFloat4x4(&projectionAsFloats);
-
-	cbForMd3Mesh.View = XMMatrixTranspose(view);
-	cbForMd3Mesh.Projection = XMMatrixTranspose(projection);
-
-	cbForMd3Mesh.light = m_basicLight;
-	cbForMd3Mesh.EyePosW = m_activeCamera->GetPosition();
-
-
-	XMMATRIX worldMat = XMLoadFloat4x4(&toDraw->WorldMat);
-
-	XMVECTOR worldMatrixDeterminate = XMMatrixDeterminant(worldMat);
-	cbForMd3Mesh.WorldInverseTranspose = XMMatrixInverse(&worldMatrixDeterminate, worldMat);
-	cbForMd3Mesh.WorldInverseTranspose = XMMatrixTranspose(cbForMd3Mesh.WorldInverseTranspose);
-
-	// transpose cbForMd3Mesh.WorldInverseTranspose as seconds time (all previous matrices had were transposed)
-	cbForMd3Mesh.WorldInverseTranspose = XMMatrixTranspose(cbForMd3Mesh.WorldInverseTranspose);
-
-	// set the bones constant buffer
-	XMMATRIX idMat = XMMatrixIdentity();
-
-	for (unsigned int i = 0; i < 96; i++)
-	{
-		
-		XMMATRIX worldMat = XMMatrixIdentity();
-		// transpose it (all previous matrices were transposed)
-		worldMat = XMMatrixTranspose(worldMat);
-		XMStoreFloat4x4(&cbForMd3Bones.boneMatrices[i], worldMat);
-	}
-
-	for (unsigned int i = 0; i < toDraw->finalTransforms.size(); i++)
-	{
-		// 96 elements cbForMd3Bones.boneMatrices, overkill?
-		if (i < 96)
-		{
-			// cbForMd3Bones.boneMatrices[i] = XMLoadFloat4x4(&m_md3ModelInst->finalTransforms[i]);
-			// above if the bone transform matrices are to be stored as XMMATRIX
-
-			// below if they are ment to be stored as XMFLOAT4X4
-
-			// transpose?
-			XMMATRIX boneTransform = XMLoadFloat4x4(&toDraw->finalTransforms[i]);
-			bool transpose = true;
-			if (transpose)
-			{
-				boneTransform = XMMatrixTranspose(boneTransform);
-			}
-
-			XMStoreFloat4x4(&cbForMd3Bones.boneMatrices[i], boneTransform);
-		}
-	}
-
-	// update the bone constant buffer
-	m_d3dDeviceContextPtr->UpdateSubresource(m_SkeletalModelBonesConstantBuffer, 1, nullptr, &cbForMd3Bones, 0, 0);
-
-
-	for (UINT i = 0; i < toDraw->theModel->m_nSubsets; i++)
-	{
-		// set the materials, textures, then draw it
-
-		cbForMd3Mesh.surface = toDraw->theModel->m_materials[i];
-		// set the diffuse map
-		m_d3dDeviceContextPtr->PSSetShaderResources(0, 1, &toDraw->theModel->m_diffuseMaps[i]);
-
-		cbForMd3Mesh.HasTexture = 1.0f;
-		
-		// Update constant buffer
-		m_d3dDeviceContextPtr->UpdateSubresource(m_SkeletalModelConstantBuffer, 0, nullptr, &cbForMd3Mesh, 0, 0);
-
-		// now the actual drawing
-		toDraw->theModel->m_modelGeomatry.draw(m_d3dDeviceContextPtr, i);
-	}
-
-	
-}
-
-void Renderer::altDrawMD3Model(MD3ModelInstance * toDraw)
+void Renderer::drawSkeletalModel(MD3ModelInstance * toDraw)
 {
 	// just use the original vertex shader (modded to all in one)
 
@@ -763,8 +765,8 @@ void Renderer::altDrawMD3Model(MD3ModelInstance * toDraw)
 	m_d3dDeviceContextPtr->PSSetConstantBuffers(0, 1, &_pConstantBuffer);
 	m_d3dDeviceContextPtr->PSSetSamplers(0, 1, &_pSamplerLinear);
 
-	m_d3dDeviceContextPtr->VSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
-	m_d3dDeviceContextPtr->PSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
+	//m_d3dDeviceContextPtr->VSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
+	//m_d3dDeviceContextPtr->PSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
 
 	// init the bone constant buffer with the boen matrices, start with identity matrices
 
