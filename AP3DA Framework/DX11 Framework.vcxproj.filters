@@ -158,8 +158,5 @@
     <None Include="DX11 Framework.fx">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="MD3_SHADER.fx">
-      <Filter>Shaders</Filter>
-    </None>
   </ItemGroup>
 </Project>

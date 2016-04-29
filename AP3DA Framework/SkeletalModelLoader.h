@@ -27,6 +27,14 @@ public:
 		std::vector<SkeletalModelMaterial>& mats,
 		SkinnedMeshSkeleton & skinInfo);
 
+	bool loadMD5(const std::string& filename,
+		std::vector<std::string> animations,
+		std::vector<SimpleVertex>& vertices,
+		std::vector<unsigned int>& indices,
+		std::vector<SkeletalModelSubSet>& subsets,
+		std::vector<SkeletalModelMaterial>& mats,
+		SkinnedMeshSkeleton & skinInfo);
+
 private:
 	void ReadMaterials(std::ifstream& fin, UINT numMaterials, std::vector<SkeletalModelMaterial>& mats);
 	void ReadSubsetTable(std::ifstream& fin, UINT numSubsets, std::vector<SkeletalModelSubSet>& subsets);

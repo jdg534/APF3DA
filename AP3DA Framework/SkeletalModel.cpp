@@ -5,11 +5,6 @@
 
 #include <fstream>
 
-SkeletalModel::SkeletalModel()
-{
-	// this is for the load MD5 functions
-}
-
 SkeletalModel::SkeletalModel(ID3D11Device * d3dD, TextureManager * tm, std::string modelFile, std::wstring texturePath)
 {
 	SkeletalModelLoader md3l;
@@ -46,19 +41,17 @@ SkeletalModel::SkeletalModel(ID3D11Device * d3dD, TextureManager * tm, std::stri
 	}
 }
 
-SkeletalModel::~SkeletalModel()
+SkeletalModel::SkeletalModel(ID3D11Device * d3dD, TextureManager * tm, std::string modelFile, std::vector<std::string> animationFiles)
 {
+	SkeletalModelLoader md5Loader;
+
+	std::vector<SkeletalModelMaterial> materials;
+
+
 }
 
-bool loadMD5Model(ID3D11Device * d3dD, TextureManager * tm, std::string modelFile, std::vector<std::string> animationFiles)
+SkeletalModel::~SkeletalModel()
 {
-	std::ifstream mdlFile(modelFile);
-	if (!mdlFile.good())
-	{
-		return false;
-	}
-
-
 }
 
 void SkeletalModelInstance::update(float dt)

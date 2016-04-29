@@ -69,6 +69,24 @@ bool SkeletalModelLoader::LoadM3d(const std::string& filename,
 	return false;
 }
 
+bool SkeletalModelLoader::loadMD5(const std::string& filename,
+	std::vector<std::string> animations,
+	std::vector<SimpleVertex>& vertices,
+	std::vector<unsigned int>& indices,
+	std::vector<SkeletalModelSubSet>& subsets,
+	std::vector<SkeletalModelMaterial>& mats,
+	SkinnedMeshSkeleton & skinInfo)
+{
+
+	std::ifstream meshFile(filename);
+	if (!meshFile.good())
+	{
+		return false;
+	}
+
+	return false; // no time!
+}
+
 void SkeletalModelLoader::ReadMaterials(std::ifstream& fin, UINT numMaterials, std::vector<SkeletalModelMaterial>& mats)
 {
 	std::string ignorStr = "";

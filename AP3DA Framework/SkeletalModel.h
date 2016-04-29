@@ -27,9 +27,9 @@
 class SkeletalModel
 {
 public: // keep simple for now
-	SkeletalModel();
+	
 	SkeletalModel(ID3D11Device * d3dD, TextureManager * tm, std::string modelFile, std::wstring texturePath);
-
+	SkeletalModel(ID3D11Device * d3dD, TextureManager * tm, std::string modelFile, std::vector<std::string> animationFiles);
 
 	~SkeletalModel();
 

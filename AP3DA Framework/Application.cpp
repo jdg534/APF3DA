@@ -156,6 +156,7 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	
 
 	m_skeletalModelInst = new SkeletalModelInstance();
+	// m_skeletalModelInst->theModel = new SkeletalModel(_pd3dDevice, m_textureManager, "soldier.m3d", L"");
 	m_skeletalModelInst->theModel = new SkeletalModel(_pd3dDevice, m_textureManager, "soldier.m3d", L"");
 	m_skeletalModelInst->timePoint = 0.0f;
 	m_skeletalModelInst->currentAnimationClipName = "Take1";
