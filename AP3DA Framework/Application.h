@@ -43,11 +43,6 @@ private:
 	HWND                    m_hWnd;
 	
 
-	ID3D11Buffer*           _pVertexBuffer;
-	ID3D11Buffer*           _pIndexBuffer;
-
-	// ID3D11SamplerState * _pSamplerLinear = nullptr;
-
 	Light m_basicLight;
 
 	// vector<GameObject *> _gameObjects;
@@ -94,17 +89,6 @@ private:
 	// HRESULT InitDevice();
 	void Cleanup();
 	
-	HRESULT CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
-	// HRESULT InitShadersAndInputLayout();
-	
-	HRESULT InitVertexBuffer();
-	HRESULT InitIndexBuffer();
-
-	HRESULT InitAssets();
-
-	//Geometry * testTerrainData;
-
-
 	
 
 
