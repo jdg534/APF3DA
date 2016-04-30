@@ -5,26 +5,26 @@
 #include <Windows.h>// for GetAsyncKeyState()
 
 
-FlyingCamera::FlyingCamera(XMFLOAT3 position, XMFLOAT3 at, XMFLOAT3 up, FLOAT windowWidth, FLOAT windowHeight, FLOAT nearDepth, FLOAT farDepth)
+FlyingCamera::FlyingCamera(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 at, DirectX::XMFLOAT3 up, FLOAT windowWidth, FLOAT windowHeight, FLOAT nearDepth, FLOAT farDepth)
 	: Camera(position, at, up, windowWidth, windowHeight, nearDepth, farDepth)
 {
-	m_defaultForward = XMFLOAT3(0.0f, 0.0f, 1.0f);
-	m_defaultRight = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	m_defaultForward = DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f);
+	m_defaultRight = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
 	m_right = m_defaultRight;
 	m_forward = m_defaultForward;
 
-	m_upVecForFlyCam = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	m_upVecForFlyCam = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
 
 	m_yaw = 0.0f; // rotation in Y axis
 	m_pitch = 0.0f; // rotation in 
 
-	// m_lookAtDir = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	// m_lookAtDir = DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f);
 	m_lookAtDir.x = at.x - position.x;
 	m_lookAtDir.y = at.y - position.y;
 	m_lookAtDir.z = at.z - position.z;
 
 
-	XMStoreFloat4x4(&m_rotationMat, XMMatrixIdentity());
+	DirectX::XMStoreFloat4x4(&m_rotationMat, DirectX::XMMatrixIdentity());
 	m_moveSpeed = 1.1f;
 }
 
@@ -100,48 +100,48 @@ void FlyingCamera::updateLogic(float dt)
 	}
 
 	/* (old code)
-	XMVECTOR z = XMLoadFloat3(&m_at);
-	XMVECTOR y = XMLoadFloat3(&m_up);
-	XMVECTOR x = XMVector3Cross(y,z); 
+	DirectX::XMVECTOR z = DirectX::XMLoadFloat3(&m_at);
+	DirectX::XMVECTOR y = DirectX::XMLoadFloat3(&m_up);
+	DirectX::XMVECTOR x = DirectX::XMVector3Cross(y,z); 
 
-	z = XMVector3Normalize(z);
-	y = XMVector3Normalize(y);
-	x = XMVector3Normalize(x);
+	z = DirectX::XMVector3Normalize(z);
+	y = DirectX::XMVector3Normalize(y);
+	x = DirectX::XMVector3Normalize(x);
 
-	XMFLOAT3 right;
-	XMStoreFloat3(&right, x);
+	DirectX::XMFLOAT3 right;
+	DirectX::XMStoreFloat3(&right, x);
 	*/
 	
 	// based off http://www.braynzarsoft.net/viewtutorial/q16390-18-first-person-camera
 
-	XMMATRIX rotM = XMMatrixRotationRollPitchYaw(m_pitch, m_yaw, 0.0f);
+	DirectX::XMMATRIX rotM = DirectX::XMMatrixRotationRollPitchYaw(m_pitch, m_yaw, 0.0f);
 
-	XMVECTOR targetVec = XMVector3TransformCoord(XMLoadFloat3(&m_defaultForward), rotM);
-	targetVec = XMVector3Normalize(targetVec);
+	DirectX::XMVECTOR targetVec = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat3(&m_defaultForward), rotM);
+	targetVec = DirectX::XMVector3Normalize(targetVec);
 	// rember the lookAt vec = eyePosition + targetVec
-	XMStoreFloat3(&m_lookAtDir, targetVec);
+	DirectX::XMStoreFloat3(&m_lookAtDir, targetVec);
 
-	XMMATRIX tmpYRotMat = XMMatrixRotationY(m_yaw);
+	DirectX::XMMATRIX tmpYRotMat = DirectX::XMMatrixRotationY(m_yaw);
 
 	/* transform:
-	XMFLOAT3 m_right;
-	XMFLOAT3 m_forward;
-	XMFLOAT3 m_upVecForFlyCam;
+	DirectX::XMFLOAT3 m_right;
+	DirectX::XMFLOAT3 m_forward;
+	DirectX::XMFLOAT3 m_upVecForFlyCam;
 	*/
 
-	XMVECTOR dr, r,
+	DirectX::XMVECTOR dr, r,
 		df, f, upTmp, upRes;
-	dr = XMLoadFloat3(&m_defaultRight);
-	df = XMLoadFloat3(&m_defaultForward);
-	upTmp = XMLoadFloat3(&m_upVecForFlyCam);
+	dr = DirectX::XMLoadFloat3(&m_defaultRight);
+	df = DirectX::XMLoadFloat3(&m_defaultForward);
+	upTmp = DirectX::XMLoadFloat3(&m_upVecForFlyCam);
 	
-	r = XMVector3TransformNormal(dr, tmpYRotMat);
-	f = XMVector3TransformNormal(df, tmpYRotMat);
-	upRes = XMVector3TransformNormal(upTmp, tmpYRotMat);
+	r = DirectX::XMVector3TransformNormal(dr, tmpYRotMat);
+	f = DirectX::XMVector3TransformNormal(df, tmpYRotMat);
+	upRes = DirectX::XMVector3TransformNormal(upTmp, tmpYRotMat);
 	
-	XMStoreFloat3(&m_right, r);
-	XMStoreFloat3(&m_forward, f);
-	XMStoreFloat3(&m_upVecForFlyCam, upRes);
+	DirectX::XMStoreFloat3(&m_right, r);
+	DirectX::XMStoreFloat3(&m_forward, f);
+	DirectX::XMStoreFloat3(&m_upVecForFlyCam, upRes);
 
 
 	float moveLeftRight = 0.0f;
@@ -188,31 +188,31 @@ void FlyingCamera::updateLogic(float dt)
 
 
 	// just need to set the final values for m_eye, m_at & m_up
-	XMVECTOR rightScaled = XMVectorScale(r, moveLeftRight);
-	XMVECTOR forwardScaled = XMVectorScale(f, moveForwardBackward);
-	XMVECTOR upScaled = XMVectorScale(upRes, moveUpDown);
+	DirectX::XMVECTOR rightScaled = DirectX::XMVectorScale(r, moveLeftRight);
+	DirectX::XMVECTOR forwardScaled = DirectX::XMVectorScale(f, moveForwardBackward);
+	DirectX::XMVECTOR upScaled = DirectX::XMVectorScale(upRes, moveUpDown);
 	// for flying camera, also add the up Vector, for basic FPS camera don't
 	
 
-	XMVECTOR pos = XMLoadFloat3(&m_eye);
-	pos = XMVectorAdd(pos, rightScaled);
-	pos = XMVectorAdd(pos, forwardScaled);
-	pos = XMVectorAdd(pos, upScaled);
-	XMStoreFloat3(&m_eye, pos);
+	DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&m_eye);
+	pos = DirectX::XMVectorAdd(pos, rightScaled);
+	pos = DirectX::XMVectorAdd(pos, forwardScaled);
+	pos = DirectX::XMVectorAdd(pos, upScaled);
+	DirectX::XMStoreFloat3(&m_eye, pos);
 
 	// set the upVector
-	XMStoreFloat3(&m_up, upRes);
+	DirectX::XMStoreFloat3(&m_up, upRes);
 
 	// finally the at position, eyePos + target vec
-	XMVECTOR finalAt = XMVectorAdd(pos, targetVec);
-	XMStoreFloat3(&m_at, finalAt);
+	DirectX::XMVECTOR finalAt = DirectX::XMVectorAdd(pos, targetVec);
+	DirectX::XMStoreFloat3(&m_at, finalAt);
 	// DONE
 
 	if (GetAsyncKeyState('R') & 0x8000) // R for Rest
 	{
-		m_at = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		m_up = XMFLOAT3(0.0f, 1.0f, 0.0f);
-		m_eye = XMFLOAT3(0.0f, 0.0f, -5.0f);
+		m_at = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+		m_up = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
+		m_eye = DirectX::XMFLOAT3(0.0f, 0.0f, -5.0f);
 
 	}
 

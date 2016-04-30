@@ -32,7 +32,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 bool Application::HandleKeyboard(MSG msg)
 {
-	XMFLOAT3 cameraPosition = m_camera->GetPosition();
+	DirectX::XMFLOAT3 cameraPosition = m_camera->GetPosition();
 
 	switch (msg.wParam)
 	{
@@ -163,26 +163,26 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	m_skeletalModelInst->finalTransforms.resize(m_skeletalModelInst->theModel->m_skinnedMeshSkeleton.getBoneCount());
 
 	// init the model's world matrix
-	XMMATRIX mdlTrans, mdlScale, mdlRot;
-	mdlScale = XMMatrixScaling(0.5f, 0.5f, -0.5f);
-	//mdlScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
-	mdlRot = XMMatrixRotationY(XM_PI);
-	mdlTrans = XMMatrixTranslation(0.0, 2.0, 0.0);
+	DirectX::XMMATRIX mdlTrans, mdlScale, mdlRot;
+	mdlScale = DirectX::XMMatrixScaling(0.5f, 0.5f, -0.5f);
+	//mdlScale =DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f);
+	mdlRot = DirectX::XMMatrixRotationY(DirectX::XM_PI);
+	mdlTrans = DirectX::XMMatrixTranslation(0.0, 2.0, 0.0);
 
-	// XMStoreFloat4x4(&m_skeletalModelInst->WorldMat, mdlScale * mdlRot * mdlTrans);
+	//DirectX::XMStoreFloat4x4(&m_skeletalModelInst->WorldMat, mdlScale * mdlRot * mdlTrans);
 
 	// starting with Identity matrix
-	// XMStoreFloat4x4(&m_skeletalModelInst->WorldMat, mdlTrans);
+	//DirectX::XMStoreFloat4x4(&m_skeletalModelInst->WorldMat, mdlTrans);
 	
-	// XMStoreFloat4x4(&m_skeletalModelInst->WorldMat, XMMatrixIdentity());
-	// XMStoreFloat4x4(&m_skeletalModelInst->WorldMat, mdlScale);
+	//DirectX::XMStoreFloat4x4(&m_skeletalModelInst->WorldMat,DirectX::XMMatrixIdentity());
+	//DirectX::XMStoreFloat4x4(&m_skeletalModelInst->WorldMat, mdlScale);
 	XMStoreFloat4x4(&m_skeletalModelInst->WorldMat, mdlScale*mdlRot*mdlTrans);
 	
 	
 	// Setup Camera
-	XMFLOAT3 eye = XMFLOAT3(0.0f, 2.0f, -15.0f);//0.0f, 0.0f, 0.0f);
-	XMFLOAT3 at = XMFLOAT3(0.0f, 0.0f, 1.0f);
-	XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	DirectX::XMFLOAT3 eye =DirectX::XMFLOAT3(0.0f, 2.0f, -15.0f);//0.0f, 0.0f, 0.0f);
+	DirectX::XMFLOAT3 at =DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f);
+	DirectX::XMFLOAT3 up =DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
 
 	//_camera = new Camera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
 	// _camera = new FlyingCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
@@ -191,25 +191,25 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 
 	// Setup the scene's light
-	m_basicLight.AmbientLight = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	m_basicLight.DiffuseLight = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	m_basicLight.SpecularLight = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+	m_basicLight.AmbientLight =DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	m_basicLight.DiffuseLight =DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	m_basicLight.SpecularLight =DirectX::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
 	m_basicLight.SpecularPower = 20.0f;
-	m_basicLight.LightVecW = XMFLOAT3(0.0f, 1.0f, -1.0f);
+	m_basicLight.LightVecW =DirectX::XMFLOAT3(0.0f, 1.0f, -1.0f);
 
 	m_rendererPtr->setLight(m_basicLight);
 
 
 	Material shinyMaterial;
-	shinyMaterial.ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	shinyMaterial.diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	shinyMaterial.specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	shinyMaterial.ambient =DirectX::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	shinyMaterial.diffuse =DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	shinyMaterial.specular =DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	shinyMaterial.specularPower = 10.0f;
 
 	Material noSpecMaterial;
-	noSpecMaterial.ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
-	noSpecMaterial.diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	noSpecMaterial.specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	noSpecMaterial.ambient =DirectX::XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
+	noSpecMaterial.diffuse =DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	noSpecMaterial.specular =DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	noSpecMaterial.specularPower = 0.0f;
 	
 
@@ -309,7 +309,7 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 
 	// _camera = new FirstPersonCamera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f, &m_terrain, additionalCamHeight);
 
-	m_camera = new FlyingCamera(eye, at, up, (float)m_renderWidth, (float)m_renderHeight, 0.01f, 1000.0f);
+	m_camera = new FlyingCamera(eye, at, up, (float)m_WindowWidth, (float)m_WindowHeight, 0.01f, 1000.0f);
 	// _camera = new Camera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 100.0f);
 
 
@@ -360,7 +360,7 @@ HRESULT Application::InitWindow(HINSTANCE hInstance, int nCmdShow)
 
     // Create window
     m_hInst = hInstance;
-	RECT rc = { 0, 0, m_renderWidth, m_renderHeight };
+	RECT rc = { 0, 0, m_WindowWidth, m_WindowHeight };
     AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
     m_hWnd = CreateWindow(L"TutorialWindowClass", L"FGGC Semester 2 Framework", WS_OVERLAPPEDWINDOW,
                          CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance,
@@ -409,7 +409,7 @@ void Application::Update()
     
 	// Update camera
 	/*
-	float angleAroundZ = XMConvertToRadians(_cameraOrbitAngleXZ);
+	float angleAroundZ =DirectX::XMConvertToRadians(_cameraOrbitAngleXZ);
 
 	float x = _cameraOrbitRadius * cos(angleAroundZ);
 	float z = _cameraOrbitRadius * sin(angleAroundZ);
@@ -443,7 +443,7 @@ void Application::Update()
 	// update the sleletal model
 	
 	//testSM.update(m_secondsToProcessLastFrame, _pImmediateContext);
-	// XMStoreFloat4x4(&testSM.m_worldMat, XMMatrixTranslation(0.0f,10.0f,0.0f));
+	//DirectX::XMStoreFloat4x4(&testSM.m_worldMat,DirectX::XMMatrixTranslation(0.0f,10.0f,0.0f));
 
 
 	m_skeletalModelInst->update(m_secondsToProcessLastFrame);

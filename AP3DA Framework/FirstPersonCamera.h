@@ -9,7 +9,7 @@ class FirstPersonCamera : public FlyingCamera
 	// This camera is to behave like a flying Camera, but with the Y axis coord for the eyePos to be determined via height map value + m_additionalHeight
 
 public:
-	FirstPersonCamera(XMFLOAT3 position, XMFLOAT3 at, XMFLOAT3 up, FLOAT windowWidth, FLOAT windowHeight, FLOAT nearDepth, FLOAT farDepth, Terrain * moveOn, float additionalHeight);
+	FirstPersonCamera(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 at, DirectX::XMFLOAT3 up, FLOAT windowWidth, FLOAT windowHeight, FLOAT nearDepth, FLOAT farDepth, Terrain * moveOn, float additionalHeight);
 	~FirstPersonCamera();
 
 	virtual void updateLogic(float dt);
@@ -21,7 +21,7 @@ public:
 private:
 	float m_additionalHeight; // to be on top of the value determined 
 	Terrain * m_moveOn;
-	XMFLOAT3 m_positionLastFrame; // won't allow for the camera to move off the terrain
+	DirectX::XMFLOAT3 m_positionLastFrame; // won't allow for the camera to move off the terrain
 };
 
 

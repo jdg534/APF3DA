@@ -1,6 +1,6 @@
 #include "FirstPersonCamera.h"
 
-FirstPersonCamera::FirstPersonCamera(XMFLOAT3 position, XMFLOAT3 at, XMFLOAT3 up, FLOAT windowWidth, FLOAT windowHeight, FLOAT nearDepth, FLOAT farDepth, Terrain * moveOn, float additionalHeight)
+FirstPersonCamera::FirstPersonCamera(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 at, DirectX::XMFLOAT3 up, FLOAT windowWidth, FLOAT windowHeight, FLOAT nearDepth, FLOAT farDepth, Terrain * moveOn, float additionalHeight)
 	:FlyingCamera(position, at, up, windowWidth, windowHeight, nearDepth, farDepth)
 
 {

@@ -71,12 +71,12 @@ private:
 	// UINT m_frameRateCap = 60; // part of an attempt to fix skeletal animaton (the time point didn't appear to change on the animation class)
 
 
-	UINT m_WindowHeight;
-	UINT m_WindowWidth;
-
+	
+	UINT m_WindowWidth = 900;
+	UINT m_WindowHeight = 768;
 	// Render dimensions - Change here to alter screen resolution
-	UINT m_renderWidth = 800;
-	UINT m_renderHeight = 600;
+	// UINT m_renderWidth = 800;
+	// UINT m_renderHeight = 600;
 	
 	bool m_wireFrame = false;
 	
@@ -91,7 +91,9 @@ private:
 	
 	
 
+	TextureManager * m_textureManager;
 
+	SkeletalModelInstance * m_skeletalModelInst;
 public:
 	Application();
 	~Application();
@@ -111,9 +113,7 @@ public:
 
 	// ModelLoader * m_modelLoaderInstancePtr;
 
-	TextureManager * m_textureManager;
 	
-	SkeletalModelInstance * m_skeletalModelInst;
 
 };
 

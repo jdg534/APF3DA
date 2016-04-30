@@ -7,7 +7,7 @@
 class FlyingCamera : public Camera
 {
 public:
-	FlyingCamera(XMFLOAT3 position, XMFLOAT3 at, XMFLOAT3 up, FLOAT windowWidth, FLOAT windowHeight, FLOAT nearDepth, FLOAT farDepth);
+	FlyingCamera(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 at, DirectX::XMFLOAT3 up, FLOAT windowWidth, FLOAT windowHeight, FLOAT nearDepth, FLOAT farDepth);
 	~FlyingCamera();
 	virtual void updateLogic(float dt);
 protected:
@@ -26,15 +26,15 @@ protected:
 
 	*/
 
-	XMFLOAT3 m_defaultForward;
-	XMFLOAT3 m_defaultRight;
+	DirectX::XMFLOAT3 m_defaultForward;
+	DirectX::XMFLOAT3 m_defaultRight;
 	
 	
-	XMFLOAT3 m_right;
-	XMFLOAT3 m_forward;
-	XMFLOAT3 m_upVecForFlyCam;
+	DirectX::XMFLOAT3 m_right;
+	DirectX::XMFLOAT3 m_forward;
+	DirectX::XMFLOAT3 m_upVecForFlyCam;
 
-	XMFLOAT3 m_lookAtDir; // for sub class they need to know the direction that the camera is looking at
+	DirectX::XMFLOAT3 m_lookAtDir; // for sub class they need to know the direction that the camera is looking at
 
 	float m_moveSpeed;
 	float m_turnSpeed;
@@ -45,7 +45,7 @@ protected:
 	float m_yaw; // rotation in Y axis
 	float m_pitch; // rotation in 
 
-	XMFLOAT4X4 m_rotationMat;
+	DirectX::XMFLOAT4X4 m_rotationMat;
 
 };
 

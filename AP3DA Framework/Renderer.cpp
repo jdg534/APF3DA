@@ -519,14 +519,14 @@ void Renderer::drawTerrain(Terrain * toDraw)
 
 	ConstantBuffer cb;
 
-	XMFLOAT4X4 viewAsFloats = m_activeCamera->GetView();
-	XMFLOAT4X4 projectionAsFloats = m_activeCamera->GetProjection();
+	DirectX::XMFLOAT4X4 viewAsFloats = m_activeCamera->GetView();
+	DirectX::XMFLOAT4X4 projectionAsFloats = m_activeCamera->GetProjection();
 
-	XMMATRIX view = XMLoadFloat4x4(&viewAsFloats);
-	XMMATRIX projection = XMLoadFloat4x4(&projectionAsFloats);
+	DirectX::XMMATRIX view = DirectX::XMLoadFloat4x4(&viewAsFloats);
+	DirectX::XMMATRIX projection = DirectX::XMLoadFloat4x4(&projectionAsFloats);
 
-	cb.View = XMMatrixTranspose(view);
-	cb.Projection = XMMatrixTranspose(projection);
+	cb.View = DirectX::XMMatrixTranspose(view);
+	cb.Projection = DirectX::XMMatrixTranspose(projection);
 
 	cb.light = m_basicLight;
 	cb.EyePosW = m_activeCamera->GetPosition();
@@ -562,7 +562,7 @@ void Renderer::drawTerrain(Terrain * toDraw)
 	m_d3dDeviceContextPtr->PSSetShaderResources(5, 1, &m_terrainSnowTex);
 
 	cb.drawingMode = 1.0f;
-	cb.World = XMMatrixTranspose(toDraw->getWorldMat());
+	cb.World = DirectX::XMMatrixTranspose(toDraw->getWorldMat());
 	cb.terrainScaledBy = toDraw->getHeightScaledBy();
 
 	m_d3dDeviceContextPtr->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
@@ -584,20 +584,20 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 	m_d3dDeviceContextPtr->PSSetConstantBuffers(0, 1, &_pConstantBuffer);
 	m_d3dDeviceContextPtr->PSSetSamplers(0, 1, &_pSamplerLinear);
 
-	XMFLOAT4X4 viewAsFloats = m_activeCamera->GetView();
-	XMFLOAT4X4 projectionAsFloats = m_activeCamera->GetProjection();
+	DirectX::XMFLOAT4X4 viewAsFloats = m_activeCamera->GetView();
+	DirectX::XMFLOAT4X4 projectionAsFloats = m_activeCamera->GetProjection();
 
-	XMMATRIX view = XMLoadFloat4x4(&viewAsFloats);
-	XMMATRIX projection = XMLoadFloat4x4(&projectionAsFloats);
+	DirectX::XMMATRIX view = DirectX::XMLoadFloat4x4(&viewAsFloats);
+	DirectX::XMMATRIX projection = DirectX::XMLoadFloat4x4(&projectionAsFloats);
 
-	cb.View = XMMatrixTranspose(view);
-	cb.Projection = XMMatrixTranspose(projection);
+	cb.View = DirectX::XMMatrixTranspose(view);
+	cb.Projection = DirectX::XMMatrixTranspose(projection);
 
 	cb.light = m_basicLight;
 	cb.EyePosW = m_activeCamera->GetPosition();
 
 	cb.World = toDraw->getWorldMat();
-	cb.World = DirectX::XMMatrixTranspose(cb.World);
+	cb.World = DirectX::DirectX::XMMatrixTranspose(cb.World);
 
 	cb.drawingMode = 0.0f;
 	cb.terrainScaledBy = 0.0f;
@@ -609,9 +609,9 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 	float difCol = 0.6f;
 	float speCol = 1.0f - difCol - ambCol;
 	
-	whiteMat.AmbientMtrl = DirectX::XMFLOAT4(ambCol, ambCol, ambCol, 1.0f);
-	whiteMat.DiffuseMtrl = DirectX::XMFLOAT4(difCol, difCol, difCol, 1.0f);
-	whiteMat.SpecularMtrl = DirectX::XMFLOAT4(speCol, speCol, speCol, 1.0f);
+	whiteMat.AmbientMtrl = DirectX::DirectX::XMFLOAT4(ambCol, ambCol, ambCol, 1.0f);
+	whiteMat.DiffuseMtrl = DirectX::DirectX::XMFLOAT4(difCol, difCol, difCol, 1.0f);
+	whiteMat.SpecularMtrl = DirectX::DirectX::XMFLOAT4(speCol, speCol, speCol, 1.0f);
 	cb.surface = whiteMat;
 
 	for (int i = 0; i < toDraw->nSubsets; i++)
@@ -664,42 +664,42 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 //
 //
 //
-//	cbForMd3Mesh.World = XMLoadFloat4x4(&toDraw->WorldMat);
-//	cbForMd3Mesh.World = XMMatrixTranspose(cbForMd3Mesh.World);
+//	cbForMd3Mesh.World = DirectX::XMLoadFloat4x4(&toDraw->WorldMat);
+//	cbForMd3Mesh.World = DirectX::XMMatrixTranspose(cbForMd3Mesh.World);
 //	
 //	
-//	XMFLOAT4X4 viewAsFloats = m_activeCamera->GetView();
-//	XMFLOAT4X4 projectionAsFloats = m_activeCamera->GetProjection();
+//	DirectX::XMFLOAT4X4 viewAsFloats = m_activeCamera->GetView();
+//	DirectX::XMFLOAT4X4 projectionAsFloats = m_activeCamera->GetProjection();
 //
-//	XMMATRIX view = XMLoadFloat4x4(&viewAsFloats);
-//	XMMATRIX projection = XMLoadFloat4x4(&projectionAsFloats);
+//	DirectX::XMMATRIX view = DirectX::XMLoadFloat4x4(&viewAsFloats);
+//	DirectX::XMMATRIX projection = DirectX::XMLoadFloat4x4(&projectionAsFloats);
 //
-//	cbForMd3Mesh.View = XMMatrixTranspose(view);
-//	cbForMd3Mesh.Projection = XMMatrixTranspose(projection);
+//	cbForMd3Mesh.View = DirectX::XMMatrixTranspose(view);
+//	cbForMd3Mesh.Projection = DirectX::XMMatrixTranspose(projection);
 //
 //	cbForMd3Mesh.light = m_basicLight;
 //	cbForMd3Mesh.EyePosW = m_activeCamera->GetPosition();
 //
 //
-//	XMMATRIX worldMat = XMLoadFloat4x4(&toDraw->WorldMat);
+//	DirectX::XMMATRIX worldMat = DirectX::XMLoadFloat4x4(&toDraw->WorldMat);
 //
-//	XMVECTOR worldMatrixDeterminate = XMMatrixDeterminant(worldMat);
-//	cbForMd3Mesh.WorldInverseTranspose = XMMatrixInverse(&worldMatrixDeterminate, worldMat);
-//	cbForMd3Mesh.WorldInverseTranspose = XMMatrixTranspose(cbForMd3Mesh.WorldInverseTranspose);
+//	DirectX::XMVECTOR worldMatrixDeterminate = DirectX::XMMatrixDeterminant(worldMat);
+//	cbForMd3Mesh.WorldInverseTranspose = DirectX::XMMatrixInverse(&worldMatrixDeterminate, worldMat);
+//	cbForMd3Mesh.WorldInverseTranspose = DirectX::XMMatrixTranspose(cbForMd3Mesh.WorldInverseTranspose);
 //
 //	// transpose cbForMd3Mesh.WorldInverseTranspose as seconds time (all previous matrices had were transposed)
-//	cbForMd3Mesh.WorldInverseTranspose = XMMatrixTranspose(cbForMd3Mesh.WorldInverseTranspose);
+//	cbForMd3Mesh.WorldInverseTranspose = DirectX::XMMatrixTranspose(cbForMd3Mesh.WorldInverseTranspose);
 //
 //	// set the bones constant buffer
-//	XMMATRIX idMat = XMMatrixIdentity();
+//	DirectX::XMMATRIX idMat = DirectX::XMMatrixIdentity();
 //
 //	for (unsigned int i = 0; i < 96; i++)
 //	{
 //		
-//		XMMATRIX worldMat = XMMatrixIdentity();
+//		DirectX::XMMATRIX worldMat = DirectX::XMMatrixIdentity();
 //		// transpose it (all previous matrices were transposed)
-//		worldMat = XMMatrixTranspose(worldMat);
-//		XMStoreFloat4x4(&cbForMd3Bones.boneMatrices[i], worldMat);
+//		worldMat = DirectX::XMMatrixTranspose(worldMat);
+//		DirectX::XMStoreFloat4x4(&cbForMd3Bones.boneMatrices[i], worldMat);
 //	}
 //
 //	for (unsigned int i = 0; i < toDraw->finalTransforms.size(); i++)
@@ -707,20 +707,20 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 //		// 96 elements cbForMd3Bones.boneMatrices, overkill?
 //		if (i < 96)
 //		{
-//			// cbForMd3Bones.boneMatrices[i] = XMLoadFloat4x4(&m_SkeletalModelInst->finalTransforms[i]);
-//			// above if the bone transform matrices are to be stored as XMMATRIX
+//			// cbForMd3Bones.boneMatrices[i] = DirectX::XMLoadFloat4x4(&m_SkeletalModelInst->finalTransforms[i]);
+//			// above if the bone transform matrices are to be stored as DirectX::XMMATRIX
 //
-//			// below if they are ment to be stored as XMFLOAT4X4
+//			// below if they are ment to be stored as DirectX::XMFLOAT4X4
 //
 //			// transpose?
-//			XMMATRIX boneTransform = XMLoadFloat4x4(&toDraw->finalTransforms[i]);
+//			DirectX::XMMATRIX boneTransform = DirectX::XMLoadFloat4x4(&toDraw->finalTransforms[i]);
 //			bool transpose = true;
 //			if (transpose)
 //			{
-//				boneTransform = XMMatrixTranspose(boneTransform);
+//				boneTransform = DirectX::XMMatrixTranspose(boneTransform);
 //			}
 //
-//			XMStoreFloat4x4(&cbForMd3Bones.boneMatrices[i], boneTransform);
+//			DirectX::XMStoreFloat4x4(&cbForMd3Bones.boneMatrices[i], boneTransform);
 //		}
 //	}
 //
@@ -775,86 +775,31 @@ void Renderer::drawSkeletalModel(SkeletalModelInstance * toDraw)
 
 
 
-	// maybe taking the wrongapproach, the frank luna book use: ID3DX11EffectMatrixVariable for the bone matrix on the c++ side
+	
+	DirectX::XMFLOAT4X4 idMat;
+	DirectX::XMStoreFloat4x4(&idMat, DirectX::XMMatrixIdentity());
 
-	DirectX::XMFLOAT4X4 testMat;
-	testMat._11 = 1.0f;
-	testMat._12 = 2.0f;
-	testMat._13 = 3.0f;
-	testMat._14 = 4.0f;
-
-	testMat._21 = 5.0f;
-	testMat._22 = 6.0f;
-	testMat._23 = 7.0f;
-	testMat._24 = 8.0f;
-
-	testMat._31 = 9.0f;
-	testMat._32 = 10.0f;
-	testMat._33 = 11.0f;
-	testMat._34 = 12.0f;
-
-	testMat._41 = 13.0f;
-	testMat._42 = 14.0f;
-	testMat._43 = 15.0f;
-	testMat._44 = 16.0f;
-
-	XMMATRIX xmTestMat = DirectX::XMLoadFloat4x4(&testMat);
-	xmTestMat = XMMatrixTranspose(xmTestMat);
-
-	XMFLOAT4X4 testMatTransposed;
-	XMStoreFloat4x4(&testMatTransposed, xmTestMat);
-
-	XMFLOAT4X4 idMat;
-	XMStoreFloat4x4(&idMat, XMMatrixIdentity());
-
-	/*
-	for (UINT i = 0; i < 96; i++)
-	{
-		XMStoreFloat4x4(&boneCB.boneMatrices[i], XMMatrixIdentity());
-
-		// boneCB.boneMatrices[i] = testMat;
-		// boneCB.boneMatrices[i] = testMatTransposed;
-		// XMStoreFloat4x4(&boneCB.boneMatrices[i], xmTestMat);
-	}
-	*/
-
-	// testing out with identity matrix
-	/*
-	for (UINT i = 0; i < toDraw->finalTransforms.size(); i++)
-	{
-		XMMATRIX boneMat = XMLoadFloat4x4(&toDraw->finalTransforms[i]);
-		if (transposeBoneTransformMats)
-		{
-			boneMat = XMMatrixTranspose(boneMat);
-		}
-		// boneCB.boneMatrices[i] = toDraw->finalTransforms[i];
-		XMStoreFloat4x4(&boneCB.boneMatrices[i], boneMat);
-	}
-	*/
+	
 
 
-	// m_d3dDeviceContextPtr->UpdateSubresource(m_SkeletalModelBonesConstantBuffer, 1, nullptr, &boneCB, 0, 0);
+	cb.World = DirectX::XMLoadFloat4x4(&toDraw->WorldMat);
 
-	// now the main constant buffer
+	DirectX::XMFLOAT4X4 viewAsFloats = m_activeCamera->GetView();
+	DirectX::XMFLOAT4X4 projectionAsFloats = m_activeCamera->GetProjection();
 
-	cb.World = XMLoadFloat4x4(&toDraw->WorldMat);
+	DirectX::XMMATRIX view = DirectX::XMLoadFloat4x4(&viewAsFloats);
+	DirectX::XMMATRIX projection = DirectX::XMLoadFloat4x4(&projectionAsFloats);
 
-	XMFLOAT4X4 viewAsFloats = m_activeCamera->GetView();
-	XMFLOAT4X4 projectionAsFloats = m_activeCamera->GetProjection();
-
-	XMMATRIX view = XMLoadFloat4x4(&viewAsFloats);
-	XMMATRIX projection = XMLoadFloat4x4(&projectionAsFloats);
-
-	cb.View = XMMatrixTranspose(view);
-	cb.Projection = XMMatrixTranspose(projection);
+	cb.View = DirectX::XMMatrixTranspose(view);
+	cb.Projection = DirectX::XMMatrixTranspose(projection);
 	
 	
-	XMVECTOR determinant = XMMatrixDeterminant(cb.World);
+	DirectX::XMVECTOR determinant = DirectX::XMMatrixDeterminant(cb.World);
 	
-	cb.WorldInverseTranspose = XMMatrixInverse(&determinant,cb.World);
-	cb.WorldInverseTranspose = XMMatrixTranspose(cb.WorldInverseTranspose);
+	cb.WorldInverseTranspose = DirectX::XMMatrixInverse(&determinant,cb.World);
+	cb.WorldInverseTranspose = DirectX::XMMatrixTranspose(cb.WorldInverseTranspose);
 	
-	cb.World = XMMatrixTranspose(cb.World);
+	cb.World = DirectX::XMMatrixTranspose(cb.World);
 
 	cb.light = m_basicLight;
 
@@ -873,9 +818,9 @@ void Renderer::drawSkeletalModel(SkeletalModelInstance * toDraw)
 		// cb.boneMatrices[i] = testMat;
 		if (i < toDraw->finalTransforms.size())
 		{
-			XMMATRIX mdlTransForm = XMLoadFloat4x4(&toDraw->finalTransforms[i]);
-			mdlTransForm = XMMatrixTranspose(mdlTransForm);
-			XMStoreFloat4x4(&cb.boneMatrices[i], mdlTransForm);
+			DirectX::XMMATRIX mdlTransForm = DirectX::XMLoadFloat4x4(&toDraw->finalTransforms[i]);
+			mdlTransForm = DirectX::XMMatrixTranspose(mdlTransForm);
+			DirectX::XMStoreFloat4x4(&cb.boneMatrices[i], mdlTransForm);
 		}
 		else
 		{
