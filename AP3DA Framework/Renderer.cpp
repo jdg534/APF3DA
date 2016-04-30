@@ -116,7 +116,7 @@ HRESULT Renderer::init(HWND windowHandle)
 	bd.ByteWidth = sizeof(ConstantBuffer);
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
-	hr = m_d3dDevicePtr->CreateBuffer(&bd, nullptr, &_pConstantBuffer);
+	hr = m_d3dDevicePtr->CreateBuffer(&bd, nullptr, &m_constantBufferPtr);
 
 	if (FAILED(hr))
 		return hr;
@@ -163,10 +163,10 @@ HRESULT Renderer::init(HWND windowHandle)
 	depthStencilDesc.CPUAccessFlags = 0;
 	depthStencilDesc.MiscFlags = 0;
 
-	m_d3dDevicePtr->CreateTexture2D(&depthStencilDesc, nullptr, &_depthStencilBuffer);
-	m_d3dDevicePtr->CreateDepthStencilView(_depthStencilBuffer, nullptr, &_depthStencilView);
+	m_d3dDevicePtr->CreateTexture2D(&depthStencilDesc, nullptr, &m_depthStencilBufferPtr);
+	m_d3dDevicePtr->CreateDepthStencilView(m_depthStencilBufferPtr, nullptr, &m_depthStencilViewPtr);
 
-	m_d3dDeviceContextPtr->OMSetRenderTargets(1, &m_RenderTargetViewPtr, _depthStencilView);
+	m_d3dDeviceContextPtr->OMSetRenderTargets(1, &m_RenderTargetViewPtr, m_depthStencilViewPtr);
 	
 	// Rasterizer
 	D3D11_RASTERIZER_DESC cmdesc;
@@ -295,7 +295,7 @@ HRESULT Renderer::InitShadersAndInputLayout()
 	}
 
 	// Create the vertex shader
-	hr = m_d3dDevicePtr->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &_pVertexShader);
+	hr = m_d3dDevicePtr->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &m_vertexShaderPtr);
 
 
 
@@ -317,7 +317,7 @@ HRESULT Renderer::InitShadersAndInputLayout()
 	}
 
 	// Create the pixel shader
-	hr = m_d3dDevicePtr->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, &_pPixelShader);
+	hr = m_d3dDevicePtr->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, &m_pixelShaderPtr);
 	pPSBlob->Release();
 
 	if (FAILED(hr))
@@ -339,14 +339,14 @@ HRESULT Renderer::InitShadersAndInputLayout()
 
 	// Create the input layout
 	hr = m_d3dDevicePtr->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(),
-		pVSBlob->GetBufferSize(), &_pVertexLayout);
+		pVSBlob->GetBufferSize(), &m_vertexLayoutPtr);
 
 
 	if (FAILED(hr))
 		return hr;
 
 	// Set the input layout
-	m_d3dDeviceContextPtr->IASetInputLayout(_pVertexLayout);
+	m_d3dDeviceContextPtr->IASetInputLayout(m_vertexLayoutPtr);
 
 	D3D11_SAMPLER_DESC sampDesc;
 	ZeroMemory(&sampDesc, sizeof(sampDesc));
@@ -357,7 +357,7 @@ HRESULT Renderer::InitShadersAndInputLayout()
 	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	sampDesc.MinLOD = 0;
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	hr = m_d3dDevicePtr->CreateSamplerState(&sampDesc, &_pSamplerLinear);
+	hr = m_d3dDevicePtr->CreateSamplerState(&sampDesc, &m_samplerPtr);
 
 
 
@@ -472,7 +472,7 @@ bool Renderer::loadTerrainTextures()
 void Renderer::startDrawing(float * clearColor, Camera * camForFrame, bool wireFrame)
 {
 	m_d3dDeviceContextPtr->ClearRenderTargetView(m_RenderTargetViewPtr, clearColor);
-	m_d3dDeviceContextPtr->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_d3dDeviceContextPtr->ClearDepthStencilView(m_depthStencilViewPtr, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	if (camForFrame != nullptr)
 	{
@@ -506,14 +506,14 @@ void Renderer::startDrawing(float * clearColor, Camera * camForFrame, bool wireF
 
 void Renderer::drawTerrain(Terrain * toDraw)
 {
-	m_d3dDeviceContextPtr->IASetInputLayout(_pVertexLayout);
+	m_d3dDeviceContextPtr->IASetInputLayout(m_vertexLayoutPtr);
 
-	m_d3dDeviceContextPtr->VSSetShader(_pVertexShader, nullptr, 0);
-	m_d3dDeviceContextPtr->PSSetShader(_pPixelShader, nullptr, 0);
+	m_d3dDeviceContextPtr->VSSetShader(m_vertexShaderPtr, nullptr, 0);
+	m_d3dDeviceContextPtr->PSSetShader(m_pixelShaderPtr, nullptr, 0);
 
-	m_d3dDeviceContextPtr->VSSetConstantBuffers(0, 1, &_pConstantBuffer);
-	m_d3dDeviceContextPtr->PSSetConstantBuffers(0, 1, &_pConstantBuffer);
-	m_d3dDeviceContextPtr->PSSetSamplers(0, 1, &_pSamplerLinear);
+	m_d3dDeviceContextPtr->VSSetConstantBuffers(0, 1, &m_constantBufferPtr);
+	m_d3dDeviceContextPtr->PSSetConstantBuffers(0, 1, &m_constantBufferPtr);
+	m_d3dDeviceContextPtr->PSSetSamplers(0, 1, &m_samplerPtr);
 
 
 
@@ -565,7 +565,7 @@ void Renderer::drawTerrain(Terrain * toDraw)
 	cb.World = DirectX::XMMatrixTranspose(toDraw->getWorldMat());
 	cb.terrainScaledBy = toDraw->getHeightScaledBy();
 
-	m_d3dDeviceContextPtr->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+	m_d3dDeviceContextPtr->UpdateSubresource(m_constantBufferPtr, 0, nullptr, &cb, 0, 0);
 
 	toDraw->Draw(m_d3dDeviceContextPtr);
 }
@@ -575,14 +575,14 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 {
 	ConstantBuffer cb;
 
-	m_d3dDeviceContextPtr->IASetInputLayout(_pVertexLayout);
+	m_d3dDeviceContextPtr->IASetInputLayout(m_vertexLayoutPtr);
 
-	m_d3dDeviceContextPtr->VSSetShader(_pVertexShader, nullptr, 0);
-	m_d3dDeviceContextPtr->PSSetShader(_pPixelShader, nullptr, 0);
+	m_d3dDeviceContextPtr->VSSetShader(m_vertexShaderPtr, nullptr, 0);
+	m_d3dDeviceContextPtr->PSSetShader(m_pixelShaderPtr, nullptr, 0);
 
-	m_d3dDeviceContextPtr->VSSetConstantBuffers(0, 1, &_pConstantBuffer);
-	m_d3dDeviceContextPtr->PSSetConstantBuffers(0, 1, &_pConstantBuffer);
-	m_d3dDeviceContextPtr->PSSetSamplers(0, 1, &_pSamplerLinear);
+	m_d3dDeviceContextPtr->VSSetConstantBuffers(0, 1, &m_constantBufferPtr);
+	m_d3dDeviceContextPtr->PSSetConstantBuffers(0, 1, &m_constantBufferPtr);
+	m_d3dDeviceContextPtr->PSSetSamplers(0, 1, &m__samplerPtr);
 
 	DirectX::XMFLOAT4X4 viewAsFloats = m_activeCamera->GetView();
 	DirectX::XMFLOAT4X4 projectionAsFloats = m_activeCamera->GetProjection();
@@ -625,7 +625,7 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 		{
 			cb.HasTexture = 0.0f;
 		}
-		m_d3dDeviceContextPtr->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+		m_d3dDeviceContextPtr->UpdateSubresource(m_constantBufferPtr, 0, nullptr, &cb, 0, 0);
 		toDraw->m_subsets[i].draw(m_d3dDeviceContextPtr);
 	}
 
@@ -633,7 +633,7 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 
 	// toDraw->draw(m_d3dDeviceContextPtr);
 	
-	//m_d3dDeviceContextPtr->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+	//m_d3dDeviceContextPtr->UpdateSubresource(m_constantBufferPtr, 0, nullptr, &cb, 0, 0);
 
 	// testSM.draw(m_d3dDeviceContextPtr);
 }
@@ -660,7 +660,7 @@ void Renderer::drawMD5Model(SkeletalModel * toDraw)
 //	m_d3dDeviceContextPtr->PSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
 //
 //
-//	m_d3dDeviceContextPtr->PSSetSamplers(0, 1, &_pSamplerLinear);
+//	m_d3dDeviceContextPtr->PSSetSamplers(0, 1, &m__samplerPtr);
 //
 //
 //
@@ -755,15 +755,15 @@ void Renderer::drawSkeletalModel(SkeletalModelInstance * toDraw)
 	ConstantBuffer cb;
 	//SkeletalModelBoneMatrixConstBuffer boneCB;
 
-	m_d3dDeviceContextPtr->IASetInputLayout(_pVertexLayout);
+	m_d3dDeviceContextPtr->IASetInputLayout(m_vertexLayoutPtr);
 
-	m_d3dDeviceContextPtr->VSSetShader(_pVertexShader, nullptr, 0);
-	m_d3dDeviceContextPtr->PSSetShader(_pPixelShader, nullptr, 0);
+	m_d3dDeviceContextPtr->VSSetShader(m_vertexShaderPtr, nullptr, 0);
+	m_d3dDeviceContextPtr->PSSetShader(m_pixelShaderPtr, nullptr, 0);
 
 	
-	m_d3dDeviceContextPtr->VSSetConstantBuffers(0, 1, &_pConstantBuffer);
-	m_d3dDeviceContextPtr->PSSetConstantBuffers(0, 1, &_pConstantBuffer);
-	m_d3dDeviceContextPtr->PSSetSamplers(0, 1, &_pSamplerLinear);
+	m_d3dDeviceContextPtr->VSSetConstantBuffers(0, 1, &m_constantBufferPtr);
+	m_d3dDeviceContextPtr->PSSetConstantBuffers(0, 1, &m_constantBufferPtr);
+	m_d3dDeviceContextPtr->PSSetSamplers(0, 1, &m_samplerPtr);
 
 	//m_d3dDeviceContextPtr->VSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
 	//m_d3dDeviceContextPtr->PSSetConstantBuffers(1, 1, &m_SkeletalModelBonesConstantBuffer);
@@ -841,7 +841,7 @@ void Renderer::drawSkeletalModel(SkeletalModelInstance * toDraw)
 		m_d3dDeviceContextPtr->PSSetShaderResources(0, 1, &toDraw->theModel->m_diffuseMaps[i]);
 
 		// now update the constant buffer.
-		m_d3dDeviceContextPtr->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+		m_d3dDeviceContextPtr->UpdateSubresource(m_constantBufferPtr, 0, nullptr, &cb, 0, 0);
 		toDraw->theModel->m_modelGeomatry.draw(m_d3dDeviceContextPtr, i);
 	}
 

@@ -61,37 +61,19 @@ private:
 	
 	
 	// start of 
-	ID3D11VertexShader*     _pVertexShader;
-	ID3D11PixelShader*      _pPixelShader;
-	ID3D11InputLayout*      _pVertexLayout;
+	ID3D11VertexShader*     m_vertexShaderPtr;
+	ID3D11PixelShader*      m_pixelShaderPtr;
+	ID3D11InputLayout*      m_vertexLayoutPtr;
 
-	// start of MD3 skeletal model rendering stuff
-	/*
-	ID3D11VertexShader * m_skeletalModelVertexShader;
-	ID3D11PixelShader * m_skeletalModelPixelShader;
-	
-	ID3D11InputLayout * m_SkeletalModelVertexLayout;
+	// ID3D11Buffer*           _pPlaneVertexBuffer;
+	// ID3D11Buffer*           _pPlaneIndexBuffer;
 
-	ID3D11Buffer * m_SkeletalModelConstantBuffer;
-	ID3D11Buffer * m_SkeletalModelBonesConstantBuffer;
-	*/
-	// end of MD3 skeletal model rendering stuff
+	ID3D11Buffer*           m_constantBufferPtr;
 
+	ID3D11DepthStencilView* m_depthStencilViewPtr = nullptr;
+	ID3D11Texture2D* m_depthStencilBufferPtr = nullptr;
 
-
-
-	// ID3D11Buffer*           _pVertexBuffer;
-	// ID3D11Buffer*           _pIndexBuffer;
-
-	ID3D11Buffer*           _pPlaneVertexBuffer;
-	ID3D11Buffer*           _pPlaneIndexBuffer;
-
-	ID3D11Buffer*           _pConstantBuffer;
-
-	ID3D11DepthStencilView* _depthStencilView = nullptr;
-	ID3D11Texture2D* _depthStencilBuffer = nullptr;
-
-	ID3D11ShaderResourceView * _pTextureRV = nullptr;
+	//ID3D11ShaderResourceView * m_renderTargetPtr = nullptr;
 
 	ID3D11ShaderResourceView * m_terrainLightDirtTex = nullptr; // for aprox sand
 	ID3D11ShaderResourceView * m_terrainGrassTex = nullptr;
@@ -100,15 +82,14 @@ private:
 	ID3D11ShaderResourceView * m_terrainSnowTex = nullptr;
 
 
-	ID3D11SamplerState * _pSamplerLinear = nullptr;
+	ID3D11SamplerState * m_samplerPtr = nullptr;
 
 	Light m_basicLight;
 	Camera * m_activeCamera;
 
 
-	// Render dimensions - Change here to alter screen resolution
-	UINT m_height = 1080;
-	UINT m_width = 1920;
+	UINT m_height;
+	UINT m_width;
 
 	ID3D11DepthStencilState* m_DSLessEqual;
 	
