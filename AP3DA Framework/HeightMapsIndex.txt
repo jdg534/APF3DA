@@ -11,8 +11,8 @@ starting with 513
 START
 HeightMapFile initialTestFile "Textures/JokeTextHeightMap.bmp"
 GenDiamondSquare initialDiamondSquare 513 0.8 200
-GenFaultFormation initialFaultFormation 513 100
-GenCircleHill initialCircleHill 513 57 13 47 27
+GenFaultFormation initialFaultFormation 513 1200
+GenCircleHill initialCircleHill 513 1000 13 47 27
 
 
 END

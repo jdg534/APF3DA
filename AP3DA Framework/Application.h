@@ -72,8 +72,8 @@ private:
 
 
 	
-	UINT m_WindowWidth = 900;
-	UINT m_WindowHeight = 768;
+	UINT m_WindowWidth = 1920;
+	UINT m_WindowHeight = 1080;
 	// Render dimensions - Change here to alter screen resolution
 	// UINT m_renderWidth = 800;
 	// UINT m_renderHeight = 600;
