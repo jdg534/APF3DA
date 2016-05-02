@@ -240,7 +240,19 @@ HRESULT Renderer::init(HWND windowHandle)
 
 void Renderer::shutdown()
 {
-	
+	m_d3dDevicePtr->Release();
+	m_d3dDeviceContextPtr->Release();
+
+	m_swapChainPtr->Release();
+	m_RenderTargetViewPtr->Release();
+
+	m_vertexShaderPtr->Release();
+	m_pixelShaderPtr->Release();
+	m_vertexLayoutPtr->Release();
+	m_constantBufferPtr->Release();
+
+	m_depthStencilViewPtr->Release();
+	m_depthStencilBufferPtr->Release();
 }
 
 HRESULT Renderer::CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
