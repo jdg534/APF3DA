@@ -9,9 +9,11 @@ the generated height maps must have the same width/depth value as the height map
 starting with 513
 
 START
+HeightMapFile flatPlane "Textures/FlatPlane513x513.bmp"
 HeightMapFile initialTestFile "Textures/JokeTextHeightMap.bmp"
-GenDiamondSquare initialDiamondSquare 513 0.8 200
-GenFaultFormation initialFaultFormation 513 1200
+HeightMapFile pit "Textures/aPit.bmp"
+GenDiamondSquare initialDiamondSquare 513 0.2 20
+GenFaultFormation initialFaultFormation 513 150
 GenCircleHill initialCircleHill 513 1000 13 47 27
 
 
