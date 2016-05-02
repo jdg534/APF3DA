@@ -37,7 +37,9 @@ Terrain::Terrain()
 
 Terrain::~Terrain()
 {
-
+	// should be done in a shutdown function
+	m_geometry.vertexBuffer->Release();
+	m_geometry.indexBuffer->Release();
 }
 
 bool Terrain::initAsFlatTerrain(int mRows, int nColumns, float cellWidth, float cellDepth, ID3D11Device * devicePtr)

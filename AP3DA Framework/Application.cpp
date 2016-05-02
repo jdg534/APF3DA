@@ -375,11 +375,13 @@ HRESULT Application::InitWindow(HINSTANCE hInstance, int nCmdShow)
 
 void Application::Cleanup()
 {
-	if (m_rendererPtr != nullptr)
-	{
-		m_rendererPtr->shutdown();
-		delete m_rendererPtr;
-	}
+	// skeletal mesh
+	m_skeletalModelInst->theModel->shutdown();
+	delete m_skeletalModelInst->theModel;
+	delete m_skeletalModelInst;
+
+	m_terrain.~Terrain(); // frees the vertex and index buffer assigned to the terrain object
+	
 
 	if (m_camera)
 	{
@@ -387,18 +389,17 @@ void Application::Cleanup()
 		m_camera = nullptr;
 	}
 
-	/*
-	for (auto gameObject : _gameObjects)
-	{
-		if (gameObject)
-		{
-			delete gameObject;
-			gameObject = nullptr;
-		}
-	}
-	*/
+	
 
 	m_textureManager->shutdown();
+
+	if (m_rendererPtr != nullptr)
+	{
+		m_rendererPtr->shutdown();
+		delete m_rendererPtr;
+	}
+
+	m_heightMapManager->shutdown();
 	delete m_textureManager;
 }
 

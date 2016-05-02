@@ -51,7 +51,7 @@ public: // keep simple for now
 	SkinnedMeshSkeleton m_skinnedMeshSkeleton;
 	SkeletalModelGeomatry m_modelGeomatry;
 
-	
+	void shutdown();
 };
 
 struct SkeletalModelInstance

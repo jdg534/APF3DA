@@ -21,6 +21,8 @@ public:
 
 	void draw(ID3D11DeviceContext * d3dDC, unsigned int nSubset);
 
+	void shutdown();
+
 private:
 	SkeletalModelGeomatry(const SkeletalModelGeomatry & toCopy);
 	// SkeletalModelGeomatry & operator =(const SkeletalModelGeomatry & toCopy);

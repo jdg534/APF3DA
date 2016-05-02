@@ -54,6 +54,12 @@ SkeletalModel::~SkeletalModel()
 {
 }
 
+void SkeletalModel::shutdown()
+{
+	// textures cleaned up by the texture manager
+	m_modelGeomatry.shutdown();
+}
+
 void SkeletalModelInstance::update(float dt)
 {
 	assert(dt > 0.0f);

@@ -74,7 +74,7 @@ protected:
 	DirectX::XMFLOAT3 m_position;
 	DirectX::XMFLOAT4X4 m_worldMatrix;
 
-	HeightMap * m_heightMap;
+	HeightMap * m_heightMap; // this is deleted by the heightmap manager class on shutdown
 
 	Geometry m_geometry;
 

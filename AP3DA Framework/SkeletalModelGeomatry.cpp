@@ -84,6 +84,12 @@ void SkeletalModelGeomatry::draw(ID3D11DeviceContext * d3dDC, unsigned int nSubs
 		0);
 }
 
+void SkeletalModelGeomatry::shutdown()
+{
+	m_vbPtr->Release();
+	m_ibPtr->Release();
+}
+
 SkeletalModelGeomatry::SkeletalModelGeomatry(const SkeletalModelGeomatry & toCopy)
 {
 	m_vbPtr = toCopy.m_vbPtr;
